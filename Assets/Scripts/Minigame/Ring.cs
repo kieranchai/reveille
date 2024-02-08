@@ -22,7 +22,7 @@ public class Ring : MonoBehaviour
 
     private void Update()
     {
-        if (rotating)
+        if (rotating && !activate)
         {
             ring.transform.Rotate(0, 0, speed * Time.deltaTime);
         }
@@ -34,7 +34,7 @@ public class Ring : MonoBehaviour
 
         if (activate)
         {
-            slot.transform.position = Vector2.MoveTowards(slot.transform.position, target.transform.position, speed * Time.deltaTime);
+            slot.transform.position = Vector2.MoveTowards(slot.transform.position, target.transform.position, 10 * Time.deltaTime);
             rotating = false;
         }
     }

@@ -9,15 +9,13 @@ public class Slot : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.name == "Hole")
+        if (collision.gameObject.CompareTag("Minigame Hole"))
         {
-            Debug.Log("A");
-            midRing.GetComponent<SpriteRenderer>().color = new Color32(0, 255, 0, 255);
+            midRing.GetComponent<SpriteRenderer>().color = Color.green;
         }
-        else if (collision.gameObject.name == "Mid Ring 1")
+        else if (collision.gameObject.CompareTag("Minigame Midring"))
         {
-            Debug.Log("B");
-            midRing.GetComponent<SpriteRenderer>().color = new Color32(255, 0, 0, 255);
+            midRing.GetComponent<SpriteRenderer>().color = Color.red;
         }
     }
 }

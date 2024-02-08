@@ -133,10 +133,11 @@ GameObject:
   m_Component:
   - component: {fileID: 294328248}
   - component: {fileID: 294328247}
+  - component: {fileID: 294328250}
   - component: {fileID: 294328249}
   m_Layer: 0
   m_Name: Mid Ring 1
-  m_TagString: Untagged
+  m_TagString: Minigame Midring
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -389,6 +390,33 @@ PolygonCollider2D:
       - {x: 0.59999996, y: -2.45}
       - {x: 0.78, y: -2.4099998}
   m_UseDelaunayMesh: 0
+--- !u!50 &294328250
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 294328246}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 0
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!1 &428198011
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,10 +426,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 428198012}
+  - component: {fileID: 428198014}
   - component: {fileID: 428198013}
   m_Layer: 0
   m_Name: Hole
-  m_TagString: Untagged
+  m_TagString: Minigame Hole
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -465,11 +494,38 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 2.5064502, y: -0.007157404}
-      - {x: 2.208343, y: -0.0069229305}
-      - {x: 2.011949, y: -0.9218527}
-      - {x: 2.2743561, y: -1.045166}
+    - - {x: 2.4700778, y: -0.31438684}
+      - {x: 2.1815479, y: -0.2852481}
+      - {x: 2.1147392, y: -0.6155915}
+      - {x: 2.3803961, y: -0.7174687}
   m_UseDelaunayMesh: 0
+--- !u!50 &428198014
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 428198011}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 0
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,6 +659,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1256601322}
   - component: {fileID: 1256601323}
+  - component: {fileID: 1256601327}
   - component: {fileID: 1256601325}
   - component: {fileID: 1256601326}
   m_Layer: 0
@@ -737,6 +794,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   midRing: {fileID: 294328246}
+--- !u!50 &1256601327
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1256601321}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 0
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!1 &1585005790
 GameObject:
   m_ObjectHideFlags: 0
@@ -767,7 +851,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8455fa18b941ad345a4415846d3cc804, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 50
+  speed: 150
 --- !u!212 &1585005792
 SpriteRenderer:
   m_ObjectHideFlags: 0
