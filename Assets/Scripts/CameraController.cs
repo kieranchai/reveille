@@ -19,7 +19,7 @@ public class CameraController : MonoBehaviour
     public Vector2 xLimit;
     public Vector2 yLimit;
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         Vector3 targetPosition = target.position + positionOffset;
         targetPosition = new Vector3(
