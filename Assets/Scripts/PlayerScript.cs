@@ -4,28 +4,39 @@ using UnityEngine;
 
 public class PlayerScript : MonoBehaviour
 {
-    // Default Data
-    public float baseMovementSpeed;
-    public int inventoryWeightLimit;
-
     // Player Components
-    public Rigidbody2D _rigidBody;
-    public Collider2D _collider;
-    public SpriteRenderer _spriteRenderer;
+    private Rigidbody2D _rigidBody;
+    private Collider2D _collider;
+    private SpriteRenderer _spriteRenderer;
+    private NoiseController _noiseController;
     public Player _data;
+
+    // Default Data
+    private float baseMovementSpeed;
+    private int inventoryWeightLimit;
+    private float movementStateMultiplier;
 
     // Dynamic Data
     private Vector3 moveDir;
-
-    // Player State
     public enum PLAYER_STATE
     {
         WALKING,
         SPRINTING,
-        SNEAKING
+        SNEAKING,
+        HACKING
     }
-
     public PLAYER_STATE currentState;
+    public float currentMovementSpeed;
+    public int currentInventoryWeight;
+    public float inventoryWeightPenalty;
+
+    private void Awake()
+    {
+        _rigidBody = GetComponent<Rigidbody2D>();
+        _collider = GetComponent<Collider2D>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
+    }
 
     private void Start()
     {
@@ -37,12 +48,13 @@ public class PlayerScript : MonoBehaviour
         switch (currentState)
         {
             case PLAYER_STATE.WALKING:
-                HandleInput();
+            case PLAYER_STATE.SPRINTING:
+            case PLAYER_STATE.SNEAKING:
+                UpdateNoiseRadius();
+                MovementInput();
                 LookAtMouse();
                 break;
-            case PLAYER_STATE.SPRINTING:
-                break;
-            case PLAYER_STATE.SNEAKING:
+            case PLAYER_STATE.HACKING:
                 break;
         }
     }
@@ -54,7 +66,8 @@ public class PlayerScript : MonoBehaviour
             case PLAYER_STATE.WALKING:
             case PLAYER_STATE.SPRINTING:
             case PLAYER_STATE.SNEAKING:
-                _rigidBody.velocity = moveDir * (baseMovementSpeed); // * movementSpeedMultiplier
+                currentMovementSpeed = baseMovementSpeed * movementStateMultiplier; // * inventoryWeightPenalty
+                _rigidBody.velocity = moveDir * currentMovementSpeed;
                 break;
         }
     }
@@ -66,28 +79,29 @@ public class PlayerScript : MonoBehaviour
         this.inventoryWeightLimit = data.inventoryWeightLimit;
     }
 
-    public void HandleInput()
+    public void MovementInput()
     {
         float moveX = 0f;
         float moveY = 0f;
-
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.W)) moveY = +1f;
+        if (Input.GetKey(KeyCode.S)) moveY = -1f;
+        if (Input.GetKey(KeyCode.A)) moveX = -1f;
+        if (Input.GetKey(KeyCode.D)) moveX = +1f;
+        if (Input.GetKey(KeyCode.LeftShift))
         {
-            moveY = +1f;
+            currentState = PLAYER_STATE.SPRINTING;
+            movementStateMultiplier = 1.5f;
         }
-        if (Input.GetKey(KeyCode.S))
+        else if (Input.GetKey(KeyCode.LeftControl))
         {
-            moveY = -1f;
+            currentState = PLAYER_STATE.SNEAKING;
+            movementStateMultiplier = 0.8f;
         }
-        if (Input.GetKey(KeyCode.A))
+        else
         {
-            moveX = -1f;
+            currentState = PLAYER_STATE.WALKING;
+            movementStateMultiplier = 1.0f;
         }
-        if (Input.GetKey(KeyCode.D))
-        {
-            moveX = +1f;
-        }
-
         moveDir = new Vector3(moveX, moveY).normalized;
     }
 
@@ -95,5 +109,10 @@ public class PlayerScript : MonoBehaviour
     {
         Vector2 mousePos = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
         transform.up = (Vector3)(mousePos - new Vector2(transform.position.x, transform.position.y));
+    }
+
+    public void UpdateNoiseRadius()
+    {
+        _noiseController.UpdateNoiseRadius(movementStateMultiplier);
     }
 }

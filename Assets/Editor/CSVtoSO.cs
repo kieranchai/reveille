@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEngine;
 using System.IO;
-using static Codice.Client.Common.Connection.AskCredentialsToUser;
 
 public class CSVtoSO
 {
@@ -15,7 +14,7 @@ public class CSVtoSO
         {
             string[] splitData = s.Split(',');
 
-            if (splitData.Length != 5)
+            if (splitData.Length != 3)
             {
                 return;
             }
@@ -24,7 +23,7 @@ public class CSVtoSO
             player.id = int.Parse(splitData[0]);
             player.baseMovementSpeed = float.Parse(splitData[1]);
             player.inventoryWeightLimit = int.Parse(splitData[2]);
-            AssetDatabase.CreateAsset(player, $"Assets/Resources/Data/Players/{player.id}.asset");
+            AssetDatabase.CreateAsset(player, $"Assets/Resources/Data/Player/{player.id}.asset");
         }
         AssetDatabase.SaveAssets();
     }
