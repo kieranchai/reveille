@@ -23,7 +23,7 @@ public class CSVtoSO
             Player player = ScriptableObject.CreateInstance<Player>();
             player.id = int.Parse(splitData[0]);
             player.baseMovementSpeed = float.Parse(splitData[1]);
-            player.inventoryWeight = int.Parse(splitData[2]);
+            player.inventoryWeightLimit = int.Parse(splitData[2]);
             AssetDatabase.CreateAsset(player, $"Assets/Resources/Data/Players/{player.id}.asset");
         }
         AssetDatabase.SaveAssets();

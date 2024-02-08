@@ -5,5 +5,5 @@ public class Player : ScriptableObject
 {
     public int id;
     public float baseMovementSpeed;
-    public int inventoryWeight;
+    public int inventoryWeightLimit;
 }
