@@ -14,18 +14,20 @@ public class PlayerScript : MonoBehaviour
     // Default Data
     private float baseMovementSpeed;
     private int inventoryWeightLimit;
-    private float movementStateMultiplier;
+    private float movementSpeedMultiplier;
+    private float noiseSizeMultiplier;
 
     // Dynamic Data
     private Vector3 moveDir;
     public enum PLAYER_STATE
     {
+        STILL,
         WALKING,
         SPRINTING,
         SNEAKING,
         HACKING
     }
-    public PLAYER_STATE currentState;
+    public PLAYER_STATE currentState = PLAYER_STATE.STILL;
     public float currentMovementSpeed;
     public int currentInventoryWeight;
     public float inventoryWeightPenalty;
@@ -47,6 +49,7 @@ public class PlayerScript : MonoBehaviour
     {
         switch (currentState)
         {
+            case PLAYER_STATE.STILL:
             case PLAYER_STATE.WALKING:
             case PLAYER_STATE.SPRINTING:
             case PLAYER_STATE.SNEAKING:
@@ -63,10 +66,11 @@ public class PlayerScript : MonoBehaviour
     {
         switch (currentState)
         {
+            case PLAYER_STATE.STILL:
             case PLAYER_STATE.WALKING:
             case PLAYER_STATE.SPRINTING:
             case PLAYER_STATE.SNEAKING:
-                currentMovementSpeed = baseMovementSpeed * movementStateMultiplier; // * inventoryWeightPenalty
+                currentMovementSpeed = baseMovementSpeed * movementSpeedMultiplier; // * inventoryWeightPenalty
                 _rigidBody.velocity = moveDir * currentMovementSpeed;
                 break;
         }
@@ -83,25 +87,45 @@ public class PlayerScript : MonoBehaviour
     {
         float moveX = 0f;
         float moveY = 0f;
+
+        // WASD
         if (Input.GetKey(KeyCode.W)) moveY = +1f;
         if (Input.GetKey(KeyCode.S)) moveY = -1f;
         if (Input.GetKey(KeyCode.A)) moveX = -1f;
         if (Input.GetKey(KeyCode.D)) moveX = +1f;
-        if (Input.GetKey(KeyCode.LeftShift))
+
+        // Player not moving
+        if (moveX == 0f && moveY == 0f)
         {
-            currentState = PLAYER_STATE.SPRINTING;
-            movementStateMultiplier = 1.5f;
-        }
-        else if (Input.GetKey(KeyCode.LeftControl))
-        {
-            currentState = PLAYER_STATE.SNEAKING;
-            movementStateMultiplier = 0.8f;
+            currentState = PLAYER_STATE.STILL;
+            movementSpeedMultiplier = 1.0f;
+            noiseSizeMultiplier = 0.0f;
         }
         else
         {
-            currentState = PLAYER_STATE.WALKING;
-            movementStateMultiplier = 1.0f;
+            // Player press SHIFT to Sprint
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                currentState = PLAYER_STATE.SPRINTING;
+                movementSpeedMultiplier = 1.5f;
+                noiseSizeMultiplier = 1.5f;
+            }
+            // Player press CTRL to Sneak
+            else if (Input.GetKey(KeyCode.LeftControl))
+            {
+                currentState = PLAYER_STATE.SNEAKING;
+                movementSpeedMultiplier = 0.8f;
+                noiseSizeMultiplier = 0.8f;
+            }
+            // Player moving normally
+            else
+            {
+                currentState = PLAYER_STATE.WALKING;
+                movementSpeedMultiplier = 1.0f;
+                noiseSizeMultiplier = 1.0f;
+            }
         }
+
         moveDir = new Vector3(moveX, moveY).normalized;
     }
 
@@ -113,6 +137,6 @@ public class PlayerScript : MonoBehaviour
 
     public void UpdateNoiseRadius()
     {
-        _noiseController.UpdateNoiseRadius(movementStateMultiplier);
+        _noiseController.UpdateNoiseRadius(noiseSizeMultiplier);
     }
 }
