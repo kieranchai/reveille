@@ -6,28 +6,28 @@ public class NoiseController : MonoBehaviour
 {
     #region Variables
     // Noise Components
-    private CircleCollider2D _collider;
+    private Transform _transform;
 
     // Default data
-    private float baseColliderRadius;
+    private Vector3 baseNoiseScale;
     public float lerpSpeed;
 
     // Dynamic data
-    public float currentColliderRadius;
+    public Vector3 currentNoiseScale;
     #endregion
 
     private void Awake()
     {
-        _collider = GetComponent<CircleCollider2D>();
-        baseColliderRadius = _collider.radius;
-        currentColliderRadius = baseColliderRadius;
+        _transform = GetComponent<Transform>();
+        baseNoiseScale = _transform.localScale;
+        currentNoiseScale = baseNoiseScale;
         lerpSpeed = 1.0f * Time.deltaTime;
     }
 
     public void UpdateNoiseRadius(float radiusMultiplier)
     {
-        currentColliderRadius = Mathf.Lerp(currentColliderRadius, baseColliderRadius * radiusMultiplier, lerpSpeed);
-        _collider.radius = currentColliderRadius;
+        currentNoiseScale = Vector3.Lerp(currentNoiseScale, baseNoiseScale * radiusMultiplier, lerpSpeed);
+        _transform.localScale = currentNoiseScale;
     }
 
     public void ProduceNoiseOnce()
