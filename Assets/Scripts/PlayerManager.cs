@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    #region Variables
     // Player Components
     private Rigidbody2D _rigidBody;
     private Collider2D _collider;
@@ -31,6 +32,9 @@ public class PlayerManager : MonoBehaviour
     public float currentMovementSpeed;
     public int currentInventoryWeight;
     public float inventoryWeightPenalty;
+    public List<Food> inventory = new List<Food>();
+    public int currentSelectedFood;
+    #endregion
 
     private void Awake()
     {
@@ -56,6 +60,7 @@ public class PlayerManager : MonoBehaviour
                 UpdateNoiseRadius();
                 MovementInput();
                 LookAtMouse();
+                MouseSelectFood();
                 break;
             case PLAYER_STATE.HACKING:
                 break;
@@ -76,13 +81,13 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    // Methods
     private void SetPlayerData(Player data)
     {
         this.baseMovementSpeed = data.baseMovementSpeed;
         this.inventoryWeightLimit = data.inventoryWeightLimit;
     }
 
+    #region Controls
     public void MovementInput()
     {
         float moveX = 0f;
@@ -114,8 +119,8 @@ public class PlayerManager : MonoBehaviour
             else if (Input.GetKey(KeyCode.LeftControl))
             {
                 currentState = PLAYER_STATE.SNEAKING;
-                movementSpeedMultiplier = 0.8f;
-                noiseSizeMultiplier = 0.8f;
+                movementSpeedMultiplier = 0.5f;
+                noiseSizeMultiplier = 0.5f;
             }
             // Player moving normally
             else
@@ -144,8 +149,44 @@ public class PlayerManager : MonoBehaviour
         transform.up = (Vector3)(mousePos - new Vector2(transform.position.x, transform.position.y));
     }
 
+    public void MouseSelectFood()
+    {
+        if (inventory.Count <= 1) return;
+
+        // Scroll Up
+        if (Input.GetAxis("Mouse ScrollWheel") > 0)
+        {
+            ++currentSelectedFood;
+            if (currentSelectedFood >= inventory.Count) currentSelectedFood = 0;
+        }
+
+        // Scroll Down
+        if (Input.GetAxis("Mouse ScrollWheel") < 0)
+        {
+            --currentSelectedFood;
+            if (currentSelectedFood < 0) currentSelectedFood = inventory.Count - 1;
+        }
+    }
+    #endregion
+
     public void UpdateNoiseRadius()
     {
         _noiseController.UpdateNoiseRadius(noiseSizeMultiplier);
+    }
+
+    public void AddFoodToInventory(Food foodItem)
+    {
+        // Check if current inventory weight have enough space for food to be added
+        if (currentInventoryWeight >= inventoryWeightLimit) return;
+        if (currentInventoryWeight + foodItem.weight > inventoryWeightLimit) return;
+
+        currentInventoryWeight += foodItem.weight;
+        inventory.Add(foodItem);
+    }
+
+    public void RemoveFoodFromInventory(Food foodItem)
+    {
+        currentInventoryWeight -= foodItem.weight;
+        inventory.Remove(foodItem);
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class NoiseController : MonoBehaviour
 {
+    #region Variables
     // Noise Components
     private CircleCollider2D _collider;
 
@@ -13,13 +14,14 @@ public class NoiseController : MonoBehaviour
 
     // Dynamic data
     public float currentColliderRadius;
+    #endregion
 
     private void Awake()
     {
         _collider = GetComponent<CircleCollider2D>();
         baseColliderRadius = _collider.radius;
         currentColliderRadius = baseColliderRadius;
-        lerpSpeed = 3.0f * Time.deltaTime;
+        lerpSpeed = 1.0f * Time.deltaTime;
     }
 
     public void UpdateNoiseRadius(float radiusMultiplier)
@@ -37,6 +39,4 @@ public class NoiseController : MonoBehaviour
     {
 
     }
-
-    //On Trigger
 }
