@@ -7,15 +7,17 @@ TagManager:
   - Noise
   - Minigame Midring
   - Minigame Hole
+  - Food
+  - Pickup
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Food
   - Water
   - UI
-  - 
-  - 
+  - Characters
+  - Obstacles
   - 
   - 
   - 

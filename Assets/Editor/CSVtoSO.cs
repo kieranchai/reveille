@@ -46,8 +46,9 @@ public class CSVtoSO
             foodItem.id = int.Parse(splitData[0]);
             foodItem.foodName = splitData[1];
             foodItem.tier = splitData[2];
-            foodItem.weight = int.Parse(splitData[3]);
-            foodItem.points = int.Parse(splitData[4]);
+            foodItem.maxPoints = int.Parse(splitData[3]);
+            foodItem.currentPoints = foodItem.maxPoints;
+            foodItem.weight = int.Parse(splitData[4]);
             AssetDatabase.CreateAsset(foodItem, $"Assets/Resources/Data/Food/{foodItem.id}.asset");
         }
         AssetDatabase.SaveAssets();

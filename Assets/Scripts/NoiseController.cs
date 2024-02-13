@@ -13,14 +13,15 @@ public class NoiseController : MonoBehaviour
     public float lerpSpeed;
 
     // Dynamic data
-    public Vector3 currentNoiseScale;
+    private Vector3 currentNoiseScale;
     #endregion
 
     private void Awake()
     {
         _transform = GetComponent<Transform>();
         baseNoiseScale = _transform.localScale;
-        currentNoiseScale = baseNoiseScale;
+        _transform.localScale = Vector3.zero;
+        currentNoiseScale = _transform.localScale;
         lerpSpeed = 1.0f * Time.deltaTime;
     }
 
@@ -30,9 +31,21 @@ public class NoiseController : MonoBehaviour
         _transform.localScale = currentNoiseScale;
     }
 
-    public void ProduceNoiseOnce()
+    public IEnumerator ProduceNoiseOnce()
     {
+        while (currentNoiseScale.sqrMagnitude < baseNoiseScale.sqrMagnitude)
+        {
+            currentNoiseScale = Vector3.Lerp(currentNoiseScale, baseNoiseScale, lerpSpeed);
+            _transform.localScale = currentNoiseScale;
+            yield return null;
+        }
 
+        while (currentNoiseScale.sqrMagnitude > Vector3.zero.sqrMagnitude)
+        {
+            currentNoiseScale = Vector3.Lerp(currentNoiseScale, Vector3.zero, lerpSpeed);
+            _transform.localScale = currentNoiseScale;
+            yield return null;
+        }
     }
 
     public void ProduceNoiseContinuous()

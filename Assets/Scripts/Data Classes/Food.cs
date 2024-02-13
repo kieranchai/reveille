@@ -6,6 +6,7 @@ public class Food : ScriptableObject
     public int id;
     public string foodName;
     public string tier;
+    public int maxPoints;
+    public int currentPoints;
     public int weight;
-    public int points;
 }

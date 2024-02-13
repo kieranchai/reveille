@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
     #region Variables
+    public static PlayerManager instance { get; private set; }
+
     // Player Components
     private Rigidbody2D _rigidBody;
     private Collider2D _collider;
@@ -17,6 +20,7 @@ public class PlayerManager : MonoBehaviour
     private int inventoryWeightLimit;
     private float movementSpeedMultiplier;
     private float noiseSizeMultiplier;
+    [SerializeField] private int thrownFoodPointsDeduction;
 
     // Dynamic Data
     private Vector3 moveDir;
@@ -34,10 +38,18 @@ public class PlayerManager : MonoBehaviour
     public float inventoryWeightPenalty;
     public List<Food> inventory = new List<Food>();
     public int currentSelectedFood;
+    public List<GameObject> nearbyFood = new List<GameObject>();
     #endregion
 
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+
         _rigidBody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -61,6 +73,8 @@ public class PlayerManager : MonoBehaviour
                 MovementInput();
                 LookAtMouse();
                 MouseSelectFood();
+                InteractInput();
+                MouseThrow();
                 break;
             case PLAYER_STATE.HACKING:
                 break;
@@ -75,7 +89,7 @@ public class PlayerManager : MonoBehaviour
             case PLAYER_STATE.WALKING:
             case PLAYER_STATE.SPRINTING:
             case PLAYER_STATE.SNEAKING:
-                currentMovementSpeed = baseMovementSpeed * movementSpeedMultiplier; // * inventoryWeightPenalty
+                currentMovementSpeed = (baseMovementSpeed * movementSpeedMultiplier) - inventoryWeightPenalty;
                 _rigidBody.velocity = moveDir * currentMovementSpeed;
                 break;
         }
@@ -139,7 +153,11 @@ public class PlayerManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             // Toggle door
+
             // Toggle hack
+
+            // Pickup Food
+            PickUpNearestFood();
         }
     }
 
@@ -166,6 +184,18 @@ public class PlayerManager : MonoBehaviour
             --currentSelectedFood;
             if (currentSelectedFood < 0) currentSelectedFood = inventory.Count - 1;
         }
+
+        // Cancel Aiming Food
+    }
+
+    public void MouseThrow()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            // Add Last thrown time check
+
+            ThrowFood();
+        }
     }
     #endregion
 
@@ -181,12 +211,45 @@ public class PlayerManager : MonoBehaviour
         if (currentInventoryWeight + foodItem.weight > inventoryWeightLimit) return;
 
         currentInventoryWeight += foodItem.weight;
+        UpdateInventoryWeightPenalty();
         inventory.Add(foodItem);
     }
 
     public void RemoveFoodFromInventory(Food foodItem)
     {
         currentInventoryWeight -= foodItem.weight;
+        UpdateInventoryWeightPenalty();
         inventory.Remove(foodItem);
+    }
+
+    public void UpdateInventoryWeightPenalty()
+    {
+        if (currentInventoryWeight == 0)
+        {
+            inventoryWeightPenalty = 0;
+            return;
+        }
+
+        inventoryWeightPenalty = (float)((0.8 * Mathf.Log(currentInventoryWeight)) / 5);
+    }
+
+    public void PickUpNearestFood()
+    {
+        if (nearbyFood.Count < 1) return;
+        AddFoodToInventory(nearbyFood[0].GetComponent<FoodManager>()._data);
+        Destroy(nearbyFood[0]);
+        //Nearest Food is removed from nearbyFood in FoodManager OnTriggerExit
+    }
+
+    public void ThrowFood()
+    {
+        if (inventory.Count < 1) return;
+
+        inventory[currentSelectedFood].currentPoints -= thrownFoodPointsDeduction;
+        GameObject thrownFood = Instantiate(Resources.Load<GameObject>("Prefabs/Food"), transform.position, Quaternion.identity);
+        thrownFood.GetComponent<FoodManager>().SetFoodData(inventory[currentSelectedFood]);
+        RemoveFoodFromInventory(inventory[currentSelectedFood]);
+
+        //Add Force to thrown food
     }
 }
