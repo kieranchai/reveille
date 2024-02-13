@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using static UnityEngine.UI.Image;
 
 public class FoodManager : MonoBehaviour
 {
@@ -24,7 +25,10 @@ public class FoodManager : MonoBehaviour
     // Dynamic Data
     public bool isThrown = false;
     public bool isNearPlayer = false;
-
+    public float throwRange = 0.0f;
+    private Vector3 initialPosition;
+    private List<Vector3> displacementPoints = new List<Vector3>();
+    private float totalDistance = 0.0f;
     public Food testData;
     #endregion
 
@@ -36,6 +40,18 @@ public class FoodManager : MonoBehaviour
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
 
         if (testData) SetDefaultFoodData(testData);
+    }
+
+    private void Update()
+    {
+        if (isThrown)
+        {
+            if (totalDistance + Vector3.Distance(displacementPoints[^1], this.transform.position) > throwRange)
+            {
+                _rigidBody.velocity = Vector3.zero;
+                StartCoroutine(_noiseController.ProduceNoiseOnce());
+            }
+        }
     }
 
     // Used only when spawning food from throwing to set their current points
@@ -66,13 +82,27 @@ public class FoodManager : MonoBehaviour
         // Update Food Sprite
     }
 
+    public void Throw(float throwRange)
+    {
+        this.throwRange = throwRange;
+        initialPosition = this.transform.position;
+        displacementPoints.Add(initialPosition);
+        _rigidBody.AddForce(PlayerManager.instance.transform.up * 40f, ForceMode2D.Impulse);
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.layer == 7)
         {
             if (!isThrown) return;
-
             StartCoroutine(_noiseController.ProduceNoiseOnce());
+
+            displacementPoints.Add(this.transform.position);
+            for (int i = 0; i < displacementPoints.Count - 1; i++)
+            {
+                if (i > displacementPoints.Count - 2) continue;
+                totalDistance += Vector3.Distance(displacementPoints[i + 1], displacementPoints[i]);
+            }
         }
     }
 

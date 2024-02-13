@@ -180,9 +180,9 @@ GameObject:
   - component: {fileID: 425179210}
   - component: {fileID: 425179209}
   - component: {fileID: 425179212}
-  - component: {fileID: 425179213}
+  - component: {fileID: 425179215}
   - component: {fileID: 425179214}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -270,8 +270,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDrag: 10
+  m_AngularDrag: 10
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -284,8 +284,29 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
---- !u!70 &425179213
-CapsuleCollider2D:
+--- !u!114 &425179214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425179207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 315daa3bc1a823140b9bde8351638926, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _data: {fileID: 11400000, guid: 8e8db5a4a492b1e47862ee79be165fd9, type: 2}
+  thrownFoodPointsDeduction: 10
+  currentState: 0
+  currentMovementSpeed: 0
+  currentInventoryWeight: 0
+  inventoryWeightPenalty: 0
+  inventory: []
+  currentSelectedFood: 0
+  nearbyFood: []
+--- !u!58 &425179215
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -316,30 +337,9 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.36, y: 0.43}
-  m_Direction: 0
---- !u!114 &425179214
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 425179207}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 315daa3bc1a823140b9bde8351638926, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _data: {fileID: 11400000, guid: 8e8db5a4a492b1e47862ee79be165fd9, type: 2}
-  thrownFoodPointsDeduction: 10
-  currentState: 0
-  currentMovementSpeed: 0
-  currentInventoryWeight: 0
-  inventoryWeightPenalty: 0
-  inventory: []
-  currentSelectedFood: 0
-  nearbyFood: []
+  m_Offset: {x: 0, y: -0.06289387}
+  serializedVersion: 2
+  m_Radius: 0.19710612
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -9113,10 +9113,10 @@ CircleCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -9202,7 +9202,7 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 1
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -9430,6 +9430,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3a41852220b7074b9473e0994ce5101, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _data: {fileID: 0}
+  id: 0
+  foodName: 
+  tier: 
+  maxPoints: 0
+  currentPoints: 0
+  weight: 0
   isThrown: 0
   isNearPlayer: 0
   testData: {fileID: 11400000, guid: f08b4fe07eafe434389348ac0e4a489d, type: 2}

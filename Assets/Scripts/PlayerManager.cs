@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -39,6 +40,11 @@ public class PlayerManager : MonoBehaviour
     public List<Food> inventory = new List<Food>();
     public int currentSelectedFood;
     public List<GameObject> nearbyFood = new List<GameObject>();
+    private float throwTimer = 0.0f;
+    private float throwInterval = 0.5f;
+    private float initialChargeTime = 0.0f;
+    private float totalChargeTime = 0.0f;
+    private bool isCharging = false;
     #endregion
 
     private void Awake()
@@ -190,10 +196,29 @@ public class PlayerManager : MonoBehaviour
 
     public void MouseThrow()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            // Add Last thrown time check
+        throwTimer += Time.deltaTime;
+        if (throwTimer < throwInterval) return;
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            initialChargeTime = Time.time;
+            isCharging = true;
+        }
+
+        if (Input.GetMouseButton(0))
+        {
+            if (!isCharging)
+            {
+                initialChargeTime = Time.time;
+                isCharging = true;
+            }
+            totalChargeTime = Time.time - initialChargeTime;
+
+            // Display predicted throw food trajectory
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
             ThrowFood();
         }
     }
@@ -249,7 +274,21 @@ public class PlayerManager : MonoBehaviour
         GameObject thrownFood = Instantiate(Resources.Load<GameObject>("Prefabs/Food"), transform.position, Quaternion.identity);
         thrownFood.GetComponent<FoodManager>().SetFoodData(inventory[currentSelectedFood]);
         RemoveFoodFromInventory(inventory[currentSelectedFood]);
+        thrownFood.GetComponent<FoodManager>().isThrown = true;
 
-        //Add Force to thrown food
+        totalChargeTime = Time.time - initialChargeTime;
+        float minChargeTime = 0.5f; // Minimum charge time in seconds
+        float maxChargeTime = 2f; // Maximum charge time in seconds
+        float minRange = 3.0f; // Minimum food range
+        float maxRange = 200 / Mathf.Sqrt(thrownFood.GetComponent<FoodManager>().weight); // Maximum food range
+
+        // Clamp totalChargeTime to be within the specified range
+        totalChargeTime = Mathf.Clamp(totalChargeTime, minChargeTime, maxChargeTime);
+
+        // Calculate the speed using linear interpolation
+        float finalRange = Mathf.Lerp(minRange, maxRange, (totalChargeTime - minChargeTime) / (maxChargeTime - minChargeTime));
+
+        thrownFood.GetComponent<FoodManager>().Throw(finalRange);
+        throwTimer = 0.0f;
     }
 }

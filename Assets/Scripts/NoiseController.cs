@@ -33,16 +33,24 @@ public class NoiseController : MonoBehaviour
 
     public IEnumerator ProduceNoiseOnce()
     {
-        while (currentNoiseScale.sqrMagnitude < baseNoiseScale.sqrMagnitude)
+        float noiseSpreadTime = 0.0f;
+        float noiseSpreadDuration = 0.3f;
+        float noiseSpreadLerpSpeed = 12.0f * Time.deltaTime;
+        while (noiseSpreadTime < noiseSpreadDuration)
         {
-            currentNoiseScale = Vector3.Lerp(currentNoiseScale, baseNoiseScale, lerpSpeed);
+            noiseSpreadTime += Time.deltaTime;
+            currentNoiseScale = Vector3.Lerp(currentNoiseScale, baseNoiseScale, noiseSpreadLerpSpeed);
             _transform.localScale = currentNoiseScale;
             yield return null;
         }
 
-        while (currentNoiseScale.sqrMagnitude > Vector3.zero.sqrMagnitude)
+        float noiseShrinkTime = 0.0f;
+        float noiseShrinkDuration = 0.1f;
+        float noiseShrinkLerpSpeed = 9.0f * Time.deltaTime;
+        while (noiseShrinkTime < noiseShrinkDuration)
         {
-            currentNoiseScale = Vector3.Lerp(currentNoiseScale, Vector3.zero, lerpSpeed);
+            noiseSpreadTime += Time.deltaTime;
+            currentNoiseScale = Vector3.Lerp(currentNoiseScale, Vector3.zero, noiseShrinkLerpSpeed);
             _transform.localScale = currentNoiseScale;
             yield return null;
         }
