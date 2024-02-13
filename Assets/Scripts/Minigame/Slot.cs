@@ -1,21 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
 public class Slot : MonoBehaviour
 {
-    public GameObject midRing;
+    public Ring ringScript;
+
+    private void Start()
+    {
+        ringScript = FindObjectOfType<Ring>();
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Minigame Hole"))
         {
-            midRing.GetComponent<SpriteRenderer>().color = Color.green;
+            ringScript.midRing[ringScript.counter].GetComponent<SpriteRenderer>().color = Color.green;
+            ringScript.solved = true;
         }
         else if (collision.gameObject.CompareTag("Minigame Midring"))
         {
-            midRing.GetComponent<SpriteRenderer>().color = Color.red;
+            ringScript.midRing[ringScript.counter].GetComponent<SpriteRenderer>().color = Color.red;
+            //play alert sound/bool
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Minigame Hole") || collision.gameObject.CompareTag("Minigame Midring"))
+        {
+            ringScript.midRing[ringScript.counter].GetComponent<SpriteRenderer>().color = Color.white;
+            ringScript.solved = false;
         }
     }
 }
