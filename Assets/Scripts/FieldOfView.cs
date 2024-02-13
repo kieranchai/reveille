@@ -1,33 +1,38 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class FieldOfView : MonoBehaviour
 {
+    [SerializeField] private LayerMask layermask;
+
     public Mesh mesh;
     public GameObject parent;
-    public float lineOfSight;
-    public float fieldOfView;
     public EnemyScript _data;
+    public float startingAngle;
+    public float fieldOfView;
+    public Vector3 origin;
+    public float angle;
 
-    public int rayCount = 50;
-    public float angle = 0f;
-    public float angleIncrease;
-    public Vector3 origin = Vector3.zero;
-    void Start()
+    public void Start()
     {
-        parent = this.transform.parent.gameObject;
-       /* _data = parent.GetComponent<EnemyScript>();*/
-        lineOfSight = 5f; /*_data.lineOfSight;*/
-        fieldOfView = 9f; /*_data.fieldOfView;*/
-
         mesh = new Mesh();
-        GetComponent<MeshFilter>().mesh = mesh;
+        mesh = GetComponent<MeshFilter>().mesh;
+    }
+    public void Update()
+    { 
+        float lineOfSight = 30f; 
+        fieldOfView = 60f;
+
+        int rayCount = 50;
+        float angle = startingAngle;
 
         float angleIncrease = fieldOfView / rayCount;
         Vector3[] vertices = new Vector3[rayCount + 1 + 1];
         Vector2[] uv = new Vector2[vertices.Length];
         int[] triangles = new int[rayCount * 3];
+     
         vertices[0] = origin;
 
         int vertexIndex = 1;
@@ -35,7 +40,15 @@ public class FieldOfView : MonoBehaviour
 
         for (int i = 0; i <= rayCount; i++)
         {
-            Vector3 vertex = origin + GetVectorFromAngle(angle) * lineOfSight;
+            Vector3 vertex; 
+            RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), lineOfSight, layermask);
+            if (raycastHit2D.collider == null)
+            {
+                vertex = origin + GetVectorFromAngle(angle) * lineOfSight;
+            }else
+            {
+                vertex = raycastHit2D.point;
+            }
             vertices[vertexIndex] = vertex;
 
             if (i > 0)
@@ -63,6 +76,22 @@ public class FieldOfView : MonoBehaviour
         return new Vector3(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
     }
 
+    public float GetAngleFromVectorFloat(Vector3 dir)
+    {
+        dir = dir.normalized;
+        float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        if (n < 0) n += 360;
+        
+        return n;
+    }
+    public void SetAimDirection(Vector3 aimDirection)
+    {
+        startingAngle = GetAngleFromVectorFloat(aimDirection) + fieldOfView / 2f;
+    }
 
+    public void SetOrigin(Vector3 position)
+    {
+        this.origin = position;
+    }
 
 }
