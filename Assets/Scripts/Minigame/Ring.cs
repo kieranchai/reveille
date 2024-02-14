@@ -119,7 +119,6 @@ public class Ring : MonoBehaviour
                 else if (failed)
                 {
                     slot.transform.position = startPos.transform.position;
-                    minigame.gameObject.SetActive(false);
                 }
             }
             #endregion

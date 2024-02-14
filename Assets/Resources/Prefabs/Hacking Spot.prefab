@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 7708560718989806263}
   - component: {fileID: 7064881823120224244}
   - component: {fileID: 5877549620221374296}
-  - component: {fileID: 8576548028487135904}
-  m_Layer: 0
+  - component: {fileID: 7619041425578762912}
+  m_Layer: 7
   m_Name: Hacking Spot
-  m_TagString: Minigame Spot
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -132,7 +132,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.90625, y: 0.4375}
   m_EdgeRadius: 0
---- !u!114 &8576548028487135904
+--- !u!114 &7619041425578762912
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -145,8 +145,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minigame: {fileID: 0}
-  isPlayable: 0
-  isNearPlayer: 0
 --- !u!1 &7104528019399375273
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,8 +156,8 @@ GameObject:
   - component: {fileID: 6668983610357067481}
   - component: {fileID: 277304367496054508}
   m_Layer: 0
-  m_Name: Radius
-  m_TagString: Untagged
+  m_Name: Interact
+  m_TagString: Terminal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

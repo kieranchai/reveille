@@ -9,7 +9,7 @@ TagManager:
   - Minigame Hole
   - Food
   - Pickup
-  - Minigame Spot
+  - Terminal
   layers:
   - Default
   - TransparentFX

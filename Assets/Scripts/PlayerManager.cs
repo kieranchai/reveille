@@ -39,13 +39,13 @@ public class PlayerManager : MonoBehaviour
     public float inventoryWeightPenalty;
     public List<Food> inventory = new List<Food>();
     public int currentSelectedFood;
-    public List<GameObject> nearbyHackingSpots = new List<GameObject>();
     public List<GameObject> nearbyFood = new List<GameObject>();
     private float throwTimer = 0.0f;
     private float throwInterval = 0.5f;
     private float initialChargeTime = 0.0f;
     private float totalChargeTime = 0.0f;
     private bool isCharging = false;
+    public GameObject hackingTarget;
     #endregion
 
     private void Awake()
@@ -84,7 +84,8 @@ public class PlayerManager : MonoBehaviour
                 MouseThrow();
                 break;
             case PLAYER_STATE.HACKING:
-                MinigameInProgress();
+                Hacking();
+                ExitHack();
                 break;
         }
     }
@@ -161,7 +162,7 @@ public class PlayerManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             // Toggle hack
-            StartMinigame();
+            AttemptHack();
 
             // Pickup Food
             PickUpNearestFood();
@@ -224,29 +225,12 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void MinigameInProgress()
+    public void ExitHack()
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E))
         {
-            nearbyHackingSpots[0].GetComponent<Spot>().minigame.gameObject.SetActive(false);
+            hackingTarget.GetComponent<Terminal>().minigame.SetActive(false);
             currentState = PLAYER_STATE.STILL;
-        }
-
-        Ring ringScript = nearbyHackingSpots[0].GetComponent<Spot>().minigame.transform.GetChild(0).GetComponent<Ring>();
-        if (ringScript.failed)
-        {
-            //nearbyHackingSpots[0].GetComponent<Spot>().minigame.gameObject.SetActive(false);
-            currentState = PLAYER_STATE.STILL;
-            //play fail sound
-            //attract enemies
-        }
-        else if (ringScript.solved)
-        {
-            nearbyHackingSpots[0].GetComponent<Spot>().minigame.gameObject.SetActive(false);
-            nearbyHackingSpots[0].GetComponent<Spot>().isPlayable = false;
-            currentState = PLAYER_STATE.STILL;
-            //play success sound
-            //unlocks are handled in minigame script
         }
     }
     #endregion
@@ -293,13 +277,6 @@ public class PlayerManager : MonoBehaviour
         //Nearest Food is removed from nearbyFood in FoodManager OnTriggerExit
     }
 
-    public void StartMinigame()
-    {
-        if (nearbyHackingSpots.Count < 1) return;
-        currentState = PLAYER_STATE.HACKING;
-        nearbyHackingSpots[0].GetComponent<Spot>().minigame.gameObject.SetActive(true);
-    }
-
     public void ThrowFood()
     {
         if (inventory.Count < 1) return;
@@ -324,5 +301,49 @@ public class PlayerManager : MonoBehaviour
 
         thrownFood.GetComponent<FoodManager>().Throw(finalRange);
         throwTimer = 0.0f;
+    }
+
+    public void AttemptHack()
+    {
+        if (!hackingTarget) return;
+
+        currentState = PLAYER_STATE.HACKING;
+        hackingTarget.GetComponent<Terminal>().minigame.SetActive(true);
+    }
+
+    public void Hacking()
+    {
+        Ring ringScript = hackingTarget.GetComponent<Terminal>().minigame.transform.GetChild(0).GetComponent<Ring>();
+        if (ringScript.failed)
+        {
+            hackingTarget.GetComponent<Terminal>().minigame.SetActive(false);
+            currentState = PLAYER_STATE.STILL;
+            //play fail sound
+            //start timer before next hack attempt
+        }
+        else if (ringScript.solved)
+        {
+            hackingTarget.GetComponent<Terminal>().minigame.SetActive(false);
+            hackingTarget.transform.Find("Interact").GetComponent<Collider2D>().enabled = false;
+            currentState = PLAYER_STATE.STILL;
+            //play success sound
+            //unlocks are handled in minigame script
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Terminal"))
+        {
+            hackingTarget = collision.gameObject.transform.parent.gameObject;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Terminal"))
+        {
+            hackingTarget = null;
+        }
     }
 }

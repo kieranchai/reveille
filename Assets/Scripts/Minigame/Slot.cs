@@ -16,7 +16,7 @@ public class Slot : MonoBehaviour
             if (ringScript.door != null)
             {
                 //disable door
-                ringScript.door.gameObject.SetActive(false);
+                ringScript.door.SetActive(false);
                 //ringScript.door.GetComponent<BoxCollider2D>().enabled = false;
             }
             else if (ringScript.cctv != null)
