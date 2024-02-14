@@ -27,8 +27,6 @@ public class FoodManager : MonoBehaviour
     public bool isNearPlayer = false;
     public float throwRange = 0.0f;
     private Vector3 initialPosition;
-    private List<Vector3> displacementPoints = new List<Vector3>();
-    private float totalDistance = 0.0f;
     public Food testData;
     #endregion
 
@@ -46,9 +44,16 @@ public class FoodManager : MonoBehaviour
     {
         if (isThrown)
         {
-            if (totalDistance + Vector3.Distance(displacementPoints[^1], this.transform.position) > throwRange)
+            if (Vector3.Distance(transform.position, initialPosition) > throwRange)
             {
+                isThrown = false;
                 _rigidBody.velocity = Vector3.zero;
+                StartCoroutine(_noiseController.ProduceNoiseOnce());
+            }
+
+            if (_rigidBody.velocity.magnitude < 1.0f)
+            {
+                isThrown = false;
                 StartCoroutine(_noiseController.ProduceNoiseOnce());
             }
         }
@@ -84,10 +89,12 @@ public class FoodManager : MonoBehaviour
 
     public void Throw(float throwRange)
     {
+        isThrown = true;
         this.throwRange = throwRange;
         initialPosition = this.transform.position;
-        displacementPoints.Add(initialPosition);
-        _rigidBody.AddForce(PlayerManager.instance.transform.up * 40f, ForceMode2D.Impulse);
+        float throwForce = this.throwRange > 5 ? 35.0f : 15.0f;
+
+        _rigidBody.AddForce(PlayerManager.instance.transform.up * throwForce, ForceMode2D.Impulse);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -96,13 +103,8 @@ public class FoodManager : MonoBehaviour
         {
             if (!isThrown) return;
             StartCoroutine(_noiseController.ProduceNoiseOnce());
-
-            displacementPoints.Add(this.transform.position);
-            for (int i = 0; i < displacementPoints.Count - 1; i++)
-            {
-                if (i > displacementPoints.Count - 2) continue;
-                totalDistance += Vector3.Distance(displacementPoints[i + 1], displacementPoints[i]);
-            }
+            //Lose velocity when hit wall
+            _rigidBody.velocity *= 0.10f;
         }
     }
 
