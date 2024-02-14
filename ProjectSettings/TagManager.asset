@@ -9,6 +9,7 @@ TagManager:
   - Minigame Hole
   - Food
   - Pickup
+  - Minigame Spot
   layers:
   - Default
   - TransparentFX
@@ -45,4 +46,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Minigame
+    uniqueID: 3828892787
     locked: 0

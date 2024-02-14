@@ -6,22 +6,28 @@ public class Slot : MonoBehaviour
 {
     public Ring ringScript;
 
-    private void Start()
-    {
-        ringScript = FindObjectOfType<Ring>();
-    }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Minigame Hole"))
         {
             ringScript.midRing[ringScript.counter].GetComponent<SpriteRenderer>().color = Color.green;
             ringScript.solved = true;
+
+            if (ringScript.door != null)
+            {
+                //disable door
+                ringScript.door.gameObject.SetActive(false);
+                //ringScript.door.GetComponent<BoxCollider2D>().enabled = false;
+            }
+            else if (ringScript.cctv != null)
+            {
+                //disable cctv temporarily here
+            }
         }
         else if (collision.gameObject.CompareTag("Minigame Midring"))
         {
             ringScript.midRing[ringScript.counter].GetComponent<SpriteRenderer>().color = Color.red;
-            //play alert sound/bool
+            ringScript.failed = true;
         }
     }
 
@@ -30,7 +36,7 @@ public class Slot : MonoBehaviour
         if (collision.gameObject.CompareTag("Minigame Hole") || collision.gameObject.CompareTag("Minigame Midring"))
         {
             ringScript.midRing[ringScript.counter].GetComponent<SpriteRenderer>().color = Color.white;
-            ringScript.solved = false;
+            ringScript.failed = false;
         }
     }
 }

@@ -39,6 +39,7 @@ public class PlayerManager : MonoBehaviour
     public float inventoryWeightPenalty;
     public List<Food> inventory = new List<Food>();
     public int currentSelectedFood;
+    public List<GameObject> nearbyHackingSpots = new List<GameObject>();
     public List<GameObject> nearbyFood = new List<GameObject>();
     private float throwTimer = 0.0f;
     private float throwInterval = 0.5f;
@@ -83,6 +84,7 @@ public class PlayerManager : MonoBehaviour
                 MouseThrow();
                 break;
             case PLAYER_STATE.HACKING:
+                MinigameInProgress();
                 break;
         }
     }
@@ -158,9 +160,8 @@ public class PlayerManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            // Toggle door
-
             // Toggle hack
+            StartMinigame();
 
             // Pickup Food
             PickUpNearestFood();
@@ -222,6 +223,32 @@ public class PlayerManager : MonoBehaviour
             ThrowFood();
         }
     }
+
+    public void MinigameInProgress()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E))
+        {
+            nearbyHackingSpots[0].GetComponent<Spot>().minigame.gameObject.SetActive(false);
+            currentState = PLAYER_STATE.STILL;
+        }
+
+        Ring ringScript = nearbyHackingSpots[0].GetComponent<Spot>().minigame.transform.GetChild(0).GetComponent<Ring>();
+        if (ringScript.failed)
+        {
+            //nearbyHackingSpots[0].GetComponent<Spot>().minigame.gameObject.SetActive(false);
+            currentState = PLAYER_STATE.STILL;
+            //play fail sound
+            //attract enemies
+        }
+        else if (ringScript.solved)
+        {
+            nearbyHackingSpots[0].GetComponent<Spot>().minigame.gameObject.SetActive(false);
+            nearbyHackingSpots[0].GetComponent<Spot>().isPlayable = false;
+            currentState = PLAYER_STATE.STILL;
+            //play success sound
+            //unlocks are handled in minigame script
+        }
+    }
     #endregion
 
     public void UpdateNoiseRadius()
@@ -264,6 +291,13 @@ public class PlayerManager : MonoBehaviour
         AddFoodToInventory(nearbyFood[0].GetComponent<FoodManager>()._data);
         Destroy(nearbyFood[0]);
         //Nearest Food is removed from nearbyFood in FoodManager OnTriggerExit
+    }
+
+    public void StartMinigame()
+    {
+        if (nearbyHackingSpots.Count < 1) return;
+        currentState = PLAYER_STATE.HACKING;
+        nearbyHackingSpots[0].GetComponent<Spot>().minigame.gameObject.SetActive(true);
     }
 
     public void ThrowFood()

@@ -5,9 +5,11 @@ using UnityEngine;
 public class Ring : MonoBehaviour
 {
     private GameObject ring;
-    private GameObject slot;
-    private GameObject startPos;
-    private GameObject targetPos;
+
+    public GameObject minigame;
+    public GameObject slot;
+    public GameObject startPos;
+    public GameObject targetPos;
 
     private bool rotating = true;
     private bool activate = false;
@@ -22,19 +24,22 @@ public class Ring : MonoBehaviour
     public GameObject[] midRing;
     public int counter;
     public bool solved;
+    public bool failed;
+
+    [Header("Unlocks")]
+    public GameObject door;
+    public GameObject cctv;
 
     private void Start()
     {
         ring = this.gameObject;
-        slot = this.gameObject.transform.GetChild(0).gameObject;
-        startPos = this.gameObject.transform.GetChild(1).gameObject;
-        targetPos = this.gameObject.transform.GetChild(2).gameObject;
 
         atStart = true;
         atEnd = false;
 
         counter = 0;
         solved = false;
+        failed = false;
     }
 
     private void Update()
@@ -75,9 +80,11 @@ public class Ring : MonoBehaviour
             #region Solved a ring
             if (atEnd && solved)
             {
-                //timer?
                 activate = false;
-                midRing[counter].gameObject.SetActive(false);
+            }
+            else if (atEnd && failed)
+            {
+                activate = false;
             }
             #endregion
 
@@ -91,23 +98,28 @@ public class Ring : MonoBehaviour
                     atStart = true;
                     atEnd = false;
                     rotating = true;
-                    ++counter;
 
-                    if (counter < midRing.Length)
+                    if (counter < midRing.Length && solved)
                     {
+                        ++counter;
                         //make the ring scale smaller/move positions closer
                         Vector3 scaleChange = new Vector3(0.25f, 0.25f, 0f);
+                        Vector3 slotScaleChange = new Vector3(0.25f, 0f, 0f);
                         Vector3 posChange = new Vector3(0.5f, 0f, 0f);
                         this.transform.localScale -= scaleChange;
-                        slot.transform.localScale -= scaleChange;
+                        slot.transform.localScale -= slotScaleChange;
                         startPos.transform.position -= posChange;
                         targetPos.transform.position -= posChange;
                     }
                     else
                     {
-                        this.gameObject.SetActive(false);
-                        //can end here or ln44
+                        ring.transform.Rotate(0, 0, speed * Time.deltaTime);
                     }
+                }
+                else if (failed)
+                {
+                    slot.transform.position = startPos.transform.position;
+                    minigame.gameObject.SetActive(false);
                 }
             }
             #endregion
