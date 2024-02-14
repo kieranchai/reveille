@@ -12,6 +12,7 @@ public class PlayerManager : MonoBehaviour
     private Collider2D _collider;
     private SpriteRenderer _spriteRenderer;
     private NoiseController _noiseController;
+    private LineRenderer _lineRenderer;
     public Player _data;
 
     // Default Data
@@ -59,6 +60,7 @@ public class PlayerManager : MonoBehaviour
         _collider = GetComponent<Collider2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
+        _lineRenderer = GetComponent<LineRenderer>();
     }
 
     private void Start()
@@ -80,6 +82,7 @@ public class PlayerManager : MonoBehaviour
                 MouseSelectFood();
                 InteractInput();
                 MouseThrow();
+                MouseDrop();
                 break;
             case PLAYER_STATE.HACKING:
                 ExitHack();
@@ -158,11 +161,16 @@ public class PlayerManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
+            // Pickup food higher priority
+            if (nearbyFood.Count > 0)
+            {
+                // Pickup Food
+                PickUpNearestFood();
+                return;
+            }
+
             // Toggle hack
             AttemptHack();
-
-            // Pickup Food
-            PickUpNearestFood();
         }
     }
 
@@ -196,12 +204,16 @@ public class PlayerManager : MonoBehaviour
     public void MouseThrow()
     {
         throwTimer += Time.deltaTime;
+        if (inventory.Count < 1) return;
         if (throwTimer < throwInterval) return;
 
         if (Input.GetMouseButtonDown(0))
         {
             initialChargeTime = Time.time;
             isCharging = true;
+            _lineRenderer.enabled = true;
+            _lineRenderer.positionCount = 1;
+            _lineRenderer.SetPosition(0, Vector3.zero);
         }
 
         if (Input.GetMouseButton(0))
@@ -211,14 +223,36 @@ public class PlayerManager : MonoBehaviour
                 initialChargeTime = Time.time;
                 isCharging = true;
             }
-            totalChargeTime = Time.time - initialChargeTime;
+            _lineRenderer.positionCount = 2;
 
-            // Display predicted throw food trajectory
+            int mask1 = 1 << LayerMask.NameToLayer("Obstacles");
+            /*            // For more layers
+                        int mask2 = 1 << LayerMask.NameToLayer("Enemies");
+                        int combinedMask = mask1 | mask2;*/
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.up, CalculateThrowRange(), mask1);
+            if (hit.collider != null)
+            {
+                _lineRenderer.SetPosition(1, transform.InverseTransformPoint(hit.point));
+            }
+            else
+            {
+                _lineRenderer.SetPosition(1, new Vector3(0, (0 + CalculateThrowRange()) / 2));
+            }
         }
 
         if (Input.GetMouseButtonUp(0))
         {
             ThrowFood();
+            _lineRenderer.positionCount = 0;
+            _lineRenderer.enabled = false;
+        }
+    }
+
+    public void MouseDrop()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            DropFood();
         }
     }
 
@@ -233,7 +267,7 @@ public class PlayerManager : MonoBehaviour
 
     public Vector3 GetPosition()
     {
-        return this.transform.position;
+        return transform.position;
     }
 
     public void UpdateNoiseRadius()
@@ -272,7 +306,6 @@ public class PlayerManager : MonoBehaviour
 
     public void PickUpNearestFood()
     {
-        if (nearbyFood.Count < 1) return;
         AddFoodToInventory(nearbyFood[0].GetComponent<FoodManager>()._data);
         Destroy(nearbyFood[0]);
         //Nearest Food is removed from nearbyFood in FoodManager OnTriggerExit
@@ -280,19 +313,21 @@ public class PlayerManager : MonoBehaviour
 
     public void ThrowFood()
     {
-        if (inventory.Count < 1) return;
-
         inventory[currentSelectedFood].currentPoints -= thrownFoodPointsDeduction;
         GameObject thrownFood = Instantiate(Resources.Load<GameObject>("Prefabs/Food"), transform.position, Quaternion.identity);
         thrownFood.GetComponent<FoodManager>().SetFoodData(inventory[currentSelectedFood]);
+        thrownFood.GetComponent<FoodManager>().Throw(CalculateThrowRange());
         RemoveFoodFromInventory(inventory[currentSelectedFood]);
-        thrownFood.GetComponent<FoodManager>().isThrown = true;
+        throwTimer = 0.0f;
+    }
 
+    public float CalculateThrowRange()
+    {
         totalChargeTime = Time.time - initialChargeTime;
         float minChargeTime = 0.5f; // Minimum charge time in seconds
         float maxChargeTime = 2f; // Maximum charge time in seconds
-        float minRange = 3.0f; // Minimum food range
-        float maxRange = 200 / Mathf.Sqrt(thrownFood.GetComponent<FoodManager>().weight); // Maximum food range
+        float minRange = 1.0f; // Minimum food range
+        float maxRange = 200 / Mathf.Sqrt(inventory[currentSelectedFood].weight); // Maximum food range
 
         // Clamp totalChargeTime to be within the specified range
         totalChargeTime = Mathf.Clamp(totalChargeTime, minChargeTime, maxChargeTime);
@@ -300,8 +335,16 @@ public class PlayerManager : MonoBehaviour
         // Calculate the speed using linear interpolation
         float finalRange = Mathf.Lerp(minRange, maxRange, (totalChargeTime - minChargeTime) / (maxChargeTime - minChargeTime));
 
-        thrownFood.GetComponent<FoodManager>().Throw(finalRange);
-        throwTimer = 0.0f;
+        return finalRange;
+    }
+
+    public void DropFood()
+    {
+        if (inventory.Count < 1) return;
+
+        GameObject droppedFood = Instantiate(Resources.Load<GameObject>("Prefabs/Food"), transform.position, Quaternion.identity);
+        droppedFood.GetComponent<FoodManager>().SetFoodData(inventory[currentSelectedFood]);
+        RemoveFoodFromInventory(inventory[currentSelectedFood]);
     }
 
     public void AttemptHack()

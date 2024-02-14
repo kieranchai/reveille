@@ -16,5 +16,5 @@ MonoBehaviour:
   foodName: Watermelon
   tier: common
   maxPoints: 50
-  currentPoints: -280
+  currentPoints: 50
   weight: 800
