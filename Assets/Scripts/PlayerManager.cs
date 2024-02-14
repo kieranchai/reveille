@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -84,7 +82,6 @@ public class PlayerManager : MonoBehaviour
                 MouseThrow();
                 break;
             case PLAYER_STATE.HACKING:
-                Hacking();
                 ExitHack();
                 break;
         }
@@ -229,8 +226,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E))
         {
-            hackingTarget.GetComponent<Terminal>().minigame.SetActive(false);
-            currentState = PLAYER_STATE.STILL;
+            StartCoroutine(hackingTarget.GetComponent<Terminal>().minigame.GetComponent<Minigame>().DelayExit());
         }
     }
     #endregion
@@ -311,29 +307,10 @@ public class PlayerManager : MonoBehaviour
     public void AttemptHack()
     {
         if (!hackingTarget) return;
+        if (!hackingTarget.GetComponent<Terminal>().playable) return;
 
         currentState = PLAYER_STATE.HACKING;
-        hackingTarget.GetComponent<Terminal>().minigame.SetActive(true);
-    }
-
-    public void Hacking()
-    {
-        Ring ringScript = hackingTarget.GetComponent<Terminal>().minigame.transform.GetChild(0).GetComponent<Ring>();
-        if (ringScript.failed)
-        {
-            hackingTarget.GetComponent<Terminal>().minigame.SetActive(false);
-            currentState = PLAYER_STATE.STILL;
-            //play fail sound
-            //start timer before next hack attempt
-        }
-        else if (ringScript.solved)
-        {
-            hackingTarget.GetComponent<Terminal>().minigame.SetActive(false);
-            hackingTarget.transform.Find("Interact").GetComponent<Collider2D>().enabled = false;
-            currentState = PLAYER_STATE.STILL;
-            //play success sound
-            //unlocks are handled in minigame script
-        }
+        Instantiate(hackingTarget.GetComponent<Terminal>().minigame, hackingTarget.transform);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
