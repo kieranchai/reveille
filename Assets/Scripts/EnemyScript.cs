@@ -22,6 +22,7 @@ public class EnemyScript : MonoBehaviour
 
     public Vector2[] patrolPoints;
     public int targetPoint;
+    public Vector2 aimdir;
 
     [SerializeField] private Transform pfFieldOfView; // fov prefab
     private FieldOfView fov;
@@ -45,8 +46,6 @@ public class EnemyScript : MonoBehaviour
         {
             patrolPoints[i] = this.transform.GetChild(i).GetComponent<Transform>().position;
         }
-
-        
     }
 
     private void Start()
@@ -55,16 +54,16 @@ public class EnemyScript : MonoBehaviour
     }
     public void setEnemyData(Enemy data)
     {
-
-        this.lineOfSight = 50f; /*data.lineOfSight;*/
-        this.fieldOfView = 90f; /*data.fieldOfView;*/
-
+        this.lineOfSight = data.lineOfSight;
+        this.fieldOfView = data.fieldOfView;
         this.id = data.id;
         this.enemyName = data.enemyName;
         this.walkSpeed = data.walkSpeed;
         this.runSpeed = data.runSpeed;
 
         fov = Instantiate(pfFieldOfView, null).GetComponent<FieldOfView>();
+        fov.SetFOV(fieldOfView);
+        fov.SetLOS(lineOfSight);
     }
 
     private void Update()
@@ -79,6 +78,7 @@ public class EnemyScript : MonoBehaviour
             case ENEMY_STATE.CHASE:
                 break;
         }
+        fovPos();
     }
 
     private void patrolState()
@@ -90,10 +90,10 @@ public class EnemyScript : MonoBehaviour
 
         transform.up = (Vector2)(patrolPoints[targetPoint] - new Vector2(transform.position.x, transform.position.y));
         transform.position = Vector2.MoveTowards(transform.position, patrolPoints[targetPoint], walkSpeed * Time.deltaTime);
-        Vector2 aimdir = ((Vector2)(patrolPoints[targetPoint] - new Vector2(transform.position.x, transform.position.y))).normalized;
+        aimdir = ((Vector2)(patrolPoints[targetPoint] - new Vector2(transform.position.x, transform.position.y))).normalized;
         fov.SetAimDirection(aimdir);
         fov.SetOrigin(transform.position);
-   }
+    }
 
     private void increaseTargetPoint()
     {
@@ -101,5 +101,18 @@ public class EnemyScript : MonoBehaviour
         if (targetPoint >= patrolPoints.Length) targetPoint = 0;
     }
 
-    
+    public void fovPos()
+    {
+        fov.SetAimDirection(aimdir);
+        fov.SetOrigin(transform.position);
+    }
+
+    public void FindTargetPlayer() {
+        
+    }
+
+    public Vector3 GetPosition()
+    {
+        return this.transform.position;
+    }
 }

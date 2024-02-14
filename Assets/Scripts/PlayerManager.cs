@@ -325,4 +325,9 @@ public class PlayerManager : MonoBehaviour
         thrownFood.GetComponent<FoodManager>().Throw(finalRange);
         throwTimer = 0.0f;
     }
+
+    public Vector3 GetPosition()
+    {
+        return this.transform.position;
+    }
 }
