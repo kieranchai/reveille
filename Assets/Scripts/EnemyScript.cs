@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
+using Unity.Mathematics;
 using UnityEngine;
 /*using static EnemyScript;*/
 
@@ -11,6 +12,9 @@ public class EnemyScript : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private NoiseController _noiseController;
     public Enemy _data;
+    private Transform header;
+    private Vector2 heading;
+    private Vector2 noiseSource;
 
 
     public int id;
@@ -23,6 +27,13 @@ public class EnemyScript : MonoBehaviour
     public Vector2[] patrolPoints;
     public int targetPoint;
     public Vector2 aimdir;
+    public Vector3 originalRotaion;
+
+    public float chaseTimer;
+    public float sentryTimer;
+    public float alertTimer;
+
+    [SerializeField] private LayerMask enemylayermask;
 
     [SerializeField] private Transform pfFieldOfView; // fov prefab
     private FieldOfView fov;
@@ -38,11 +49,12 @@ public class EnemyScript : MonoBehaviour
 
     private void Awake()
     {
+        header = transform.Find("Heading");
         _rigidBody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
 
-        patrolPoints = new Vector2[this.transform.childCount];
-        for (int i = 0; i < this.transform.childCount; i++)
+        patrolPoints = new Vector2[this.transform.childCount-1];
+        for (int i = 0; i < this.transform.childCount-1; i++)
         {
             patrolPoints[i] = this.transform.GetChild(i).GetComponent<Transform>().position;
         }
@@ -68,17 +80,24 @@ public class EnemyScript : MonoBehaviour
 
     private void Update()
     {
+        heading = new Vector2(header.position.x, header.position.y);
         switch (currentState)
         {
             case ENEMY_STATE.PATROL:
                 patrolState();
                 break;
             case ENEMY_STATE.SENTRY:
+                sentryState();
+                break;
             case ENEMY_STATE.ALERTED:
+                alertState();
+                break;
             case ENEMY_STATE.CHASE:
+                chaseState();
                 break;
         }
         fovPos();
+        UpdateAimDir();
     }
 
     private void patrolState()
@@ -90,10 +109,53 @@ public class EnemyScript : MonoBehaviour
 
         transform.up = (Vector2)(patrolPoints[targetPoint] - new Vector2(transform.position.x, transform.position.y));
         transform.position = Vector2.MoveTowards(transform.position, patrolPoints[targetPoint], walkSpeed * Time.deltaTime);
-        aimdir = ((Vector2)(patrolPoints[targetPoint] - new Vector2(transform.position.x, transform.position.y))).normalized;
-        fov.SetAimDirection(aimdir);
-        fov.SetOrigin(transform.position);
+        FindTargetPlayer();
     }
+
+    public void chaseState()
+    {
+        if (chaseTimer < 8)
+        {
+            transform.up = (Vector2)PlayerManager.instance.GetPosition() - new Vector2(transform.position.x, transform.position.y);
+            transform.position = Vector2.MoveTowards(transform.position, (Vector2)PlayerManager.instance.GetPosition(), runSpeed * Time.deltaTime);
+            chaseTimer += Time.deltaTime;
+        }else
+        {
+            currentState = ENEMY_STATE.PATROL;
+            sentryTimer = 0;
+        }
+    }
+
+    public void sentryState()
+    {
+        if (sentryTimer < 5)
+        {
+            transform.localEulerAngles = new Vector3(0, 0, Mathf.PingPong(Time.time * 30f, 60f) - 45); //temp 30 is speed 60 is angle
+            sentryTimer += Time.deltaTime;
+            FindTargetPlayer();
+        }
+        else
+        {
+            currentState = ENEMY_STATE.PATROL; 
+            chaseTimer = 0;
+        }
+    }
+
+    public void alertState()
+    {
+        if (alertTimer < 10)
+        {
+            transform.up = noiseSource - new Vector2(transform.position.x, transform.position.y);
+            transform.position = Vector2.MoveTowards(transform.position, noiseSource, walkSpeed * Time.deltaTime);
+            alertTimer += Time.deltaTime;
+        }else
+        {
+            currentState = ENEMY_STATE.PATROL;
+            alertTimer = 0; 
+        }
+
+    }
+
 
     private void increaseTargetPoint()
     {
@@ -108,11 +170,43 @@ public class EnemyScript : MonoBehaviour
     }
 
     public void FindTargetPlayer() {
-        
-    }
+        if (Vector3.Distance(GetPosition(), PlayerManager.instance.GetPosition()) < lineOfSight) {
+            Vector3 dirToPlayer = (PlayerManager.instance.GetPosition() - GetPosition()).normalized;
 
+          if (Vector3.Angle(aimdir, dirToPlayer) < fieldOfView / 2f)
+            {
+                RaycastHit2D raycastHit2D = Physics2D.Raycast(GetPosition(), dirToPlayer, lineOfSight, enemylayermask);
+                if (raycastHit2D.collider != null)
+                {
+                    if (raycastHit2D.collider.gameObject.tag == "Player")
+                    {
+                        currentState = ENEMY_STATE.CHASE;
+                    }
+                }
+            }
+        }
+    }
     public Vector3 GetPosition()
     {
-        return this.transform.position;
+        return transform.position;
+    }
+
+    public void UpdateAimDir()
+    {
+        aimdir = ((Vector2)(heading - new Vector2(transform.position.x, transform.position.y))).normalized;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Noise"))
+        {
+            currentState = ENEMY_STATE.ALERTED;
+            noiseSource = collision.gameObject.transform.position;
+        }
+
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            Debug.Log("Game Over");
+        }
     }
 }
