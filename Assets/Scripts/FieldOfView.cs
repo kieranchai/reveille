@@ -14,6 +14,10 @@ public class FieldOfView : MonoBehaviour
     public float fieldOfView;
     public Vector3 origin;
     public float angle;
+    float lineOfSight;
+
+    int rayCount;
+    float angleIncrease;
 
     public void Start()
     {
@@ -22,13 +26,10 @@ public class FieldOfView : MonoBehaviour
     }
     public void Update()
     { 
-        float lineOfSight = 30f; 
-        fieldOfView = 60f;
+        rayCount = 50;
+        angle = startingAngle;
 
-        int rayCount = 50;
-        float angle = startingAngle;
-
-        float angleIncrease = fieldOfView / rayCount;
+        angleIncrease = fieldOfView / rayCount;
         Vector3[] vertices = new Vector3[rayCount + 1 + 1];
         Vector2[] uv = new Vector2[vertices.Length];
         int[] triangles = new int[rayCount * 3];
@@ -92,6 +93,14 @@ public class FieldOfView : MonoBehaviour
     public void SetOrigin(Vector3 position)
     {
         this.origin = position;
+    }
+
+    public void SetFOV(float fov) {
+        this.fieldOfView = fov;
+    }
+
+    public void SetLOS(float los) {
+        this.lineOfSight = los;
     }
 
 }

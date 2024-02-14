@@ -235,6 +235,11 @@ public class PlayerManager : MonoBehaviour
     }
     #endregion
 
+    public Vector3 GetPosition()
+    {
+        return this.transform.position;
+    }
+
     public void UpdateNoiseRadius()
     {
         _noiseController.UpdateNoiseRadius(noiseSizeMultiplier);
