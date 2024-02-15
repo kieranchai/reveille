@@ -260,7 +260,8 @@ public class PlayerManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E))
         {
-            StartCoroutine(hackingTarget.GetComponent<Terminal>().minigame.GetComponent<Minigame>().DelayExit());
+            Destroy(hackingTarget.transform.GetChild(1).gameObject); //fixed at second child (child index 1)
+            currentState = PLAYER_STATE.STILL;
         }
     }
     #endregion

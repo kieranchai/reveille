@@ -11,6 +11,7 @@ public class Minigame : MonoBehaviour
 
     [Header("Player Ring")]
     public int speed;
+    public bool rotating;
 
     [Header("Ring Patterns")]
     public List<GameObject> midRing = new List<GameObject>();
@@ -30,6 +31,8 @@ public class Minigame : MonoBehaviour
 
     private void Start()
     {
+        rotating = true;
+
         counter = 0;
         solved = false;
         failed = false;
@@ -56,15 +59,18 @@ public class Minigame : MonoBehaviour
 
     public void RotateRing()
     {
-        if (!Input.GetMouseButtonDown(0))
+        if (!rotating) return;
+
+        if (Input.GetMouseButtonDown(0))
         {
-            ring.transform.Rotate(0, 0, speed * Time.deltaTime);
-        }
-        else if (Input.GetMouseButtonDown(0))
-        {
+            rotating = false;
+            ring.transform.Rotate(0, 0, 0);
             slot.transform.position = Vector2.MoveTowards(startPos.transform.position, targetPos.transform.position, 1000 * Time.deltaTime);
-            currentHackingState = HackState.NEXT;
+
+            StartCoroutine(DelayNextState());
         }
+
+        ring.transform.Rotate(0, 0, speed * Time.deltaTime);
     }
 
     public void CheckCondition()
@@ -78,18 +84,23 @@ public class Minigame : MonoBehaviour
         else if (solved)
         {
             ++counter;
+            solved = false;
 
             //check if got another ring
             if (counter != midRing.Count)
             {
+                midRing[counter - 1].gameObject.SetActive(false);
                 //make the ring scale smaller/ move positions closer
-                Vector3 scaleChange = new Vector3(0.25f, 0.25f, 0f);
-                Vector3 slotScaleChange = new Vector3(0.25f, 0f, 0f);
+                Vector3 scaleChange = new Vector3(0.2f, 0.2f, 0f);
                 Vector3 posChange = new Vector3(0.5f, 0f, 0f);
+
+                slot.transform.position = startPos.transform.position;
                 ring.transform.localScale -= scaleChange;
-                slot.transform.localScale -= slotScaleChange;
                 startPos.transform.position -= posChange;
                 targetPos.transform.position -= posChange;
+
+                rotating = true;
+                currentHackingState = HackState.PLAY;
             }
             else
             {
@@ -124,10 +135,16 @@ public class Minigame : MonoBehaviour
         StartCoroutine(DelayExit());
     }
 
+    public IEnumerator DelayNextState()
+    {
+        yield return new WaitForSeconds(0.25f);
+        currentHackingState = HackState.NEXT;
+    }
+
     public IEnumerator DelayExit()
     {
-        yield return new WaitForSeconds(0.5f);
-        Destroy(gameObject);
+        yield return new WaitForSeconds(0.25f);
+        Destroy(this.gameObject);
         PlayerManager.instance.currentState = PlayerManager.PLAYER_STATE.STILL;
     }
 }
