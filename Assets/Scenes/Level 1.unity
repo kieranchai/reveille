@@ -307,9 +307,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 --- !u!1001 &397964994
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -367,12 +364,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 48aaf38474c89434eafb34dc7ee57db9, type: 3}
-=======
->>>>>>> 3d9d5e17b39f7f4ce438e845cd1c9de950a31789
-=======
->>>>>>> 3d9d5e17b39f7f4ce438e845cd1c9de950a31789
-=======
->>>>>>> 3d9d5e17b39f7f4ce438e845cd1c9de950a31789
 --- !u!1 &425179207
 GameObject:
   m_ObjectHideFlags: 0
@@ -18694,35 +18685,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7297351032224332990, guid: 48aaf38474c89434eafb34dc7ee57db9, type: 3}
       propertyPath: m_LocalPosition.x
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
       value: 0.7600002
       objectReference: {fileID: 0}
     - target: {fileID: 7297351032224332990, guid: 48aaf38474c89434eafb34dc7ee57db9, type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.94000006
-=======
       value: 12.22
       objectReference: {fileID: 0}
     - target: {fileID: 7297351032224332990, guid: 48aaf38474c89434eafb34dc7ee57db9, type: 3}
       propertyPath: m_LocalPosition.y
       value: 4.31
->>>>>>> 3d9d5e17b39f7f4ce438e845cd1c9de950a31789
-=======
       value: 12.22
       objectReference: {fileID: 0}
     - target: {fileID: 7297351032224332990, guid: 48aaf38474c89434eafb34dc7ee57db9, type: 3}
       propertyPath: m_LocalPosition.y
       value: 4.31
->>>>>>> 3d9d5e17b39f7f4ce438e845cd1c9de950a31789
-=======
       value: 12.22
       objectReference: {fileID: 0}
     - target: {fileID: 7297351032224332990, guid: 48aaf38474c89434eafb34dc7ee57db9, type: 3}
       propertyPath: m_LocalPosition.y
       value: 4.31
->>>>>>> 3d9d5e17b39f7f4ce438e845cd1c9de950a31789
       objectReference: {fileID: 0}
     - target: {fileID: 7297351032224332990, guid: 48aaf38474c89434eafb34dc7ee57db9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -21746,26 +21728,13 @@ SceneRoots:
   - {fileID: 301168123}
   - {fileID: 425179210}
   - {fileID: 4786251441867613921}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+
   - {fileID: 397964994}
   - {fileID: 1525747869}
   - {fileID: 333197487}
   - {fileID: 778043864}
-=======
-=======
->>>>>>> 3d9d5e17b39f7f4ce438e845cd1c9de950a31789
-=======
->>>>>>> 3d9d5e17b39f7f4ce438e845cd1c9de950a31789
   - {fileID: 778043864}
   - {fileID: 333197487}
   - {fileID: 127170393}
   - {fileID: 1744654611}
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 3d9d5e17b39f7f4ce438e845cd1c9de950a31789
-=======
->>>>>>> 3d9d5e17b39f7f4ce438e845cd1c9de950a31789
-=======
->>>>>>> 3d9d5e17b39f7f4ce438e845cd1c9de950a31789
+
