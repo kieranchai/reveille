@@ -89,16 +89,16 @@ public class MinigameTest : MonoBehaviour
             solved = false;
 
             //check if got another ring
-            if (counter != midRing.Count)
+            if (counter < midRing.Count)
             {
                 //make the ring scale smaller/ move positions closer
-                Vector3 scaleChange = new Vector3(0.2f, 0.2f, 0f);
-                Vector3 posChange = new Vector3(0.5f, 0f, 0f);
+                Vector3 scaleChange = new Vector3(0.25f, 0.25f, 0f);
+                Vector3 posChange = new Vector3(0.4f, 0f, 0f);
 
                 slot.transform.position = startPos.transform.position;
                 ring.transform.localScale -= scaleChange;
-                startPos.transform.position -= posChange;
-                targetPos.transform.position -= posChange;
+                ring.transform.TransformPoint(startPos.transform.localPosition - posChange);
+                ring.transform.TransformPoint(targetPos.transform.localPosition - posChange);
 
                 rotating = true;
                 currentHackingState = HackState.PLAY;

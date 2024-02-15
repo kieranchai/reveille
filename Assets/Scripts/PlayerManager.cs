@@ -261,7 +261,11 @@ public class PlayerManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E))
         {
-            Destroy(hackingTarget.transform.GetChild(1).gameObject); //fixed at second child (child index 1)
+            GameObject minigameClone = hackingTarget.transform.Find("Minigame(Clone)").gameObject;
+            if (minigameClone != null)
+            {
+                Destroy(minigameClone);
+            }
             currentState = PLAYER_STATE.STILL;
         }
     }

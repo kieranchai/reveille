@@ -19,13 +19,4 @@ public class SlotTest : MonoBehaviour
             minigame.solved = true;
         }
     }
-
-    //private void OnTriggerExit2D(Collider2D collision)
-    //{
-    //    if (collision.gameObject.CompareTag("Minigame Hole") || collision.gameObject.CompareTag("Minigame Midring"))
-    //    {
-    //        minigame.midRing[minigame.counter].GetComponent<SpriteRenderer>().color = Color.white;
-    //        minigame.failed = false;
-    //    }
-    //}
 }

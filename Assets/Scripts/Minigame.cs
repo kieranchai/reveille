@@ -85,21 +85,21 @@ public class Minigame : MonoBehaviour
         }
         else if (solved)
         {
+            midRing[counter].gameObject.SetActive(false);
             ++counter;
             solved = false;
 
             //check if got another ring
             if (counter != midRing.Count)
             {
-                midRing[counter - 1].gameObject.SetActive(false);
                 //make the ring scale smaller/ move positions closer
-                Vector3 scaleChange = new Vector3(0.2f, 0.2f, 0f);
-                Vector3 posChange = new Vector3(0.5f, 0f, 0f);
+                Vector3 scaleChange = new Vector3(0.25f, 0.25f, 0f);
+                Vector3 posChange = new Vector3(0.4f, 0f, 0f);
 
                 slot.transform.position = startPos.transform.position;
                 ring.transform.localScale -= scaleChange;
-                startPos.transform.position -= posChange;
-                targetPos.transform.position -= posChange;
+                ring.transform.TransformPoint(startPos.transform.localPosition - posChange);
+                ring.transform.TransformPoint(targetPos.transform.localPosition - posChange);
 
                 rotating = true;
                 currentHackingState = HackState.PLAY;
@@ -118,7 +118,7 @@ public class Minigame : MonoBehaviour
         if (PlayerManager.instance.hackingTarget.GetComponent<Terminal>().door != null)
         {
             //disable door
-            PlayerManager.instance.hackingTarget.GetComponent<Terminal>().door.SetActive(false);
+            PlayerManager.instance.hackingTarget.GetComponent<Terminal>().door.gameObject.SetActive(false);
             //door.GetComponent<BoxCollider2D>().enabled = false;
             //animate door
         }
@@ -133,7 +133,7 @@ public class Minigame : MonoBehaviour
     public void LoseMinigame()
     {
         //Play failed sound
-       if (!playedAlertSound)
+        if (!playedAlertSound)
         {
             playedAlertSound = true;
             PlayerManager.instance.hackingTarget.GetComponent<Terminal>().StartCoroutine(PlayerManager.instance.hackingTarget.GetComponent<Terminal>()._noiseController.ProduceNoiseMultiple(8));
