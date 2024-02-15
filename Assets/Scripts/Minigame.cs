@@ -9,11 +9,13 @@ public class Minigame : MonoBehaviour
     public GameObject startPos;
     public GameObject targetPos;
 
-    [Header("Player Ring")]
+    [Header("Terminal Variables")]
     public int speed;
-    public bool rotating;
+    //public int rings;
 
-    [Header("Ring Patterns")]
+    [Header("Attributes")]
+    public bool rotating;
+    public GameObject activeRing;
     public List<GameObject> midRing = new List<GameObject>();
     public int counter;
     public bool solved; //based on slot
@@ -57,6 +59,13 @@ public class Minigame : MonoBehaviour
     public void Initialise(int speed)
     {
         this.speed = speed;
+        //this.rings = rings;
+
+        //put all this in a new method
+        //if (rings == 2) instantiate 1 more smaller ring
+        //else if (rings == 3) instantiate 1 more even smaller ring
+
+        //add all rings to midring gameobject list
     }
 
     public void RotateRing()
@@ -85,6 +94,28 @@ public class Minigame : MonoBehaviour
         }
         else if (solved)
         {
+            //if (counter < rings)
+            //{
+            //    activeRing.SetActive(false);
+            //    ++counter;
+            //    activeRing = midRing[counter];
+
+            //instantiate smaller rings
+
+            //    Vector3 scaleChange = new Vector3(0.25f, 0.25f, 0f);
+            //    Vector3 posChange = new Vector3(0.4f, 0f, 0f);
+
+            //    slot.transform.position = startPos.transform.position;
+            //    ring.transform.localScale -= scaleChange;
+            //    ring.transform.TransformPoint(startPos.transform.localPosition - posChange);
+            //    ring.transform.TransformPoint(targetPos.transform.localPosition - posChange);
+            //}
+            //else
+            //{
+            //    currentHackingState = HackState.WIN;
+            //}
+
+
             midRing[counter].gameObject.SetActive(false);
             ++counter;
             solved = false;

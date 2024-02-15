@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static PlayerManager;
 
 public class Terminal : MonoBehaviour
 {
@@ -16,6 +15,7 @@ public class Terminal : MonoBehaviour
 
     [Header("Minigame Difficulty")]
     public int speed;
+    //public int rings;
 
     private void Awake()
     {
@@ -43,6 +43,7 @@ public class Terminal : MonoBehaviour
     {
         minigame = Instantiate(Resources.Load<GameObject>("Prefabs/Minigame"), transform.position, Quaternion.identity);
         minigame.GetComponent<Minigame>().Initialise(speed);
+        //minigame.GetComponent<Minigame>().Initialise(speed, rings);
     }
 
     public void StopHacking()

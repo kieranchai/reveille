@@ -299,7 +299,7 @@ MonoBehaviour:
   slot: {fileID: 8136001770410691803}
   startPos: {fileID: 5693813033121625293}
   targetPos: {fileID: 6698997388949400298}
-  speed: 200
+  speed: 0
   rotating: 0
   midRing:
   - {fileID: 5366175164104484203}
