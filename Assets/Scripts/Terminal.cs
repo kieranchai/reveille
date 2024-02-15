@@ -1,17 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static PlayerManager;
 
 public class Terminal : MonoBehaviour
 {
-    public NoiseController _noiseController;
-
-    public GameObject minigame;
+    private NoiseController _noiseController;
+    public bool playable;
+    private GameObject minigame;
+    private bool playedAlertSound = false;
 
     [Header("Unlocks")]
-    public bool playable;
     public GameObject door;
-    public List<GameObject> cctv = new List<GameObject>();
+    public GameObject cctv;
+
+    [Header("Minigame Difficulty")]
+    public int speed;
 
     private void Awake()
     {
@@ -21,11 +25,59 @@ public class Terminal : MonoBehaviour
 
     private void Update()
     {
-        if (!door.activeSelf)
+        if (minigame == null) return;
+
+        if (minigame.GetComponent<Minigame>().currentHackingState == Minigame.HackState.WIN)
         {
-            //permanent disable
-            playable = false;
+            Unlock();
+            StopHacking();
         }
-        // else if (cctv disabled, make playable false for x seconds, then make playable true)
+        else if (minigame.GetComponent<Minigame>().currentHackingState == Minigame.HackState.LOSE)
+        {
+            SoundAlarm();
+            StopHacking();
+        }
+    }
+
+    public void StartHacking()
+    {
+        minigame = Instantiate(Resources.Load<GameObject>("Prefabs/Minigame"), transform.position, Quaternion.identity);
+        minigame.GetComponent<Minigame>().Initialise(speed);
+    }
+
+    public void StopHacking()
+    {
+        Destroy(minigame);
+        PlayerManager.instance.currentState = PlayerManager.PLAYER_STATE.STILL;
+        playedAlertSound = false;
+    }
+
+    private void Unlock()
+    {
+        playable = false;
+        StopAllCoroutines();
+        StartCoroutine(_noiseController.StopNoise());
+
+        if (door)
+        {
+            //disable door
+            door.SetActive(false);
+            //door.GetComponent<BoxCollider2D>().enabled = false;
+            //animate door
+        }
+
+        if (cctv)
+        {
+            //disable cctv temporarily here
+        }
+    }
+
+    private void SoundAlarm()
+    {
+        if (!playedAlertSound)
+        {
+            playedAlertSound = true;
+            StartCoroutine(_noiseController.ProduceNoiseMultiple(8));
+        }
     }
 }

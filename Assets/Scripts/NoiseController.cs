@@ -115,4 +115,19 @@ public class NoiseController : MonoBehaviour
         }
         _transform.localScale = Vector3.zero;
     }
+
+    public IEnumerator StopNoise()
+    {
+        float noiseShrinkTime = 0.0f;
+        float noiseShrinkDuration = 0.1f;
+        float noiseShrinkLerpSpeed = 9.0f * Time.deltaTime;
+        while (noiseShrinkTime < noiseShrinkDuration)
+        {
+            noiseShrinkTime += Time.deltaTime;
+            currentNoiseScale = Vector3.Lerp(currentNoiseScale, Vector3.zero, noiseShrinkLerpSpeed);
+            _transform.localScale = currentNoiseScale;
+            yield return null;
+        }
+        _transform.localScale = Vector3.zero;
+    }
 }

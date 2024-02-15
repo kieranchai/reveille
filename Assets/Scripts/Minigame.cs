@@ -19,8 +19,6 @@ public class Minigame : MonoBehaviour
     public bool solved; //based on slot
     public bool failed; //based on slot
 
-    private bool playedAlertSound = false;
-
     public enum HackState
     {
         PLAY,
@@ -51,12 +49,14 @@ public class Minigame : MonoBehaviour
                 CheckCondition();
                 break;
             case HackState.WIN:
-                WinMinigame();
-                break;
             case HackState.LOSE:
-                LoseMinigame();
                 break;
         }
+    }
+
+    public void Initialise(int speed)
+    {
+        this.speed = speed;
     }
 
     public void RotateRing()
@@ -111,48 +111,9 @@ public class Minigame : MonoBehaviour
         }
     }
 
-    public void WinMinigame()
-    {
-        //Play success sound
-
-        if (PlayerManager.instance.hackingTarget.GetComponent<Terminal>().door != null)
-        {
-            //disable door
-            PlayerManager.instance.hackingTarget.GetComponent<Terminal>().door.gameObject.SetActive(false);
-            //door.GetComponent<BoxCollider2D>().enabled = false;
-            //animate door
-        }
-        else if (PlayerManager.instance.hackingTarget.GetComponent<Terminal>().cctv != null)
-        {
-            //disable cctv temporarily here
-        }
-
-        StartCoroutine(DelayExit());
-    }
-
-    public void LoseMinigame()
-    {
-        //Play failed sound
-        if (!playedAlertSound)
-        {
-            playedAlertSound = true;
-            PlayerManager.instance.hackingTarget.GetComponent<Terminal>().StartCoroutine(PlayerManager.instance.hackingTarget.GetComponent<Terminal>()._noiseController.ProduceNoiseMultiple(8));
-        }
-
-        //Delay timer before being able to hack again
-        StartCoroutine(DelayExit());
-    }
-
     public IEnumerator DelayNextState()
     {
         yield return new WaitForSeconds(0.25f);
         currentHackingState = HackState.NEXT;
-    }
-
-    public IEnumerator DelayExit()
-    {
-        yield return new WaitForSeconds(0.25f);
-        Destroy(this.gameObject);
-        PlayerManager.instance.currentState = PlayerManager.PLAYER_STATE.STILL;
     }
 }

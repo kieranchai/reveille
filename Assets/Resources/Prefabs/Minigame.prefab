@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 201453113406083695}
   - component: {fileID: 8517428360061635495}
   - component: {fileID: 6110792806372342422}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Hole
   m_TagString: Minigame Hole
   m_Icon: {fileID: 0}
@@ -119,7 +119,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6477624245631584257}
   - component: {fileID: 6258518215137608125}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Player Ring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -207,7 +207,7 @@ GameObject:
   - component: {fileID: 3699953092312728744}
   - component: {fileID: 96092347194921288}
   - component: {fileID: 3861674912843586284}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Minigame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -319,7 +319,7 @@ GameObject:
   - component: {fileID: 4824163840804346170}
   - component: {fileID: 465699017521442966}
   - component: {fileID: 4918493375948754456}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Mid Ring 1
   m_TagString: Minigame Midring
   m_Icon: {fileID: 0}
@@ -610,7 +610,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5066926742712669323}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Start
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -641,7 +641,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3375246068881405756}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -676,7 +676,7 @@ GameObject:
   - component: {fileID: 7678384616303621922}
   - component: {fileID: 8222827809126874507}
   - component: {fileID: 3998271978424575165}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Slot
   m_TagString: Untagged
   m_Icon: {fileID: 0}

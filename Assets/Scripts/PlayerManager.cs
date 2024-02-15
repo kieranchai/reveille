@@ -261,12 +261,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E))
         {
-            GameObject minigameClone = hackingTarget.transform.Find("Minigame(Clone)").gameObject;
-            if (minigameClone != null)
-            {
-                Destroy(minigameClone);
-            }
-            currentState = PLAYER_STATE.STILL;
+            hackingTarget.GetComponent<Terminal>().StopHacking();
         }
     }
     #endregion
@@ -360,7 +355,7 @@ public class PlayerManager : MonoBehaviour
 
         currentState = PLAYER_STATE.HACKING;
         noiseSizeMultiplier = 0.0f;
-        Instantiate(hackingTarget.GetComponent<Terminal>().minigame, hackingTarget.transform);
+        hackingTarget.GetComponent<Terminal>().StartHacking();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
