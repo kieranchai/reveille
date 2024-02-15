@@ -85,6 +85,7 @@ public class PlayerManager : MonoBehaviour
                 MouseDrop();
                 break;
             case PLAYER_STATE.HACKING:
+                UpdateNoiseRadius();
                 ExitHack();
                 break;
         }
@@ -354,6 +355,7 @@ public class PlayerManager : MonoBehaviour
         if (!hackingTarget.GetComponent<Terminal>().playable) return;
 
         currentState = PLAYER_STATE.HACKING;
+        noiseSizeMultiplier = 0.0f;
         Instantiate(hackingTarget.GetComponent<Terminal>().minigame, hackingTarget.transform);
     }
 

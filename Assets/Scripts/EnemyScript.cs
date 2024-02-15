@@ -62,9 +62,9 @@ public class EnemyScript : MonoBehaviour
 
     private void Start()
     {
-        setEnemyData(_data);
+        SetEnemyData(_data);
     }
-    public void setEnemyData(Enemy data)
+    public void SetEnemyData(Enemy data)
     {
         this.lineOfSight = data.lineOfSight;
         this.fieldOfView = data.fieldOfView;
@@ -84,27 +84,27 @@ public class EnemyScript : MonoBehaviour
         switch (currentState)
         {
             case ENEMY_STATE.PATROL:
-                patrolState();
+                PatrolState();
                 break;
             case ENEMY_STATE.SENTRY:
-                sentryState();
+                SentryState();
                 break;
             case ENEMY_STATE.ALERTED:
-                alertState();
+                AlertState();
                 break;
             case ENEMY_STATE.CHASE:
-                chaseState();
+                ChaseState();
                 break;
         }
-        fovPos();
+        FovPos();
         UpdateAimDir();
     }
 
-    private void patrolState()
+    private void PatrolState()
     {
         if ((Vector2)transform.position == patrolPoints[targetPoint])
         {
-            increaseTargetPoint();
+            IncreaseTargetPoint();
         }
 
         transform.up = (Vector2)(patrolPoints[targetPoint] - new Vector2(transform.position.x, transform.position.y));
@@ -112,7 +112,7 @@ public class EnemyScript : MonoBehaviour
         FindTargetPlayer();
     }
 
-    public void chaseState()
+    public void ChaseState()
     {
         if (chaseTimer < 8)
         {
@@ -126,7 +126,7 @@ public class EnemyScript : MonoBehaviour
         }
     }
 
-    public void sentryState()
+    public void SentryState()
     {
         if (sentryTimer < 5)
         {
@@ -141,7 +141,7 @@ public class EnemyScript : MonoBehaviour
         }
     }
 
-    public void alertState()
+    public void AlertState()
     {
         if (alertTimer < 10)
         {
@@ -157,13 +157,13 @@ public class EnemyScript : MonoBehaviour
     }
 
 
-    private void increaseTargetPoint()
+    private void IncreaseTargetPoint()
     {
         targetPoint++;
         if (targetPoint >= patrolPoints.Length) targetPoint = 0;
     }
 
-    public void fovPos()
+    public void FovPos()
     {
         fov.SetAimDirection(aimdir);
         fov.SetOrigin(transform.position);

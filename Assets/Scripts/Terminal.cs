@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Terminal : MonoBehaviour
 {
+    public NoiseController _noiseController;
+
     public GameObject minigame;
 
     [Header("Unlocks")]
@@ -11,9 +13,10 @@ public class Terminal : MonoBehaviour
     public GameObject door;
     public List<GameObject> cctv = new List<GameObject>();
 
-    private void Start()
+    private void Awake()
     {
         playable = true;
+        _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
     }
 
     private void Update()

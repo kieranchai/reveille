@@ -19,6 +19,8 @@ public class Minigame : MonoBehaviour
     public bool solved; //based on slot
     public bool failed; //based on slot
 
+    private bool playedAlertSound = false;
+
     public enum HackState
     {
         PLAY,
@@ -131,6 +133,12 @@ public class Minigame : MonoBehaviour
     public void LoseMinigame()
     {
         //Play failed sound
+       if (!playedAlertSound)
+        {
+            playedAlertSound = true;
+            PlayerManager.instance.hackingTarget.GetComponent<Terminal>().StartCoroutine(PlayerManager.instance.hackingTarget.GetComponent<Terminal>()._noiseController.ProduceNoiseMultiple(8));
+        }
+
         //Delay timer before being able to hack again
         StartCoroutine(DelayExit());
     }
