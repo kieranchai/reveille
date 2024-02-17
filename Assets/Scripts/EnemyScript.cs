@@ -215,7 +215,7 @@ public class EnemyScript : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            Debug.Log("Game Over");
+            Debug.Log("Game Over!!!");
         }
     }
 }
