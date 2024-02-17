@@ -266,7 +266,7 @@ public class PlayerManager : MonoBehaviour
     }
     #endregion
 
-    public Vector3 GetPosition()
+    public Vector3 CurrentPosition()
     {
         return transform.position;
     }

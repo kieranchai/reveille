@@ -101,7 +101,7 @@ public class FoodManager : MonoBehaviour
         {
             if (!isThrown) return;
             StartCoroutine(_noiseController.ProduceNoiseOnce());
-            //Lose velocity when hit wall
+            // Lose velocity when hit wall
             _rigidBody.velocity *= 0.10f;
         }
     }
