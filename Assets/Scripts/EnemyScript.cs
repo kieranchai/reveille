@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 /*using static EnemyScript;*/
 
 public class EnemyScript : MonoBehaviour
@@ -11,8 +14,7 @@ public class EnemyScript : MonoBehaviour
     private Rigidbody2D _rigidBody;
     private Collider2D _collider;
     public Enemy _data;
-
-    private Vector3 noiseSource;
+    private NavMeshAgent _agent;
 
     // Default Data
     private int id;
@@ -23,8 +25,13 @@ public class EnemyScript : MonoBehaviour
     private float fieldOfView;
 
     // Dynamic Data
-    public Vector3[] patrolPoints;
-    public int targetPoint;
+    public Vector3 currentPathingTarget;
+    private bool hasSetFinalRotation;
+    private Quaternion finalRotation;
+    private Vector3 playerLastSeenPosition;
+    public List<Transform> patrolPoints = new List<Transform>();
+    private bool hasSetNextPatrol;
+    public int currentPatrolPoint;
     public float chaseTimer;
     public float sentryTimer;
     public LayerMask blockedLayers;
@@ -33,9 +40,10 @@ public class EnemyScript : MonoBehaviour
     public enum ENEMY_STATE
     {
         PATROL,
-        SENTRY,
+        TURNING,
         ALERTED,
-        CHASE
+        CHASE,
+        SENTRY
     };
     public ENEMY_STATE currentState = ENEMY_STATE.PATROL;
     #endregion
@@ -44,17 +52,16 @@ public class EnemyScript : MonoBehaviour
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
-
-        patrolPoints = new Vector3[transform.childCount];
-        for (int i = 0; i < transform.childCount - 1; i++)
-        {
-            patrolPoints[i] = transform.GetChild(i).GetComponent<Transform>().position;
-        }
+        _agent = GetComponent<NavMeshAgent>();
+        _agent.updateRotation = false;
+        _agent.updateUpAxis = false;
     }
 
     private void Start()
     {
         SetEnemyData(_data);
+        currentPathingTarget = patrolPoints[currentPatrolPoint].position;
+        _agent.SetDestination(currentPathingTarget);
     }
 
     private void Update()
@@ -63,6 +70,9 @@ public class EnemyScript : MonoBehaviour
         {
             case ENEMY_STATE.PATROL:
                 PatrolState();
+                break;
+            case ENEMY_STATE.TURNING:
+                RotateToNextPoint();
                 break;
             case ENEMY_STATE.ALERTED:
                 AlertState();
@@ -88,6 +98,8 @@ public class EnemyScript : MonoBehaviour
         this.walkSpeed = data.walkSpeed;
         this.runSpeed = data.runSpeed;
 
+        _agent.speed = this.walkSpeed;
+
         fov = Instantiate(pfFieldOfView, null).GetComponent<FieldOfView>();
         fov.SetFOV(fieldOfView);
         fov.SetLOS(lineOfSight);
@@ -96,38 +108,81 @@ public class EnemyScript : MonoBehaviour
     #region Enemy State Methods
     private void PatrolState()
     {
-        // If at current patrol point, set next patrol point
-        if (transform.position == patrolPoints[targetPoint])
-        {
-            SetNextPatrolPoint();
-        }
+        _agent.speed = walkSpeed;
 
-        // Go to next patrol point
-        transform.up = patrolPoints[targetPoint] - new Vector3(transform.position.x, transform.position.y);
-        transform.position = Vector3.MoveTowards(transform.position, patrolPoints[targetPoint], walkSpeed * Time.deltaTime);
+        transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
+
+        // If at current patrol point, set and turn towards next patrol point
+        if (_agent.remainingDistance <= _agent.stoppingDistance && !hasSetNextPatrol)
+        {
+            hasSetNextPatrol = true;
+            SetNextPatrolPoint();
+            currentState = ENEMY_STATE.TURNING;
+        }
 
         // If see player, go chase state
         if (PlayerInSight())
         {
+            UpdatePlayerLastSeenPosition();
             currentState = ENEMY_STATE.CHASE;
         }
     }
 
-    public void ChaseState()
+    // Need to fix and change to coroutine so this doesnt take up a state
+    void RotateToNextPoint()
     {
+        if (!hasSetFinalRotation)
+        {
+            hasSetFinalRotation = true;
+            float angle = Mathf.Atan2((patrolPoints[currentPatrolPoint].position - transform.position).y, (patrolPoints[currentPatrolPoint].position - transform.position).x) * Mathf.Rad2Deg;
+            finalRotation = Quaternion.AngleAxis(angle - 90.0f, Vector3.forward);
+        }
+
+        transform.rotation = Quaternion.Lerp(transform.rotation, finalRotation, 3.0f * Time.deltaTime);
+
+        if (Quaternion.Angle(transform.rotation, finalRotation) <= 1.0f)
+        {
+            currentPathingTarget = patrolPoints[currentPatrolPoint].position;
+            _agent.SetDestination(currentPathingTarget);
+            currentState = ENEMY_STATE.PATROL;
+            hasSetFinalRotation = false;
+        }
+
+        // If see player, go chase state
+        if (PlayerInSight())
+        {
+            UpdatePlayerLastSeenPosition();
+            currentState = ENEMY_STATE.CHASE;
+            hasSetFinalRotation = false;
+        }
+    }
+
+    private void ChaseState()
+    {
+        _agent.speed = runSpeed;
+
         // If see player, go to player
         if (PlayerInSight())
         {
+            UpdatePlayerLastSeenPosition();
+
             chaseTimer = 0;
-            transform.up = PlayerManager.instance.CurrentPosition() - new Vector3(transform.position.x, transform.position.y);
-            transform.position = Vector3.MoveTowards(transform.position, PlayerManager.instance.CurrentPosition(), runSpeed * Time.deltaTime);
+
+            currentPathingTarget = PlayerManager.instance.CurrentPosition();
+            transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
+            _agent.SetDestination(currentPathingTarget);
         }
         else
         {
             chaseTimer += Time.deltaTime;
+
+            currentPathingTarget = playerLastSeenPosition;
+            transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
+            _agent.SetDestination(currentPathingTarget);
         }
 
         // If player not in sight for 5 seconds, go back to patrolling
+        // Need to add: walk/look around before going back to patrolling
         if (chaseTimer >= 5.0f)
         {
             chaseTimer = 0;
@@ -135,26 +190,29 @@ public class EnemyScript : MonoBehaviour
         }
     }
 
-    public void AlertState()
+    private void AlertState()
     {
+        _agent.speed = walkSpeed;
+
         // If see player, go to player
         if (PlayerInSight())
         {
+            UpdatePlayerLastSeenPosition();
             currentState = ENEMY_STATE.CHASE;
         }
 
-        // Go towards noise source
-        transform.up = noiseSource - new Vector3(transform.position.x, transform.position.y);
-        transform.position = Vector3.MoveTowards(transform.position, noiseSource, walkSpeed * Time.deltaTime);
+        transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
+        _agent.SetDestination(currentPathingTarget);
 
-        // If at noise source, go back to patrolling
-        if (transform.position == noiseSource)
+        // If at current target, go back to patrolling
+        // Need to add: walk/look around before going back to patrolling
+        if (_agent.remainingDistance <= _agent.stoppingDistance)
         {
             currentState = ENEMY_STATE.PATROL;
         }
     }
 
-    public void SentryState()
+    private void SentryState()
     {
         if (sentryTimer < 5)
         {
@@ -172,8 +230,9 @@ public class EnemyScript : MonoBehaviour
 
     private void SetNextPatrolPoint()
     {
-        targetPoint++;
-        if (targetPoint >= patrolPoints.Length) targetPoint = 0;
+        ++currentPatrolPoint;
+        if (currentPatrolPoint > patrolPoints.Count - 1) currentPatrolPoint = 0;
+        hasSetNextPatrol = false;
     }
 
     public void FovPos()
@@ -182,7 +241,7 @@ public class EnemyScript : MonoBehaviour
         fov.SetOrigin(transform.position);
     }
 
-    public bool PlayerInSight()
+    private bool PlayerInSight()
     {
         // Check if player is within Line of Sight
         bool inLOS = Vector3.Distance(PlayerManager.instance.CurrentPosition(), transform.position) <= lineOfSight;
@@ -202,12 +261,23 @@ public class EnemyScript : MonoBehaviour
         return inLOS && (sightAngle < fieldOfView);
     }
 
+    private void UpdatePlayerLastSeenPosition()
+    {
+        playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Noise"))
         {
+            // If currently chasing player and player is in line of sight, don't get distracted
+            if (currentState == ENEMY_STATE.CHASE && PlayerInSight())
+            {
+                return;
+            }
+
+            currentPathingTarget = collision.gameObject.transform.position;
             currentState = ENEMY_STATE.ALERTED;
-            noiseSource = collision.gameObject.transform.position;
         }
     }
 

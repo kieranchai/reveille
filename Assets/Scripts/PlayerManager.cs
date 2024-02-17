@@ -200,6 +200,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         // Cancel Aiming Food
+        CancelThrowFood();
     }
 
     public void MouseThrow()
@@ -254,6 +255,7 @@ public class PlayerManager : MonoBehaviour
         if (Input.GetMouseButtonDown(1))
         {
             DropFood();
+            CancelThrowFood();
         }
     }
 
@@ -346,6 +348,13 @@ public class PlayerManager : MonoBehaviour
         GameObject droppedFood = Instantiate(Resources.Load<GameObject>("Prefabs/Food"), transform.position, Quaternion.identity);
         droppedFood.GetComponent<FoodManager>().SetFoodData(inventory[currentSelectedFood]);
         RemoveFoodFromInventory(inventory[currentSelectedFood]);
+    }
+
+    public void CancelThrowFood()
+    {
+        throwTimer = 0.0f;
+        _lineRenderer.positionCount = 0;
+        _lineRenderer.enabled = false;
     }
 
     public void AttemptHack()
