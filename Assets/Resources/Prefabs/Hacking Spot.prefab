@@ -145,11 +145,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09d274b51df48d4499b065b3fb6c151f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _noiseController: {fileID: 0}
-  minigame: {fileID: 5062544802936543145, guid: 359b9df2ed5325540b53ab8c34c7c3d1, type: 3}
   playable: 0
   door: {fileID: 0}
-  cctv: []
+  cctv: {fileID: 0}
+  speed: 0
 --- !u!1 &7104528019399375273
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,7 +159,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6668983610357067481}
   - component: {fileID: 277304367496054508}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Interact
   m_TagString: Terminal
   m_Icon: {fileID: 0}
