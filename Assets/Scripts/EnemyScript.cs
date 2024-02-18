@@ -26,7 +26,6 @@ public class EnemyScript : MonoBehaviour
 
     // Dynamic Data
     public Vector3 currentPathingTarget;
-    private bool hasSetFinalRotation;
     private Quaternion finalRotation;
     private Vector3 playerLastSeenPosition;
     public List<Transform> patrolPoints = new List<Transform>();
@@ -71,11 +70,11 @@ public class EnemyScript : MonoBehaviour
             case ENEMY_STATE.PATROL:
                 PatrolState();
                 break;
-            case ENEMY_STATE.TURNING:
-                RotateToNextPoint();
-                break;
             case ENEMY_STATE.ALERTED:
                 AlertState();
+                break;
+            case ENEMY_STATE.TURNING:
+                TurningState();
                 break;
             case ENEMY_STATE.CHASE:
                 ChaseState();
@@ -117,6 +116,7 @@ public class EnemyScript : MonoBehaviour
         {
             hasSetNextPatrol = true;
             SetNextPatrolPoint();
+            StartCoroutine(RotateToNextPathingTarget(patrolPoints[currentPatrolPoint].position, "PATROL"));
             currentState = ENEMY_STATE.TURNING;
         }
 
@@ -128,32 +128,39 @@ public class EnemyScript : MonoBehaviour
         }
     }
 
-    // Need to fix and change to coroutine so this doesnt take up a state
-    void RotateToNextPoint()
+    private void AlertState()
     {
-        if (!hasSetFinalRotation)
-        {
-            hasSetFinalRotation = true;
-            float angle = Mathf.Atan2((patrolPoints[currentPatrolPoint].position - transform.position).y, (patrolPoints[currentPatrolPoint].position - transform.position).x) * Mathf.Rad2Deg;
-            finalRotation = Quaternion.AngleAxis(angle - 90.0f, Vector3.forward);
-        }
+        _agent.speed = walkSpeed;
 
-        transform.rotation = Quaternion.Lerp(transform.rotation, finalRotation, 3.0f * Time.deltaTime);
-
-        if (Quaternion.Angle(transform.rotation, finalRotation) <= 1.0f)
-        {
-            currentPathingTarget = patrolPoints[currentPatrolPoint].position;
-            _agent.SetDestination(currentPathingTarget);
-            currentState = ENEMY_STATE.PATROL;
-            hasSetFinalRotation = false;
-        }
-
-        // If see player, go chase state
+        // If see player, go to player
         if (PlayerInSight())
         {
             UpdatePlayerLastSeenPosition();
             currentState = ENEMY_STATE.CHASE;
-            hasSetFinalRotation = false;
+        }
+
+        transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
+        _agent.SetDestination(currentPathingTarget);
+
+        // If at current target, go back to patrolling
+        if (_agent.remainingDistance <= _agent.stoppingDistance)
+        {
+            // Need to add: walk/look around before going back to patrolling
+
+            // Rotate back to current patrol point
+            StartCoroutine(RotateToNextPathingTarget(patrolPoints[currentPatrolPoint].position, "PATROL"));
+            currentState = ENEMY_STATE.TURNING;
+        }
+    }
+
+    private void TurningState()
+    {
+        // If see player, go chase state
+        if (PlayerInSight())
+        {
+            StopCoroutine(nameof(RotateToNextPathingTarget));
+            UpdatePlayerLastSeenPosition();
+            currentState = ENEMY_STATE.CHASE;
         }
     }
 
@@ -176,39 +183,36 @@ public class EnemyScript : MonoBehaviour
         {
             chaseTimer += Time.deltaTime;
 
-            currentPathingTarget = playerLastSeenPosition;
+            // Predict player's path from last seen position
+            float timeToPlayer = Vector3.Distance(PlayerManager.instance.CurrentPosition(), transform.position) / _agent.speed;
+            if (timeToPlayer > 2.0f)
+            {
+                timeToPlayer = 2.0f;
+            }
+            Vector3 predictedPosition = playerLastSeenPosition + PlayerManager.instance.CurrentVelocity() * timeToPlayer;
+            Vector3 directionToTarget = (predictedPosition - transform.position).normalized;
+            Vector3 directionToPlayer = (PlayerManager.instance.CurrentPosition() - transform.position).normalized;
+            float dot = Vector3.Dot(directionToPlayer, directionToTarget);
+            if (dot < 0.0f)
+            {
+                predictedPosition = PlayerManager.instance.CurrentPosition();
+            }
+
+            currentPathingTarget = predictedPosition;
             transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
             _agent.SetDestination(currentPathingTarget);
         }
 
         // If player not in sight for 5 seconds, go back to patrolling
-        // Need to add: walk/look around before going back to patrolling
         if (chaseTimer >= 5.0f)
         {
             chaseTimer = 0;
-            currentState = ENEMY_STATE.PATROL;
-        }
-    }
 
-    private void AlertState()
-    {
-        _agent.speed = walkSpeed;
+            // Need to add: walk/look around before going back to patrolling
 
-        // If see player, go to player
-        if (PlayerInSight())
-        {
-            UpdatePlayerLastSeenPosition();
-            currentState = ENEMY_STATE.CHASE;
-        }
-
-        transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
-        _agent.SetDestination(currentPathingTarget);
-
-        // If at current target, go back to patrolling
-        // Need to add: walk/look around before going back to patrolling
-        if (_agent.remainingDistance <= _agent.stoppingDistance)
-        {
-            currentState = ENEMY_STATE.PATROL;
+            // Rotate back to current patrol point
+            StartCoroutine(RotateToNextPathingTarget(patrolPoints[currentPatrolPoint].position, "PATROL"));
+            currentState = ENEMY_STATE.TURNING;
         }
     }
 
@@ -266,6 +270,46 @@ public class EnemyScript : MonoBehaviour
         playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
     }
 
+    IEnumerator RotateToNextPathingTarget(Vector3 nextPathingTarget, string returnState)
+    {
+        // Stop enemy from moving
+        _agent.ResetPath();
+
+        // Calculate angle between next pathing target and current position
+        float angle = Mathf.Atan2((nextPathingTarget - transform.position).y, (nextPathingTarget - transform.position).x) * Mathf.Rad2Deg;
+        finalRotation = Quaternion.AngleAxis(angle - 90.0f, Vector3.forward);
+
+        // Lerp enemy's rotation to to next pathing target
+        while (Quaternion.Angle(transform.rotation, finalRotation) > 1.0f)
+        {
+            transform.rotation = Quaternion.Lerp(transform.rotation, finalRotation, 3.0f * Time.deltaTime);
+            yield return null;
+        }
+
+        // Once lerp completed, set currentPathingTarget to next pathing target and move enemy there
+        currentPathingTarget = nextPathingTarget;
+        _agent.SetDestination(currentPathingTarget);
+
+        // Return enemy back to the state it was in before turning
+        switch (returnState)
+        {
+            case "PATROL":
+                currentState = ENEMY_STATE.PATROL;
+                break;
+            case "ALERTED":
+                currentState = ENEMY_STATE.ALERTED;
+                break;
+            case "CHASE":
+                currentState = ENEMY_STATE.CHASE;
+                break;
+            case "SENTRY":
+                currentState = ENEMY_STATE.SENTRY;
+                break;
+            default:
+                break;
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Noise"))
@@ -276,8 +320,10 @@ public class EnemyScript : MonoBehaviour
                 return;
             }
 
-            currentPathingTarget = collision.gameObject.transform.position;
-            currentState = ENEMY_STATE.ALERTED;
+            // Rotate to noise source
+            StopCoroutine(nameof(RotateToNextPathingTarget));
+            StartCoroutine(RotateToNextPathingTarget(collision.gameObject.transform.position, "ALERTED"));
+            currentState = ENEMY_STATE.TURNING;
         }
     }
 

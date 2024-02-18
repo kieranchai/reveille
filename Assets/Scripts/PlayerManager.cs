@@ -273,6 +273,11 @@ public class PlayerManager : MonoBehaviour
         return transform.position;
     }
 
+    public Vector3 CurrentVelocity()
+    {
+        return _rigidBody.velocity;
+    }
+
     public void UpdateNoiseRadius()
     {
         _noiseController.UpdateNoiseRadius(noiseSizeMultiplier);
