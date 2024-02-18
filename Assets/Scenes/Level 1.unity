@@ -1018,6 +1018,10 @@ PrefabInstance:
       value: Hacking Spot (1)
       objectReference: {fileID: 0}
     - target: {fileID: 7619041425578762912, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
+      propertyPath: door
+      value: 
+      objectReference: {fileID: 727694221}
+    - target: {fileID: 7619041425578762912, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
       propertyPath: speed
       value: 250
       objectReference: {fileID: 0}
@@ -1201,6 +1205,11 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &727694221 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6617362450544541358, guid: 02fda319e0a3bba478faa8e6040ce639, type: 3}
+  m_PrefabInstance: {fileID: 271193080}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &739059026
 GameObject:
   m_ObjectHideFlags: 0

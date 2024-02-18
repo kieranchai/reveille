@@ -104,7 +104,7 @@ CircleCollider2D:
     m_Bits: 128
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 320
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -308,6 +308,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lerpSpeed: 0
+  isDeactivated: 0
 --- !u!1 &2379556143619326118
 GameObject:
   m_ObjectHideFlags: 0

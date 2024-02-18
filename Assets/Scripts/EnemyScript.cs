@@ -39,7 +39,6 @@ public class EnemyScript : MonoBehaviour
     public enum ENEMY_STATE
     {
         PATROL,
-        TURNING,
         ALERTED,
         CHASE,
         SENTRY
@@ -72,9 +71,6 @@ public class EnemyScript : MonoBehaviour
                 break;
             case ENEMY_STATE.ALERTED:
                 AlertState();
-                break;
-            case ENEMY_STATE.TURNING:
-                TurningState();
                 break;
             case ENEMY_STATE.CHASE:
                 ChaseState();
@@ -116,8 +112,12 @@ public class EnemyScript : MonoBehaviour
         {
             hasSetNextPatrol = true;
             SetNextPatrolPoint();
-            StartCoroutine(RotateToNextPathingTarget(patrolPoints[currentPatrolPoint].position, "PATROL"));
-            currentState = ENEMY_STATE.TURNING;
+
+            /*StartCoroutine(RotateToNextPathingTarget(patrolPoints[currentPatrolPoint].position, "PATROL"));
+            currentState = ENEMY_STATE.TURNING;*/
+
+            currentPathingTarget = patrolPoints[currentPatrolPoint].position;
+            _agent.SetDestination(currentPathingTarget);
         }
 
         // If see player, go chase state
@@ -148,19 +148,13 @@ public class EnemyScript : MonoBehaviour
             // Need to add: walk/look around before going back to patrolling
 
             // Rotate back to current patrol point
-            StartCoroutine(RotateToNextPathingTarget(patrolPoints[currentPatrolPoint].position, "PATROL"));
-            currentState = ENEMY_STATE.TURNING;
-        }
-    }
 
-    private void TurningState()
-    {
-        // If see player, go chase state
-        if (PlayerInSight())
-        {
-            StopCoroutine(nameof(RotateToNextPathingTarget));
-            UpdatePlayerLastSeenPosition();
-            currentState = ENEMY_STATE.CHASE;
+            /*StartCoroutine(RotateToNextPathingTarget(patrolPoints[currentPatrolPoint].position, "PATROL"));
+            currentState = ENEMY_STATE.TURNING;*/
+
+            currentState = ENEMY_STATE.PATROL;
+            currentPathingTarget = patrolPoints[currentPatrolPoint].position;
+            _agent.SetDestination(currentPathingTarget);
         }
     }
 
@@ -185,15 +179,15 @@ public class EnemyScript : MonoBehaviour
 
             // Predict player's path from last seen position
             float timeToPlayer = Vector3.Distance(PlayerManager.instance.CurrentPosition(), transform.position) / _agent.speed;
-            if (timeToPlayer > 2.0f)
+            if (timeToPlayer > 1.0f)
             {
-                timeToPlayer = 2.0f;
+                timeToPlayer = 1.0f;
             }
             Vector3 predictedPosition = playerLastSeenPosition + PlayerManager.instance.CurrentVelocity() * timeToPlayer;
             Vector3 directionToTarget = (predictedPosition - transform.position).normalized;
             Vector3 directionToPlayer = (PlayerManager.instance.CurrentPosition() - transform.position).normalized;
             float dot = Vector3.Dot(directionToPlayer, directionToTarget);
-            if (dot < 0.0f)
+            if (dot < 0.4f)
             {
                 predictedPosition = PlayerManager.instance.CurrentPosition();
             }
@@ -203,16 +197,21 @@ public class EnemyScript : MonoBehaviour
             _agent.SetDestination(currentPathingTarget);
         }
 
-        // If player not in sight for 5 seconds, go back to patrolling
-        if (chaseTimer >= 5.0f)
+        // If player not in sight for 5 seconds or reached predicted location, go back to patrolling
+        if (_agent.remainingDistance <= _agent.stoppingDistance || chaseTimer >= 5.0f)
         {
             chaseTimer = 0;
 
             // Need to add: walk/look around before going back to patrolling
 
             // Rotate back to current patrol point
-            StartCoroutine(RotateToNextPathingTarget(patrolPoints[currentPatrolPoint].position, "PATROL"));
-            currentState = ENEMY_STATE.TURNING;
+
+            /*StartCoroutine(RotateToNextPathingTarget(patrolPoints[currentPatrolPoint].position, "PATROL"));
+            currentState = ENEMY_STATE.TURNING;*/
+
+            currentState = ENEMY_STATE.PATROL;
+            currentPathingTarget = patrolPoints[currentPatrolPoint].position;
+            _agent.SetDestination(currentPathingTarget);
         }
     }
 
@@ -270,7 +269,7 @@ public class EnemyScript : MonoBehaviour
         playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
     }
 
-    IEnumerator RotateToNextPathingTarget(Vector3 nextPathingTarget, string returnState)
+    /*IEnumerator RotateToNextPathingTarget(Vector3 nextPathingTarget, string returnState)
     {
         // Stop enemy from moving
         _agent.ResetPath();
@@ -308,22 +307,27 @@ public class EnemyScript : MonoBehaviour
             default:
                 break;
         }
-    }
+    }*/
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Noise"))
         {
-            // If currently chasing player and player is in line of sight, don't get distracted
-            if (currentState == ENEMY_STATE.CHASE && PlayerInSight())
+            // If currently chasing player, don't get distracted
+            if (currentState == ENEMY_STATE.CHASE)
             {
                 return;
             }
 
             // Rotate to noise source
-            StopCoroutine(nameof(RotateToNextPathingTarget));
+
+            /*StopCoroutine(nameof(RotateToNextPathingTarget));
             StartCoroutine(RotateToNextPathingTarget(collision.gameObject.transform.position, "ALERTED"));
-            currentState = ENEMY_STATE.TURNING;
+            currentState = ENEMY_STATE.TURNING;*/
+
+            currentState = ENEMY_STATE.ALERTED;
+            currentPathingTarget = collision.gameObject.transform.position;
+            _agent.SetDestination(currentPathingTarget);
         }
     }
 
@@ -331,7 +335,7 @@ public class EnemyScript : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            Debug.Log("Game Over!!!");
+            Debug.Log("Game Over!");
         }
     }
 }
