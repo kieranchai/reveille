@@ -32,6 +32,7 @@ public class EnemyScript : MonoBehaviour
     private bool hasSetNextPatrol;
     public int currentPatrolPoint;
     public float chaseTimer;
+    public float predictTimer;
     public float sentryTimer;
     public LayerMask blockedLayers;
     [SerializeField] private Transform pfFieldOfView; // fov prefab
@@ -167,7 +168,8 @@ public class EnemyScript : MonoBehaviour
         {
             UpdatePlayerLastSeenPosition();
 
-            chaseTimer = 0;
+            chaseTimer = 0.0f;
+            predictTimer = 0.0f;
 
             currentPathingTarget = PlayerManager.instance.CurrentPosition();
             transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
@@ -176,31 +178,37 @@ public class EnemyScript : MonoBehaviour
         else
         {
             chaseTimer += Time.deltaTime;
+            predictTimer += Time.deltaTime;
 
-            // Predict player's path from last seen position
-            float timeToPlayer = Vector3.Distance(PlayerManager.instance.CurrentPosition(), transform.position) / _agent.speed;
-            if (timeToPlayer > 1.0f)
+            // Predict player's path from last seen position every 1 second
+            if (predictTimer >= 1.0f)
             {
-                timeToPlayer = 1.0f;
+                float timeToPlayer = Vector3.Distance(PlayerManager.instance.CurrentPosition(), transform.position) / _agent.speed;
+                if (timeToPlayer > 0.5f)
+                {
+                    timeToPlayer = 1.0f;
+                }
+                Vector3 predictedPosition = playerLastSeenPosition + PlayerManager.instance.CurrentVelocity() * timeToPlayer;
+                Vector3 directionToTarget = (predictedPosition - transform.position).normalized;
+                Vector3 directionToPlayer = (PlayerManager.instance.CurrentPosition() - transform.position).normalized;
+                float dot = Vector3.Dot(directionToPlayer, directionToTarget);
+                if (dot < 0.4f)
+                {
+                    predictedPosition = PlayerManager.instance.CurrentPosition();
+                }
+                currentPathingTarget = predictedPosition;
+                predictTimer = 0.0f;
             }
-            Vector3 predictedPosition = playerLastSeenPosition + PlayerManager.instance.CurrentVelocity() * timeToPlayer;
-            Vector3 directionToTarget = (predictedPosition - transform.position).normalized;
-            Vector3 directionToPlayer = (PlayerManager.instance.CurrentPosition() - transform.position).normalized;
-            float dot = Vector3.Dot(directionToPlayer, directionToTarget);
-            if (dot < 0.4f)
-            {
-                predictedPosition = PlayerManager.instance.CurrentPosition();
-            }
-
-            currentPathingTarget = predictedPosition;
+            
             transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
             _agent.SetDestination(currentPathingTarget);
         }
 
-        // If player not in sight for 5 seconds or reached predicted location, go back to patrolling
-        if (_agent.remainingDistance <= _agent.stoppingDistance || chaseTimer >= 5.0f)
+        // If player not in sight for 5 seconds, go back to patrolling
+        if (chaseTimer >= 5.0f)
         {
-            chaseTimer = 0;
+            chaseTimer = 0.0f;
+            predictTimer = 0.0f;
 
             // Need to add: walk/look around before going back to patrolling
 
