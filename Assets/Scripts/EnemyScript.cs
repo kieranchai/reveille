@@ -31,9 +31,11 @@ public class EnemyScript : MonoBehaviour
     public List<Transform> patrolPoints = new List<Transform>();
     private bool hasSetNextPatrol;
     public int currentPatrolPoint;
+    public float playerSeenTimer;
+    public float confusedTimer;
     public float chaseTimer;
     public float predictTimer;
-    public float sentryTimer;
+    public float alertTimer;
     public LayerMask blockedLayers;
     [SerializeField] private Transform pfFieldOfView; // fov prefab
     private FieldOfView fov;
@@ -41,8 +43,8 @@ public class EnemyScript : MonoBehaviour
     {
         PATROL,
         ALERTED,
-        CHASE,
-        SENTRY
+        CONFUSED,
+        CHASE
     };
     public ENEMY_STATE currentState = ENEMY_STATE.PATROL;
     #endregion
@@ -70,14 +72,14 @@ public class EnemyScript : MonoBehaviour
             case ENEMY_STATE.PATROL:
                 PatrolState();
                 break;
+            case ENEMY_STATE.CONFUSED:
+                ConfusedState();
+                break;
             case ENEMY_STATE.ALERTED:
                 AlertState();
                 break;
             case ENEMY_STATE.CHASE:
                 ChaseState();
-                break;
-            case ENEMY_STATE.SENTRY:
-                SentryState();
                 break;
             default:
                 break;
@@ -108,54 +110,78 @@ public class EnemyScript : MonoBehaviour
 
         transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
 
-        // If at current patrol point, set and turn towards next patrol point
+        // If at current patrol point, set and go towards next patrol point
         if (_agent.remainingDistance <= _agent.stoppingDistance && !hasSetNextPatrol)
         {
             hasSetNextPatrol = true;
             SetNextPatrolPoint();
-
-            /*StartCoroutine(RotateToNextPathingTarget(patrolPoints[currentPatrolPoint].position, "PATROL"));
-            currentState = ENEMY_STATE.TURNING;*/
-
             currentPathingTarget = patrolPoints[currentPatrolPoint].position;
             _agent.SetDestination(currentPathingTarget);
         }
 
-        // If see player, go chase state
+        // If see player, become confused "Huh?!"
         if (PlayerInSight())
         {
             UpdatePlayerLastSeenPosition();
+            currentPathingTarget = playerLastSeenPosition;
+            _agent.ResetPath();
+            currentState = ENEMY_STATE.CONFUSED;
+
+        }
+    }
+
+    private void ConfusedState()
+    {
+        _agent.speed = walkSpeed;
+
+        transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
+
+        confusedTimer += Time.deltaTime;
+
+        // After confused for 1 second, go to alerted
+        if (confusedTimer >= 1.0f)
+        {
+            confusedTimer = 0.0f;
+            currentState = ENEMY_STATE.ALERTED;
+        }
+
+        // If confused but still see player after 0.5 second, start chasing "HEY!"
+        if (PlayerInSight() && confusedTimer >= 0.5f)
+        {
+            confusedTimer = 0.0f;
             currentState = ENEMY_STATE.CHASE;
         }
+
     }
 
     private void AlertState()
     {
         _agent.speed = walkSpeed;
 
-        // If see player, go to player
-        if (PlayerInSight())
-        {
-            UpdatePlayerLastSeenPosition();
-            currentState = ENEMY_STATE.CHASE;
-        }
-
         transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
         _agent.SetDestination(currentPathingTarget);
 
-        // If at current target, go back to patrolling
+        // If at current target, look around
         if (_agent.remainingDistance <= _agent.stoppingDistance)
         {
-            // Need to add: walk/look around before going back to patrolling
+            alertTimer += Time.deltaTime;
 
-            // Rotate back to current patrol point
+            // After looking around for 1 second, go back to patrolling
+            if (alertTimer >= 1.0f)
+            {
+                alertTimer = 0.0f;
+                currentPathingTarget = patrolPoints[currentPatrolPoint].position;
+                _agent.SetDestination(currentPathingTarget);
+                currentState = ENEMY_STATE.PATROL;
+            }
+        }
 
-            /*StartCoroutine(RotateToNextPathingTarget(patrolPoints[currentPatrolPoint].position, "PATROL"));
-            currentState = ENEMY_STATE.TURNING;*/
-
-            currentState = ENEMY_STATE.PATROL;
-            currentPathingTarget = patrolPoints[currentPatrolPoint].position;
-            _agent.SetDestination(currentPathingTarget);
+        // If see player, start chasing player
+        if (PlayerInSight())
+        {
+            alertTimer = 0.0f;
+            UpdatePlayerLastSeenPosition();
+            currentState = ENEMY_STATE.CHASE;
         }
     }
 
@@ -163,7 +189,7 @@ public class EnemyScript : MonoBehaviour
     {
         _agent.speed = runSpeed;
 
-        // If see player, go to player
+        // If see player, start chasing player
         if (PlayerInSight())
         {
             UpdatePlayerLastSeenPosition();
@@ -175,6 +201,7 @@ public class EnemyScript : MonoBehaviour
             transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
             _agent.SetDestination(currentPathingTarget);
         }
+        // If not, start going to player's predicted path
         else
         {
             chaseTimer += Time.deltaTime;
@@ -199,42 +226,28 @@ public class EnemyScript : MonoBehaviour
                 currentPathingTarget = predictedPosition;
                 predictTimer = 0.0f;
             }
-            
+
             transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
             _agent.SetDestination(currentPathingTarget);
         }
 
-        // If player not in sight for 5 seconds, go back to patrolling
+        // If player not in sight for 5 seconds, look around
         if (chaseTimer >= 5.0f)
         {
-            chaseTimer = 0.0f;
-            predictTimer = 0.0f;
+            _agent.ResetPath();
 
-            // Need to add: walk/look around before going back to patrolling
+            // After looking around for 1 second, go back to patrolling
+            alertTimer += Time.deltaTime;
+            if (alertTimer >= 1.0f)
+            {
+                alertTimer = 0.0f;
+                chaseTimer = 0.0f;
+                predictTimer = 0.0f;
 
-            // Rotate back to current patrol point
-
-            /*StartCoroutine(RotateToNextPathingTarget(patrolPoints[currentPatrolPoint].position, "PATROL"));
-            currentState = ENEMY_STATE.TURNING;*/
-
-            currentState = ENEMY_STATE.PATROL;
-            currentPathingTarget = patrolPoints[currentPatrolPoint].position;
-            _agent.SetDestination(currentPathingTarget);
-        }
-    }
-
-    private void SentryState()
-    {
-        if (sentryTimer < 5)
-        {
-            transform.localEulerAngles = new Vector3(0, 0, Mathf.PingPong(Time.time * 30f, 60f) - 45); //temp 30 is speed 60 is angle
-            sentryTimer += Time.deltaTime;
-            PlayerInSight();
-        }
-        else
-        {
-            currentState = ENEMY_STATE.PATROL;
-            chaseTimer = 0;
+                currentPathingTarget = patrolPoints[currentPatrolPoint].position;
+                _agent.SetDestination(currentPathingTarget);
+                currentState = ENEMY_STATE.PATROL;
+            }
         }
     }
     #endregion
@@ -321,21 +334,28 @@ public class EnemyScript : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Noise"))
         {
-            // If currently chasing player, don't get distracted
-            if (currentState == ENEMY_STATE.CHASE)
+            // If currently chasing player, don't get confused
+            if (currentState == ENEMY_STATE.CHASE) return;
+
+            // If already confused, don't get confused again
+            if (currentState == ENEMY_STATE.CONFUSED) return;
+
+            // If hear noise when alerted, stay alerted but go to new noise position 
+            if (currentState == ENEMY_STATE.ALERTED)
             {
-                return;
+                alertTimer = 0.0f;
+                currentPathingTarget = collision.gameObject.transform.position;
+                currentState = ENEMY_STATE.ALERTED;
             }
 
-            // Rotate to noise source
-
-            /*StopCoroutine(nameof(RotateToNextPathingTarget));
-            StartCoroutine(RotateToNextPathingTarget(collision.gameObject.transform.position, "ALERTED"));
-            currentState = ENEMY_STATE.TURNING;*/
-
-            currentState = ENEMY_STATE.ALERTED;
-            currentPathingTarget = collision.gameObject.transform.position;
-            _agent.SetDestination(currentPathingTarget);
+            // If hear noise when patrolling, get confused for 1 second
+            if (currentState == ENEMY_STATE.PATROL)
+            {
+                alertTimer = 0.0f;
+                currentPathingTarget = collision.gameObject.transform.position;
+                _agent.ResetPath();
+                currentState = ENEMY_STATE.CONFUSED;
+            }
         }
     }
 
