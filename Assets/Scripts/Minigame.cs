@@ -11,7 +11,7 @@ public class Minigame : MonoBehaviour
 
     [Header("Terminal Variables")]
     public int speed;
-    //public int rings;
+    public int rings;
 
     [Header("Attributes")]
     public bool rotating;
@@ -56,16 +56,41 @@ public class Minigame : MonoBehaviour
         }
     }
 
-    public void Initialise(int speed)
+    public void Initialise(int speed, int rings)
     {
         this.speed = speed;
-        //this.rings = rings;
+        this.rings = rings;
 
-        //put all this in a new method
-        //if (rings == 2) instantiate 1 more smaller ring
-        //else if (rings == 3) instantiate 1 more even smaller ring
+        CreatingRings();
+    }
 
-        //add all rings to midring gameobject list
+    public void CreatingRings()
+    {
+        if (rings == 1) return;
+
+        if (rings == 2)
+        {
+            GameObject second = Instantiate(midRing[0], transform);
+            int randNum = Random.Range(0, 346);
+            second.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+            second.transform.Rotate(0, 0, randNum);
+            midRing.Add(second);
+        }
+
+        if (rings == 3)
+        {
+            GameObject second = Instantiate(midRing[0], transform);
+            int secondRandNum = Random.Range(0, 346);
+            second.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+            second.transform.Rotate(0, 0, secondRandNum);
+            midRing.Add(second);
+
+            GameObject third = Instantiate(midRing[0], transform);
+            int thirdRandNum = Random.Range(0, 346);
+            third.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            third.transform.Rotate(0, 0, thirdRandNum);
+            midRing.Add(third);
+        }
     }
 
     public void RotateRing()
@@ -94,28 +119,6 @@ public class Minigame : MonoBehaviour
         }
         else if (solved)
         {
-            //if (counter < rings)
-            //{
-            //    activeRing.SetActive(false);
-            //    ++counter;
-            //    activeRing = midRing[counter];
-
-            //instantiate smaller rings
-
-            //    Vector3 scaleChange = new Vector3(0.25f, 0.25f, 0f);
-            //    Vector3 posChange = new Vector3(0.4f, 0f, 0f);
-
-            //    slot.transform.position = startPos.transform.position;
-            //    ring.transform.localScale -= scaleChange;
-            //    ring.transform.TransformPoint(startPos.transform.localPosition - posChange);
-            //    ring.transform.TransformPoint(targetPos.transform.localPosition - posChange);
-            //}
-            //else
-            //{
-            //    currentHackingState = HackState.WIN;
-            //}
-
-
             midRing[counter].gameObject.SetActive(false);
             ++counter;
             solved = false;

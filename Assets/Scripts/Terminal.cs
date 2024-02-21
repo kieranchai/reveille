@@ -15,7 +15,7 @@ public class Terminal : MonoBehaviour
 
     [Header("Minigame Difficulty")]
     public int speed;
-    //public int rings;
+    public int rings;
 
     private void Awake()
     {
@@ -42,8 +42,7 @@ public class Terminal : MonoBehaviour
     public void StartHacking()
     {
         minigame = Instantiate(Resources.Load<GameObject>("Prefabs/Minigame"), transform.position, Quaternion.identity);
-        minigame.GetComponent<Minigame>().Initialise(speed);
-        //minigame.GetComponent<Minigame>().Initialise(speed, rings);
+        minigame.GetComponent<Minigame>().Initialise(speed, rings);
     }
 
     public void StopHacking()

@@ -417,8 +417,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1367666564}
     - target: {fileID: 7619041425578762912, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
+      propertyPath: rings
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7619041425578762912, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
       propertyPath: speed
-      value: 200
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 7708560718989806263, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -987,6 +991,10 @@ PrefabInstance:
       propertyPath: door
       value: 
       objectReference: {fileID: 727694221}
+    - target: {fileID: 7619041425578762912, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
+      propertyPath: rings
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7619041425578762912, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
       propertyPath: speed
       value: 250
