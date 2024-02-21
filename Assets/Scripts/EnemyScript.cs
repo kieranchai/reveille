@@ -269,7 +269,7 @@ public class EnemyScript : MonoBehaviour
         }
 
         // Returns true if both conditions are met
-        return inLOS && (sightAngle < fieldOfView);
+        return inLOS && (sightAngle < fieldOfView / 2);
     }
 
     private void UpdatePlayerLastSeenPosition()
