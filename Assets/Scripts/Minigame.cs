@@ -66,30 +66,17 @@ public class Minigame : MonoBehaviour
 
     public void CreatingRings()
     {
-        if (rings == 1) return;
+        if (rings <= 1) return;
 
-        if (rings == 2)
+        for (int i = 1; i < rings; i++)
         {
-            GameObject second = Instantiate(midRing[0], transform);
+            GameObject newRing = Instantiate(midRing[0], transform);
+            float scale = i == 1 ? 0.75f : 0.5f; //fixed operation
             int randNum = Random.Range(0, 346);
-            second.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
-            second.transform.Rotate(0, 0, randNum);
-            midRing.Add(second);
-        }
 
-        if (rings == 3)
-        {
-            GameObject second = Instantiate(midRing[0], transform);
-            int secondRandNum = Random.Range(0, 346);
-            second.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
-            second.transform.Rotate(0, 0, secondRandNum);
-            midRing.Add(second);
-
-            GameObject third = Instantiate(midRing[0], transform);
-            int thirdRandNum = Random.Range(0, 346);
-            third.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-            third.transform.Rotate(0, 0, thirdRandNum);
-            midRing.Add(third);
+            newRing.transform.localScale = new Vector3(scale, scale, scale);
+            newRing.transform.Rotate(0, 0, randNum);
+            midRing.Add(newRing);
         }
     }
 
