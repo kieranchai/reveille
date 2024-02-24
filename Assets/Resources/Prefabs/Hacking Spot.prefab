@@ -149,6 +149,7 @@ MonoBehaviour:
   door: {fileID: 0}
   cctv: {fileID: 0}
   speed: 0
+  rings: 0
 --- !u!1 &7104528019399375273
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,7 +216,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.95
+  m_Radius: 1.25
 --- !u!1 &7146933905146609600
 GameObject:
   m_ObjectHideFlags: 0

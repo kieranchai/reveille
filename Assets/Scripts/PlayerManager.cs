@@ -45,6 +45,7 @@ public class PlayerManager : MonoBehaviour
     private float totalChargeTime = 0.0f;
     private bool isCharging = false;
     public GameObject hackingTarget;
+    public GameObject barrack;
     #endregion
 
     private void Awake()
@@ -172,6 +173,9 @@ public class PlayerManager : MonoBehaviour
 
             // Toggle hack
             AttemptHack();
+
+            // Deliver food
+            PlaceFoodInBarrack();
         }
     }
 
@@ -372,11 +376,34 @@ public class PlayerManager : MonoBehaviour
         hackingTarget.GetComponent<Terminal>().StartHacking();
     }
 
+    public void PlaceFoodInBarrack()
+    {
+        if (!barrack) return;
+
+        Barrack barrackComponent = barrack.GetComponent<Barrack>();
+
+        if (inventory.Count > 0 && barrackComponent.fullCapacity)
+        {
+            UiManager uiManager = FindObjectOfType<UiManager>();
+            StartCoroutine(uiManager.BarrackAddErrorText());
+        }
+        else if (inventory.Count > 0)
+        {
+            barrackComponent.AddToBarrack(inventory[currentSelectedFood]);
+            RemoveFoodFromInventory(inventory[currentSelectedFood]);
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Terminal"))
         {
             hackingTarget = collision.gameObject.transform.parent.gameObject;
+        }
+
+        if (collision.gameObject.CompareTag("Barrack"))
+        {
+            barrack = collision.gameObject.transform.parent.gameObject;
         }
     }
 
@@ -385,6 +412,11 @@ public class PlayerManager : MonoBehaviour
         if (collision.gameObject.CompareTag("Terminal"))
         {
             hackingTarget = null;
+        }
+
+        if (collision.gameObject.CompareTag("Barrack"))
+        {
+            barrack = null;
         }
     }
 }
