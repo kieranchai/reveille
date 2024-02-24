@@ -38,6 +38,7 @@ public class PlayerManager : MonoBehaviour
     public float inventoryWeightPenalty;
     public List<Food> inventory = new List<Food>();
     public int currentSelectedFood;
+    public int points;
     public List<GameObject> nearbyFood = new List<GameObject>();
     private float throwTimer = 0.0f;
     private float throwInterval = 0.5f;
@@ -45,7 +46,7 @@ public class PlayerManager : MonoBehaviour
     private float totalChargeTime = 0.0f;
     private bool isCharging = false;
     public GameObject hackingTarget;
-    public GameObject barrack;
+    public GameObject foodDropOffTarget;
     #endregion
 
     private void Awake()
@@ -175,7 +176,7 @@ public class PlayerManager : MonoBehaviour
             AttemptHack();
 
             // Deliver food
-            PlaceFoodInBarrack();
+            DropOffFood();
         }
     }
 
@@ -376,22 +377,21 @@ public class PlayerManager : MonoBehaviour
         hackingTarget.GetComponent<Terminal>().StartHacking();
     }
 
-    public void PlaceFoodInBarrack()
+    public void DropOffFood()
     {
-        if (!barrack) return;
+        if (!foodDropOffTarget) return;
+        if (inventory.Count < 1) return;
 
-        Barrack barrackComponent = barrack.GetComponent<Barrack>();
-
-        if (inventory.Count > 0 && barrackComponent.fullCapacity)
+        if (foodDropOffTarget.GetComponent<DropOff>().DepositFood(inventory[currentSelectedFood]))
         {
-            UiManager uiManager = FindObjectOfType<UiManager>();
-            StartCoroutine(uiManager.BarrackAddErrorText());
-        }
-        else if (inventory.Count > 0)
-        {
-            barrackComponent.AddToBarrack(inventory[currentSelectedFood]);
+            UpdatePoints(inventory[currentSelectedFood].currentPoints);
             RemoveFoodFromInventory(inventory[currentSelectedFood]);
         }
+    }
+
+    public void UpdatePoints(int foodCurrentPoints)
+    {
+        points += foodCurrentPoints;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -401,9 +401,9 @@ public class PlayerManager : MonoBehaviour
             hackingTarget = collision.gameObject.transform.parent.gameObject;
         }
 
-        if (collision.gameObject.CompareTag("Barrack"))
+        if (collision.gameObject.CompareTag("Dropoff"))
         {
-            barrack = collision.gameObject.transform.parent.gameObject;
+            foodDropOffTarget = collision.gameObject.transform.parent.gameObject;
         }
     }
 
@@ -414,9 +414,9 @@ public class PlayerManager : MonoBehaviour
             hackingTarget = null;
         }
 
-        if (collision.gameObject.CompareTag("Barrack"))
+        if (collision.gameObject.CompareTag("Dropoff"))
         {
-            barrack = null;
+            foodDropOffTarget = null;
         }
     }
 }

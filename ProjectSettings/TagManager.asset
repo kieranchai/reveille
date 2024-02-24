@@ -10,7 +10,7 @@ TagManager:
   - Food
   - Pickup
   - Terminal
-  - Barrack
+  - Dropoff
   layers:
   - Default
   - TransparentFX
@@ -23,7 +23,7 @@ TagManager:
   - Player
   - Noise
   - Minigame
-  - Hacking Interact
+  - 
   - 
   - 
   - 

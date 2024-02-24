@@ -160,7 +160,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6668983610357067481}
   - component: {fileID: 277304367496054508}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: Interact
   m_TagString: Terminal
   m_Icon: {fileID: 0}
@@ -229,7 +229,7 @@ GameObject:
   - component: {fileID: 8194855452162392853}
   - component: {fileID: 7138990281478965944}
   - component: {fileID: 8668979466125777491}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Noise
   m_TagString: Noise
   m_Icon: {fileID: 0}

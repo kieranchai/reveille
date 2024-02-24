@@ -4,37 +4,25 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class UiManager : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
-    private LevelManager levelManager;
-
-    public TextMeshProUGUI timerText;
-    public TextMeshProUGUI barrackAddErrorText;
-
-    private void Start()
-    {
-        levelManager = FindObjectOfType<LevelManager>();
-    }
+    [SerializeField] private TMP_Text levelTimer;
 
     private void Update()
     {
-        EditLevelTimerText();
+        DisplayLevelTime(GameController.instance.currentLevelController.levelTimer);
     }
 
-    public void EditLevelTimerText()
+    void DisplayLevelTime(float timeToDisplay)
     {
-        timerText.text = "Timer: " + levelManager.currentTime.ToString("0") + " sec";
-
-        if (levelManager.currentTime <= 60f)
-        {
-            timerText.color = Color.red; // display time in red if < 60s
-        }
+        timeToDisplay += 1;
+        float minutes = Mathf.FloorToInt(timeToDisplay / 60);
+        float seconds = Mathf.FloorToInt(timeToDisplay % 60);
+        levelTimer.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
-    public IEnumerator BarrackAddErrorText()
+    public void DisplayAlertDropOffFull()
     {
-        barrackAddErrorText.gameObject.SetActive(true);
-        yield return new WaitForSeconds(1f);
-        barrackAddErrorText.gameObject.SetActive(false);
+
     }
 }
