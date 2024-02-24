@@ -166,13 +166,18 @@ MonoBehaviour:
   currentPathingTarget: {x: 0, y: 0, z: 0}
   patrolPoints: []
   currentPatrolPoint: 0
+  playerSeenTimer: 0
+  confusedTimer: 0
   chaseTimer: 0
-  sentryTimer: 0
+  predictTimer: 0
+  alertTimer: 0
   blockedLayers:
     serializedVersion: 2
     m_Bits: 128
   pfFieldOfView: {fileID: 1993779790705325113, guid: 19555dd9e7dd10a41b209ebc1e82bf80, type: 3}
   currentState: 0
+  isTurning: 0
+  rotationTime: 0
 --- !u!195 &663790775363712397
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -192,6 +197,6 @@ NavMeshAgent:
   m_AutoBraking: 0
   m_AutoRepath: 1
   m_Height: 0.41
-  m_BaseOffset: 0.205
+  m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4

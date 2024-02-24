@@ -1,10 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
-/*using static EnemyScript;*/
 
 public class EnemyScript : MonoBehaviour
 {
@@ -29,7 +26,6 @@ public class EnemyScript : MonoBehaviour
     private Quaternion finalRotation;
     private Vector3 playerLastSeenPosition;
     public List<Transform> patrolPoints = new List<Transform>();
-    private bool hasSetNextPatrol;
     public int currentPatrolPoint;
     public float playerSeenTimer;
     public float confusedTimer;
@@ -47,6 +43,8 @@ public class EnemyScript : MonoBehaviour
         CHASE
     };
     public ENEMY_STATE currentState = ENEMY_STATE.PATROL;
+    public bool isTurning = false;
+    public float rotationTime;
     #endregion
 
     private void Awake()
@@ -108,25 +106,40 @@ public class EnemyScript : MonoBehaviour
     {
         _agent.speed = walkSpeed;
 
-        transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
+        // Face target only when not turning
+        if (!isTurning) transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
 
         // If at current patrol point, set and go towards next patrol point
-        if (_agent.remainingDistance <= _agent.stoppingDistance && !hasSetNextPatrol)
+        if (_agent.remainingDistance <= _agent.stoppingDistance)
         {
-            hasSetNextPatrol = true;
-            SetNextPatrolPoint();
-            currentPathingTarget = patrolPoints[currentPatrolPoint].position;
-            _agent.SetDestination(currentPathingTarget);
+            // Immediately set next patrol point then set turning true
+            if (!isTurning) SetNextPatrolPoint();
+            isTurning = true;
+
+            if (isTurning)
+            {
+                // Stop the enemy movement when turning
+                _agent.ResetPath();
+
+                if (RotateToNextPoint(patrolPoints[currentPatrolPoint].position))
+                {
+                    ResetRotationVariables();
+
+                    // Go to next pathing target
+                    currentPathingTarget = patrolPoints[currentPatrolPoint].position;
+                    _agent.SetDestination(currentPathingTarget);
+                }
+            }
         }
 
         // If see player, become confused "Huh?!"
         if (PlayerInSight())
         {
+            ResetRotationVariables();
             UpdatePlayerLastSeenPosition();
             currentPathingTarget = playerLastSeenPosition;
             _agent.ResetPath();
             currentState = ENEMY_STATE.CONFUSED;
-
         }
     }
 
@@ -158,7 +171,7 @@ public class EnemyScript : MonoBehaviour
     {
         _agent.speed = walkSpeed;
 
-        transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
+        transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
         _agent.SetDestination(currentPathingTarget);
 
         // If at current target, look around
@@ -198,8 +211,6 @@ public class EnemyScript : MonoBehaviour
             predictTimer = 0.0f;
 
             currentPathingTarget = PlayerManager.instance.CurrentPosition();
-            transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
-            _agent.SetDestination(currentPathingTarget);
         }
         // If not, start going to player's predicted path
         else
@@ -226,10 +237,10 @@ public class EnemyScript : MonoBehaviour
                 currentPathingTarget = predictedPosition;
                 predictTimer = 0.0f;
             }
-
-            transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
-            _agent.SetDestination(currentPathingTarget);
         }
+
+        transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
+        _agent.SetDestination(currentPathingTarget);
 
         // If player not in sight for 5 seconds, look around
         if (chaseTimer >= 5.0f)
@@ -256,7 +267,6 @@ public class EnemyScript : MonoBehaviour
     {
         ++currentPatrolPoint;
         if (currentPatrolPoint > patrolPoints.Count - 1) currentPatrolPoint = 0;
-        hasSetNextPatrol = false;
     }
 
     public void FovPos()
@@ -290,45 +300,31 @@ public class EnemyScript : MonoBehaviour
         playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
     }
 
-    /*IEnumerator RotateToNextPathingTarget(Vector3 nextPathingTarget, string returnState)
+    public bool RotateToNextPoint(Vector3 nextPoint)
     {
-        // Stop enemy from moving
-        _agent.ResetPath();
-
         // Calculate angle between next pathing target and current position
-        float angle = Mathf.Atan2((nextPathingTarget - transform.position).y, (nextPathingTarget - transform.position).x) * Mathf.Rad2Deg;
+        float angle = Mathf.Atan2((nextPoint - transform.position).y, (nextPoint - transform.position).x) * Mathf.Rad2Deg;
         finalRotation = Quaternion.AngleAxis(angle - 90.0f, Vector3.forward);
+        rotationTime += Time.deltaTime * 0.5f;
 
         // Lerp enemy's rotation to to next pathing target
-        while (Quaternion.Angle(transform.rotation, finalRotation) > 1.0f)
+        transform.rotation = Quaternion.Lerp(transform.rotation, finalRotation, rotationTime);
+
+        // Once rotation complete return true
+        if (Quaternion.Angle(transform.rotation, finalRotation) <= 0.0f)
         {
-            transform.rotation = Quaternion.Lerp(transform.rotation, finalRotation, 3.0f * Time.deltaTime);
-            yield return null;
+            return true;
         }
 
-        // Once lerp completed, set currentPathingTarget to next pathing target and move enemy there
-        currentPathingTarget = nextPathingTarget;
-        _agent.SetDestination(currentPathingTarget);
+        return false;
+    }
 
-        // Return enemy back to the state it was in before turning
-        switch (returnState)
-        {
-            case "PATROL":
-                currentState = ENEMY_STATE.PATROL;
-                break;
-            case "ALERTED":
-                currentState = ENEMY_STATE.ALERTED;
-                break;
-            case "CHASE":
-                currentState = ENEMY_STATE.CHASE;
-                break;
-            case "SENTRY":
-                currentState = ENEMY_STATE.SENTRY;
-                break;
-            default:
-                break;
-        }
-    }*/
+    public void ResetRotationVariables()
+    {
+        // Reset rotation time and set turning false
+        rotationTime = 0.0f;
+        isTurning = false;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -351,6 +347,8 @@ public class EnemyScript : MonoBehaviour
             // If hear noise when patrolling, get confused for 1 second
             if (currentState == ENEMY_STATE.PATROL)
             {
+                ResetRotationVariables();
+
                 alertTimer = 0.0f;
                 currentPathingTarget = collision.gameObject.transform.position;
                 _agent.ResetPath();
