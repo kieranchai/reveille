@@ -146,52 +146,83 @@ public class EnemyScript : MonoBehaviour
     private void ConfusedState()
     {
         _agent.speed = walkSpeed;
-
-        transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
-
         confusedTimer += Time.deltaTime;
 
-        // After confused for 1 second, go to alerted
-        if (confusedTimer >= 1.0f)
+        isTurning = true;
+        if (isTurning)
         {
-            confusedTimer = 0.0f;
-            currentState = ENEMY_STATE.ALERTED;
+            if (RotateToNextPoint(currentPathingTarget))
+            {
+                // After confused for 1 second, go to alerted
+                if (confusedTimer >= 1.0f)
+                {
+                    ResetRotationVariables();
+                    confusedTimer = 0.0f;
+                    currentState = ENEMY_STATE.ALERTED;
+                }
+
+                // If confused but still see player after 0.5 second, start chasing "HEY!"
+                if (PlayerInSight() && confusedTimer >= 0.5f)
+                {
+                    ResetRotationVariables();
+                    confusedTimer = 0.0f;
+                    currentState = ENEMY_STATE.CHASE;
+                }
+            }
         }
 
-        // If confused but still see player after 0.5 second, start chasing "HEY!"
-        if (PlayerInSight() && confusedTimer >= 0.5f)
-        {
-            confusedTimer = 0.0f;
-            currentState = ENEMY_STATE.CHASE;
-        }
-
+        if (!isTurning) transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
     }
 
     private void AlertState()
     {
         _agent.speed = walkSpeed;
 
-        transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
-        _agent.SetDestination(currentPathingTarget);
+        if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
+        if (!isTurning) _agent.SetDestination(currentPathingTarget);
 
-        // If at current target, look around
+        if (isTurning && _agent.remainingDistance > _agent.stoppingDistance)
+        {
+            // Stop the enemy movement when turning
+            _agent.ResetPath();
+
+            if (RotateToNextPoint(currentPathingTarget))
+            {
+                ResetRotationVariables();
+            }
+        }
+
+        // At current target
         if (_agent.remainingDistance <= _agent.stoppingDistance)
         {
             alertTimer += Time.deltaTime;
+            // Look around
 
-            // After looking around for 1 second, go back to patrolling
+            // Go back to patrolling
             if (alertTimer >= 1.0f)
             {
-                alertTimer = 0.0f;
+                isTurning = true;
                 currentPathingTarget = patrolPoints[currentPatrolPoint].position;
-                _agent.SetDestination(currentPathingTarget);
-                currentState = ENEMY_STATE.PATROL;
+                if (isTurning)
+                {
+                    // Stop the enemy movement when turning
+                    _agent.ResetPath();
+
+                    if (RotateToNextPoint(currentPathingTarget))
+                    {
+                        alertTimer = 0.0f;
+                        ResetRotationVariables();
+                        _agent.SetDestination(currentPathingTarget);
+                        currentState = ENEMY_STATE.PATROL;
+                    }
+                }
             }
         }
 
         // If see player, start chasing player
         if (PlayerInSight())
         {
+            ResetRotationVariables();
             alertTimer = 0.0f;
             UpdatePlayerLastSeenPosition();
             currentState = ENEMY_STATE.CHASE;
@@ -201,6 +232,9 @@ public class EnemyScript : MonoBehaviour
     private void ChaseState()
     {
         _agent.speed = runSpeed;
+
+        if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
+        if (!isTurning) _agent.SetDestination(currentPathingTarget);
 
         // If see player, start chasing player
         if (PlayerInSight())
@@ -218,7 +252,9 @@ public class EnemyScript : MonoBehaviour
             chaseTimer += Time.deltaTime;
             predictTimer += Time.deltaTime;
 
-            // Predict player's path from last seen position every 1 second
+            // Method 1: Go to player's position every 2 second?
+
+            // Method 2: Predict player's path from last seen position every 1 second
             if (predictTimer >= 1.0f)
             {
                 float timeToPlayer = Vector3.Distance(PlayerManager.instance.CurrentPosition(), transform.position) / _agent.speed;
@@ -239,25 +275,34 @@ public class EnemyScript : MonoBehaviour
             }
         }
 
-        transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
-        _agent.SetDestination(currentPathingTarget);
-
         // If player not in sight for 5 seconds, look around
         if (chaseTimer >= 5.0f)
         {
             _agent.ResetPath();
 
-            // After looking around for 1 second, go back to patrolling
+            // Look around
+
+            // Go back to patrolling
             alertTimer += Time.deltaTime;
             if (alertTimer >= 1.0f)
             {
-                alertTimer = 0.0f;
-                chaseTimer = 0.0f;
-                predictTimer = 0.0f;
-
+                isTurning = true;
                 currentPathingTarget = patrolPoints[currentPatrolPoint].position;
-                _agent.SetDestination(currentPathingTarget);
-                currentState = ENEMY_STATE.PATROL;
+                if (isTurning)
+                {
+                    // Stop the enemy movement when turning
+                    _agent.ResetPath();
+
+                    if (RotateToNextPoint(currentPathingTarget))
+                    {
+                        alertTimer = 0.0f;
+                        chaseTimer = 0.0f;
+                        predictTimer = 0.0f;
+                        ResetRotationVariables();
+                        _agent.SetDestination(currentPathingTarget);
+                        currentState = ENEMY_STATE.PATROL;
+                    }
+                }
             }
         }
     }
@@ -305,10 +350,13 @@ public class EnemyScript : MonoBehaviour
         // Calculate angle between next pathing target and current position
         float angle = Mathf.Atan2((nextPoint - transform.position).y, (nextPoint - transform.position).x) * Mathf.Rad2Deg;
         finalRotation = Quaternion.AngleAxis(angle - 90.0f, Vector3.forward);
-        rotationTime += Time.deltaTime * 0.5f;
+        rotationTime += Time.deltaTime * 0.3f;
 
-        // Lerp enemy's rotation to to next pathing target
-        transform.rotation = Quaternion.Lerp(transform.rotation, finalRotation, rotationTime);
+        // Method 1: Lerp enemy's rotation to to next pathing target
+        /*transform.rotation = Quaternion.Lerp(transform.rotation, finalRotation, rotationTime);*/
+
+        // Method 2: Lerp enemy's transform.up to vector towards next pathing target
+        transform.up = Vector3.Lerp(transform.up, new Vector3((nextPoint - transform.position).normalized.x, (nextPoint - transform.position).normalized.y, 0), rotationTime);
 
         // Once rotation complete return true
         if (Quaternion.Angle(transform.rotation, finalRotation) <= 0.0f)
@@ -339,6 +387,9 @@ public class EnemyScript : MonoBehaviour
             // If hear noise when alerted, stay alerted but go to new noise position 
             if (currentState == ENEMY_STATE.ALERTED)
             {
+                ResetRotationVariables();
+                isTurning = true;
+
                 alertTimer = 0.0f;
                 currentPathingTarget = collision.gameObject.transform.position;
                 currentState = ENEMY_STATE.ALERTED;
