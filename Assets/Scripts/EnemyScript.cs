@@ -31,7 +31,6 @@ public class EnemyScript : MonoBehaviour
     public float confusedTimer;
     public float chaseTimer;
     public float predictTimer;
-    public float alertTimer;
     public LayerMask blockedLayers;
     [SerializeField] private Transform pfFieldOfView; // fov prefab
     private FieldOfView fov;
@@ -233,7 +232,6 @@ public class EnemyScript : MonoBehaviour
         if (PlayerInSight())
         {
             ResetRotationVariables();
-            alertTimer = 0.0f;
             UpdatePlayerLastSeenPosition();
             currentState = ENEMY_STATE.CHASE;
         }
@@ -288,28 +286,31 @@ public class EnemyScript : MonoBehaviour
         // If player not in sight for 5 seconds, look around
         if (chaseTimer >= 5.0f)
         {
-            _agent.ResetPath();
+            _agent.isStopped = true;
 
-            // Look around
-
-            // Go back to patrolling
-            alertTimer += Time.deltaTime;
-            if (alertTimer >= 1.0f)
+            if (!isDoneLooking)
             {
+                if (LookAround())
+                {
+                    isDoneLooking = true;
+                    rotationTime = 0.0f;
+                }
+            }
+
+            if (isDoneLooking)
+            {
+                // Go back to patrolling
                 isTurning = true;
                 currentPathingTarget = patrolPoints[currentPatrolPoint].position;
                 if (isTurning)
                 {
-                    // Stop the enemy movement when turning
-                    _agent.ResetPath();
-
                     if (RotateToNextPoint(currentPathingTarget))
                     {
-                        alertTimer = 0.0f;
                         chaseTimer = 0.0f;
                         predictTimer = 0.0f;
                         ResetRotationVariables();
                         _agent.SetDestination(currentPathingTarget);
+                        _agent.isStopped = false;
                         currentState = ENEMY_STATE.PATROL;
                     }
                 }
@@ -458,7 +459,6 @@ public class EnemyScript : MonoBehaviour
                 ResetRotationVariables();
                 isTurning = true;
 
-                alertTimer = 0.0f;
                 currentPathingTarget = collision.gameObject.transform.position;
                 currentState = ENEMY_STATE.ALERTED;
             }
@@ -468,7 +468,6 @@ public class EnemyScript : MonoBehaviour
             {
                 ResetRotationVariables();
 
-                alertTimer = 0.0f;
                 currentPathingTarget = collision.gameObject.transform.position;
                 _agent.ResetPath();
                 currentState = ENEMY_STATE.CONFUSED;
