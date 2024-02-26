@@ -44,6 +44,14 @@ public class EnemyScript : MonoBehaviour
     };
     public ENEMY_STATE currentState = ENEMY_STATE.PATROL;
     public bool isTurning = false;
+    public bool isDoneLooking = false;
+    private bool isLookingLeft = true;
+    private bool isLookingRight = false;
+    private bool isLookingRightR = false;
+    private bool hasSetLookDirections = false;
+    private Vector3 initialUp;
+    private Vector3 initialLeft;
+    private Vector3 initialRight;
     public float rotationTime;
     #endregion
 
@@ -181,7 +189,7 @@ public class EnemyScript : MonoBehaviour
         if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
         if (!isTurning) _agent.SetDestination(currentPathingTarget);
 
-        if (isTurning && _agent.remainingDistance > _agent.stoppingDistance)
+        if (isTurning && !isDoneLooking)
         {
             // Stop the enemy movement when turning
             _agent.ResetPath();
@@ -193,27 +201,29 @@ public class EnemyScript : MonoBehaviour
         }
 
         // At current target
-        if (_agent.remainingDistance <= _agent.stoppingDistance)
+        if (_agent.remainingDistance != 0 && _agent.remainingDistance <= _agent.stoppingDistance)
         {
-            alertTimer += Time.deltaTime;
-            // Look around
-
-            // Go back to patrolling
-            if (alertTimer >= 1.0f)
+            if (!isDoneLooking)
             {
+                if (LookAround())
+                {
+                    isDoneLooking = true;
+                    rotationTime = 0.0f;
+                }
+            }
+
+            if (isDoneLooking)
+            {
+                // Go back to patrolling
                 isTurning = true;
                 currentPathingTarget = patrolPoints[currentPatrolPoint].position;
                 if (isTurning)
                 {
-                    // Stop the enemy movement when turning
-                    _agent.ResetPath();
-
                     if (RotateToNextPoint(currentPathingTarget))
                     {
-                        alertTimer = 0.0f;
-                        ResetRotationVariables();
                         _agent.SetDestination(currentPathingTarget);
                         currentState = ENEMY_STATE.PATROL;
+                        ResetRotationVariables();
                     }
                 }
             }
@@ -350,7 +360,7 @@ public class EnemyScript : MonoBehaviour
         // Calculate angle between next pathing target and current position
         float angle = Mathf.Atan2((nextPoint - transform.position).y, (nextPoint - transform.position).x) * Mathf.Rad2Deg;
         finalRotation = Quaternion.AngleAxis(angle - 90.0f, Vector3.forward);
-        rotationTime += Time.deltaTime * 0.3f;
+        rotationTime += Time.deltaTime * 0.1f;
 
         // Method 1: Lerp enemy's rotation to to next pathing target
         /*transform.rotation = Quaternion.Lerp(transform.rotation, finalRotation, rotationTime);*/
@@ -367,11 +377,69 @@ public class EnemyScript : MonoBehaviour
         return false;
     }
 
+    public bool LookAround()
+    {
+        if (!hasSetLookDirections)
+        {
+            hasSetLookDirections = true;
+            initialUp = new Vector3(transform.up.x, transform.up.y, 0);
+            initialLeft = new Vector3(-transform.right.x, -transform.right.y, 0);
+            initialRight = new Vector3(transform.right.x, transform.right.y, 0);
+        }
+
+        rotationTime += Time.deltaTime * 0.8f;
+
+        if (isLookingLeft) transform.up = Vector3.Lerp(transform.up, initialLeft, rotationTime);
+
+        if (isLookingLeft && Vector3.SqrMagnitude(transform.up - initialLeft) <= 0.001f)
+        {
+            transform.up = initialLeft;
+            rotationTime = 0.0f;
+            isLookingLeft = false;
+            isLookingRight = true;
+        }
+
+        if (isLookingRight)
+        {
+            transform.up = Vector3.Lerp(initialLeft, initialUp, rotationTime);
+        }
+
+        if (isLookingRight && Vector3.SqrMagnitude(transform.up - initialUp) <= 0.001f)
+        {
+            transform.up = initialUp;
+            rotationTime = 0.0f;
+            isLookingLeft = false;
+            isLookingRight = false;
+            isLookingRightR = true;
+        }
+
+        if (isLookingRightR)
+        {
+            transform.up = Vector3.Lerp(initialUp, initialRight, rotationTime);
+        }
+
+        if (isLookingRightR && Vector3.SqrMagnitude(transform.up - initialRight) <= 0.001f)
+        {
+            transform.up = initialRight;
+            return true;
+        }
+
+        return false;
+    }
+
     public void ResetRotationVariables()
     {
         // Reset rotation time and set turning false
         rotationTime = 0.0f;
         isTurning = false;
+        hasSetLookDirections = false;
+        isLookingLeft = true;
+        isLookingRight = false;
+        isLookingRightR = false;
+        initialLeft = Vector3.zero;
+        initialRight = Vector3.zero;
+        initialUp = Vector3.zero;
+        isDoneLooking = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
