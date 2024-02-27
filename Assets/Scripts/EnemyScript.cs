@@ -261,26 +261,28 @@ public class EnemyScript : MonoBehaviour
             predictTimer += Time.deltaTime;
 
             // Method 1: Go to player's position every 2 second?
+            Vector3 predictedPosition = PlayerManager.instance.CurrentPosition() - PlayerManager.instance.CurrentVelocity() * 0.15f;
+            currentPathingTarget = predictedPosition;
 
             // Method 2: Predict player's path from last seen position every 1 second
-            if (predictTimer >= 1.0f)
-            {
-                float timeToPlayer = Vector3.Distance(PlayerManager.instance.CurrentPosition(), transform.position) / _agent.speed;
-                if (timeToPlayer > 0.5f)
-                {
-                    timeToPlayer = 1.0f;
-                }
-                Vector3 predictedPosition = playerLastSeenPosition + PlayerManager.instance.CurrentVelocity() * timeToPlayer;
-                Vector3 directionToTarget = (predictedPosition - transform.position).normalized;
-                Vector3 directionToPlayer = (PlayerManager.instance.CurrentPosition() - transform.position).normalized;
-                float dot = Vector3.Dot(directionToPlayer, directionToTarget);
-                if (dot < 0.4f)
-                {
-                    predictedPosition = PlayerManager.instance.CurrentPosition();
-                }
-                currentPathingTarget = predictedPosition;
-                predictTimer = 0.0f;
-            }
+            /*            if (predictTimer >= 1.0f)
+                        {
+                            float timeToPlayer = Vector3.Distance(PlayerManager.instance.CurrentPosition(), transform.position) / _agent.speed;
+                            if (timeToPlayer > 0.5f)
+                            {
+                                timeToPlayer = 1.0f;
+                            }
+                            Vector3 predictedPosition = playerLastSeenPosition + PlayerManager.instance.CurrentVelocity() * timeToPlayer;
+                            Vector3 directionToTarget = (predictedPosition - transform.position).normalized;
+                            Vector3 directionToPlayer = (PlayerManager.instance.CurrentPosition() - transform.position).normalized;
+                            float dot = Vector3.Dot(directionToPlayer, directionToTarget);
+                            if (dot < 0.4f)
+                            {
+                                predictedPosition = PlayerManager.instance.CurrentPosition();
+                            }
+                            currentPathingTarget = predictedPosition;
+                            predictTimer = 0.0f;
+                        }*/
         }
 
         // If player not in sight for 5 seconds, look around
