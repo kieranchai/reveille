@@ -10,12 +10,12 @@ public class Slot : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Minigame Midring"))
         {
-            minigame.midRing[minigame.counter].GetComponent<SpriteRenderer>().color = Color.red;
+            minigame.midRingList[minigame.counter].GetComponent<SpriteRenderer>().color = Color.red;
             minigame.failed = true;
         }
         else if (collision.gameObject.CompareTag("Minigame Hole"))
         {
-            minigame.midRing[minigame.counter].GetComponent<SpriteRenderer>().color = Color.green;
+            minigame.midRingList[minigame.counter].GetComponent<SpriteRenderer>().color = Color.green;
             minigame.solved = true;
         }
     }

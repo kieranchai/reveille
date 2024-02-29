@@ -40,7 +40,7 @@ public class Terminal : MonoBehaviour
 
     public void StartHacking()
     {
-        minigame = Instantiate(Resources.Load<GameObject>("Prefabs/Minigame"), transform.position, Quaternion.identity);
+        minigame = Instantiate(Resources.Load<GameObject>("Prefabs/Minigame"), Camera.main.transform.GetChild(0).position, Quaternion.identity);
         minigame.GetComponent<Minigame>().Initialise(speed, rings);
     }
 

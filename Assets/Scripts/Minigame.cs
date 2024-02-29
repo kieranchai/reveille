@@ -8,6 +8,7 @@ public class Minigame : MonoBehaviour
     public GameObject slot;
     public GameObject startPos;
     public GameObject targetPos;
+    public GameObject midRingPrefab;
 
     [Header("Terminal Variables")]
     public int speed;
@@ -16,7 +17,7 @@ public class Minigame : MonoBehaviour
     [Header("Attributes")]
     public bool rotating;
     public GameObject activeRing;
-    public List<GameObject> midRing = new List<GameObject>();
+    public List<GameObject> midRingList = new List<GameObject>();
     public int counter;
     public bool solved; //based on slot
     public bool failed; //based on slot
@@ -66,17 +67,16 @@ public class Minigame : MonoBehaviour
 
     public void CreatingRings()
     {
-        if (rings <= 1) return;
-
-        for (int i = 1; i < rings; i++)
+        for (int i = 0; i < rings; i++)
         {
-            GameObject newRing = Instantiate(midRing[0], transform);
-            float scale = i == 1 ? 0.75f : 0.5f; //fixed operation
-            int randNum = Random.Range(0, 346);
+            GameObject newRing = Instantiate(midRingPrefab, transform);
 
+            float scale = i == 0 ? 1.0f : (i == 1 ? 0.75f : 0.5f); //fixed operation up to 3
+            int randNum = Random.Range(0, 346);
             newRing.transform.localScale = new Vector3(scale, scale, scale);
             newRing.transform.Rotate(0, 0, randNum);
-            midRing.Add(newRing);
+
+            midRingList.Add(newRing);
         }
     }
 
@@ -106,12 +106,12 @@ public class Minigame : MonoBehaviour
         }
         else if (solved)
         {
-            midRing[counter].gameObject.SetActive(false);
+            midRingList[counter].gameObject.SetActive(false);
             ++counter;
             solved = false;
 
             //check if got another ring
-            if (counter != midRing.Count)
+            if (counter != midRingList.Count)
             {
                 //make the ring scale smaller/ move positions closer
                 Vector3 scaleChange = new Vector3(0.25f, 0.25f, 0f);
