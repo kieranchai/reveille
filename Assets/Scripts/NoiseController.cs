@@ -29,6 +29,13 @@ public class NoiseController : MonoBehaviour
         lerpSpeed = 1.0f * Time.deltaTime;
     }
 
+    public void ResetNoise()
+    {
+        _transform.localScale = Vector3.zero;
+        _collider.enabled = false;
+        currentNoiseScale = _transform.localScale;
+    }
+
     public void UpdateNoiseRadius(float radiusMultiplier)
     {
         _collider.enabled = true;
@@ -91,13 +98,15 @@ public class NoiseController : MonoBehaviour
                 yield return null;
             }
             _transform.localScale = Vector3.zero;
-            _collider.enabled = false;
         }
+        _collider.enabled = false;
     }
 
     public IEnumerator ProduceNoiseInfinitely()
     {
         _collider.enabled = true;
+        float noiseShrinkTime, noiseShrinkDuration, noiseShrinkLerpSpeed;
+
         while (!isDeactivated)
         {
             float noiseSpreadTime = 0.0f;
@@ -110,19 +119,21 @@ public class NoiseController : MonoBehaviour
                 _transform.localScale = currentNoiseScale;
                 yield return null;
             }
+
+            noiseShrinkTime = 0.0f;
+            noiseShrinkDuration = 0.1f;
+            noiseShrinkLerpSpeed = 9.0f * Time.deltaTime;
+            while (noiseShrinkTime < noiseShrinkDuration)
+            {
+                noiseShrinkTime += Time.deltaTime;
+                currentNoiseScale = Vector3.Lerp(currentNoiseScale, Vector3.zero, noiseShrinkLerpSpeed);
+                _transform.localScale = currentNoiseScale;
+                yield return null;
+            }
+            _transform.localScale = Vector3.zero;
         }
 
-        float noiseShrinkTime = 0.0f;
-        float noiseShrinkDuration = 0.1f;
-        float noiseShrinkLerpSpeed = 9.0f * Time.deltaTime;
-        while (noiseShrinkTime < noiseShrinkDuration)
-        {
-            noiseShrinkTime += Time.deltaTime;
-            currentNoiseScale = Vector3.Lerp(currentNoiseScale, Vector3.zero, noiseShrinkLerpSpeed);
-            _transform.localScale = currentNoiseScale;
-            yield return null;
-        }
-        _collider.enabled = false;
+        yield return StopNoise();
     }
 
     public IEnumerator StopNoise()

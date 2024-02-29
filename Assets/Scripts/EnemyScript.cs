@@ -12,6 +12,7 @@ public class EnemyScript : MonoBehaviour
     private Collider2D _collider;
     public Enemy _data;
     private NavMeshAgent _agent;
+    private NoiseController _noiseController;
 
     // Default Data
     private int id;
@@ -22,15 +23,14 @@ public class EnemyScript : MonoBehaviour
     private float fieldOfView;
 
     // Dynamic Data
-    public Vector3 currentPathingTarget;
+    private Vector3 currentPathingTarget;
     private Quaternion finalRotation;
     private Vector3 playerLastSeenPosition;
     public List<Transform> patrolPoints = new List<Transform>();
-    public int currentPatrolPoint;
-    public float playerSeenTimer;
-    public float confusedTimer;
-    public float chaseTimer;
-    public float predictTimer;
+    private int currentPatrolPoint;
+    private float confusedTimer;
+    private float chaseTimer;
+    private float predictTimer;
     public LayerMask blockedLayers;
     [SerializeField] private Transform pfFieldOfView; // fov prefab
     private FieldOfView fov;
@@ -39,11 +39,13 @@ public class EnemyScript : MonoBehaviour
         PATROL,
         ALERTED,
         CONFUSED,
-        CHASE
+        CHASE,
+        CCTV,
+        CCTV_TARGET
     };
-    public ENEMY_STATE currentState = ENEMY_STATE.PATROL;
-    public bool isTurning = false;
-    public bool isDoneLooking = false;
+    public ENEMY_STATE currentState;
+    private bool isTurning = false;
+    private bool isDoneLooking = false;
     private bool isLookingLeft = true;
     private bool isLookingRight = false;
     private bool isLookingRightR = false;
@@ -51,23 +53,33 @@ public class EnemyScript : MonoBehaviour
     private Vector3 initialUp;
     private Vector3 initialLeft;
     private Vector3 initialRight;
-    public float rotationTime;
+    private Vector3 initialRotation;
+    private Vector3 transitionRotation;
+    private float rotationTime;
     #endregion
 
     private void Awake()
     {
-        _rigidBody = GetComponent<Rigidbody2D>();
-        _collider = GetComponent<Collider2D>();
-        _agent = GetComponent<NavMeshAgent>();
-        _agent.updateRotation = false;
-        _agent.updateUpAxis = false;
+        if (currentState != ENEMY_STATE.CCTV)
+        {
+            _rigidBody = GetComponent<Rigidbody2D>();
+            _collider = GetComponent<Collider2D>();
+            _agent = GetComponent<NavMeshAgent>();
+            _agent.updateRotation = false;
+            _agent.updateUpAxis = false;
+        }
+        else _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
     }
 
     private void Start()
     {
         SetEnemyData(_data);
-        currentPathingTarget = patrolPoints[currentPatrolPoint].position;
-        _agent.SetDestination(currentPathingTarget);
+        if (currentState != ENEMY_STATE.CCTV)
+        {
+            currentPathingTarget = patrolPoints[currentPatrolPoint].position;
+            _agent.SetDestination(currentPathingTarget);
+        }
+        else initialRotation = transform.eulerAngles;
     }
 
     private void Update()
@@ -86,6 +98,12 @@ public class EnemyScript : MonoBehaviour
             case ENEMY_STATE.CHASE:
                 ChaseState();
                 break;
+            case ENEMY_STATE.CCTV:
+                CCTVScanState();
+                break;
+            case ENEMY_STATE.CCTV_TARGET:
+                CCTVTargetState();
+                break;
             default:
                 break;
         }
@@ -101,7 +119,7 @@ public class EnemyScript : MonoBehaviour
         this.walkSpeed = data.walkSpeed;
         this.runSpeed = data.runSpeed;
 
-        _agent.speed = this.walkSpeed;
+        if (currentState != ENEMY_STATE.CCTV) _agent.speed = this.walkSpeed;
 
         fov = Instantiate(pfFieldOfView, null).GetComponent<FieldOfView>();
         fov.SetFOV(fieldOfView);
@@ -114,7 +132,7 @@ public class EnemyScript : MonoBehaviour
         _agent.speed = walkSpeed;
 
         // Face target only when not turning
-        if (!isTurning) transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
+        if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
 
         // If at current patrol point, set and go towards next patrol point
         if (_agent.remainingDistance <= _agent.stoppingDistance)
@@ -178,7 +196,7 @@ public class EnemyScript : MonoBehaviour
             }
         }
 
-        if (!isTurning) transform.up = currentPathingTarget - new Vector3(transform.position.x, transform.position.y);
+        if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
     }
 
     private void AlertState()
@@ -319,6 +337,42 @@ public class EnemyScript : MonoBehaviour
             }
         }
     }
+
+    private void CCTVScanState()
+    {
+        Quaternion targetRotation = Quaternion.Euler(initialRotation.x, initialRotation.y, 70 * Mathf.Sin(Time.time * 0.8f) + initialRotation.z);
+        transform.localRotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime * 90f);
+
+        if (PlayerInSight())
+        {
+            playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
+            currentState = ENEMY_STATE.CCTV_TARGET;
+            _noiseController.isDeactivated = false;
+            StartCoroutine(_noiseController.ProduceNoiseInfinitely());
+            confusedTimer = 0.0f;
+        }
+    }
+
+    private void CCTVTargetState()
+    {
+        if (PlayerInSight())
+        {
+            playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
+            transform.up = new Vector3(playerLastSeenPosition.x, playerLastSeenPosition.y) - new Vector3(transform.position.x, transform.position.y);
+        }
+        else
+        {
+            chaseTimer += Time.deltaTime;
+            transform.up = new Vector3(playerLastSeenPosition.x, playerLastSeenPosition.y) - new Vector3(transform.position.x, transform.position.y);
+
+            if (chaseTimer >= 1.0f)
+            {
+                currentState = ENEMY_STATE.CCTV;
+                _noiseController.isDeactivated = true;
+                chaseTimer = 0.0f;
+            }
+        }
+    }
     #endregion
 
     private void SetNextPatrolPoint()
@@ -447,6 +501,9 @@ public class EnemyScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // CCTV doesn't react to noise
+        if (currentState == ENEMY_STATE.CCTV) return;
+
         if (collision.gameObject.CompareTag("Noise"))
         {
             // If currently chasing player, don't get confused
@@ -479,6 +536,9 @@ public class EnemyScript : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // CCTV doesn't react to player collision
+        if (currentState == ENEMY_STATE.CCTV) return;
+
         if (collision.gameObject.CompareTag("Player"))
         {
             Debug.Log("Game Over!");

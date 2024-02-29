@@ -76,7 +76,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 4
+  m_SortingOrder: 2
   m_Sprite: {fileID: 1040264952, guid: 3b7733d2aed390e46ad91f7ec21d426a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -163,21 +163,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 655871379fb72c4478e3422346b3ff67, type: 2}
-  currentPathingTarget: {x: 0, y: 0, z: 0}
   patrolPoints: []
-  currentPatrolPoint: 0
-  playerSeenTimer: 0
-  confusedTimer: 0
-  chaseTimer: 0
-  predictTimer: 0
-  alertTimer: 0
   blockedLayers:
     serializedVersion: 2
     m_Bits: 128
   pfFieldOfView: {fileID: 1993779790705325113, guid: 19555dd9e7dd10a41b209ebc1e82bf80, type: 3}
   currentState: 0
-  isTurning: 0
-  rotationTime: 0
 --- !u!195 &663790775363712397
 NavMeshAgent:
   m_ObjectHideFlags: 0

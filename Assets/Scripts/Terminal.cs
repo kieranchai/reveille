@@ -11,7 +11,6 @@ public class Terminal : MonoBehaviour
 
     [Header("Unlocks")]
     public GameObject door;
-    public GameObject cctv;
 
     [Header("Minigame Difficulty")]
     public int speed;
@@ -65,17 +64,14 @@ public class Terminal : MonoBehaviour
             //door.GetComponent<BoxCollider2D>().enabled = false;
             //animate door
         }
-
-        if (cctv)
-        {
-            //disable cctv temporarily here
-        }
     }
 
     private void SoundAlarm()
     {
         if (!playedAlertSound)
         {
+            StopAllCoroutines();
+            _noiseController.ResetNoise();
             playedAlertSound = true;
             StartCoroutine(_noiseController.ProduceNoiseMultiple(8));
         }

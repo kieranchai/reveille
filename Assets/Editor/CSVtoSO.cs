@@ -74,7 +74,7 @@ public class CSVtoSO
             enemy.walkSpeed = float.Parse(splitData[2]);
             enemy.runSpeed = float.Parse(splitData[3]);
             enemy.lineOfSight = float.Parse(splitData[4]);
-            enemy.lineOfSight = float.Parse(splitData[5]);
+            enemy.fieldOfView = float.Parse(splitData[5]);
             AssetDatabase.CreateAsset(enemy, $"Assets/Resources/Data/Enemy/{enemy.id}.asset");
         }
         AssetDatabase.SaveAssets();
