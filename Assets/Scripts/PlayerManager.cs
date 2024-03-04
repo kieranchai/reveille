@@ -14,6 +14,7 @@ public class PlayerManager : MonoBehaviour
     private NoiseController _noiseController;
     private LineRenderer _lineRenderer;
     public Player _data;
+    public Animator _anim;
 
     // Default Data
     private float baseMovementSpeed;
@@ -63,6 +64,7 @@ public class PlayerManager : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
         _lineRenderer = GetComponent<LineRenderer>();
+        _anim = GetComponent<Animator>();
     }
 
     private void Start()
@@ -75,7 +77,11 @@ public class PlayerManager : MonoBehaviour
         switch (currentState)
         {
             case PLAYER_STATE.STILL:
+                // _anim.SetBool("isWalking", false);
+                // break;
             case PLAYER_STATE.WALKING:
+                // _anim.SetBool("isWalking", true);
+                // break;
             case PLAYER_STATE.SPRINTING:
             case PLAYER_STATE.SNEAKING:
                 UpdateNoiseRadius();
@@ -97,7 +103,7 @@ public class PlayerManager : MonoBehaviour
     {
         switch (currentState)
         {
-            case PLAYER_STATE.STILL:
+            case PLAYER_STATE.STILL:    
             case PLAYER_STATE.WALKING:
             case PLAYER_STATE.SPRINTING:
             case PLAYER_STATE.SNEAKING:
@@ -128,6 +134,7 @@ public class PlayerManager : MonoBehaviour
         // Player not moving
         if (moveX == 0f && moveY == 0f)
         {
+            _anim.SetBool("isWalking", false);
             currentState = PLAYER_STATE.STILL;
             movementSpeedMultiplier = 1.0f;
             noiseSizeMultiplier = 0.0f;
@@ -137,6 +144,7 @@ public class PlayerManager : MonoBehaviour
             // Player press SHIFT to Sprint
             if (Input.GetKey(KeyCode.LeftShift))
             {
+                _anim.speed = 1.5f;
                 currentState = PLAYER_STATE.SPRINTING;
                 movementSpeedMultiplier = 1.5f;
                 noiseSizeMultiplier = 1.5f;
@@ -144,6 +152,7 @@ public class PlayerManager : MonoBehaviour
             // Player press CTRL to Sneak
             else if (Input.GetKey(KeyCode.LeftControl))
             {
+                _anim.speed = 0.5f;
                 currentState = PLAYER_STATE.SNEAKING;
                 movementSpeedMultiplier = 0.5f;
                 noiseSizeMultiplier = 0.5f;
@@ -151,6 +160,7 @@ public class PlayerManager : MonoBehaviour
             // Player moving normally
             else
             {
+                _anim.SetBool("isWalking", true);
                 currentState = PLAYER_STATE.WALKING;
                 movementSpeedMultiplier = 1.0f;
                 noiseSizeMultiplier = 1.0f;
