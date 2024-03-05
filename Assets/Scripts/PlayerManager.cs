@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -77,11 +78,11 @@ public class PlayerManager : MonoBehaviour
         switch (currentState)
         {
             case PLAYER_STATE.STILL:
-                // _anim.SetBool("isWalking", false);
-                // break;
+            // _anim.SetBool("isWalking", false);
+            // break;
             case PLAYER_STATE.WALKING:
-                // _anim.SetBool("isWalking", true);
-                // break;
+            // _anim.SetBool("isWalking", true);
+            // break;
             case PLAYER_STATE.SPRINTING:
             case PLAYER_STATE.SNEAKING:
                 UpdateNoiseRadius();
@@ -103,7 +104,7 @@ public class PlayerManager : MonoBehaviour
     {
         switch (currentState)
         {
-            case PLAYER_STATE.STILL:    
+            case PLAYER_STATE.STILL:
             case PLAYER_STATE.WALKING:
             case PLAYER_STATE.SPRINTING:
             case PLAYER_STATE.SNEAKING:
@@ -228,9 +229,6 @@ public class PlayerManager : MonoBehaviour
         {
             initialChargeTime = Time.time;
             isCharging = true;
-            _lineRenderer.enabled = true;
-            _lineRenderer.positionCount = 1;
-            _lineRenderer.SetPosition(0, Vector3.zero);
         }
 
         if (Input.GetMouseButton(0))
@@ -240,6 +238,7 @@ public class PlayerManager : MonoBehaviour
                 initialChargeTime = Time.time;
                 isCharging = true;
             }
+            _lineRenderer.enabled = true;
             _lineRenderer.positionCount = 2;
 
             int mask1 = 1 << LayerMask.NameToLayer("Obstacles");
@@ -249,11 +248,13 @@ public class PlayerManager : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.up, CalculateThrowRange(), mask1);
             if (hit.collider != null)
             {
+                _lineRenderer.SetPosition(0, Vector3.zero);
                 _lineRenderer.SetPosition(1, transform.InverseTransformPoint(hit.point));
             }
             else
             {
-                _lineRenderer.SetPosition(1, new Vector3(0, (0 + CalculateThrowRange()) / 2));
+                _lineRenderer.SetPosition(0, Vector3.zero);
+                _lineRenderer.SetPosition(1, transform.InverseTransformPoint(GetFinalThrowPosition()));
             }
         }
 
@@ -330,6 +331,7 @@ public class PlayerManager : MonoBehaviour
     public void PickUpNearestFood()
     {
         AddFoodToInventory(nearbyFood[0].GetComponent<FoodManager>()._data);
+        Destroy(nearbyFood[0].GetComponent<FoodManager>().myPopUp);
         Destroy(nearbyFood[0]);
         //Nearest Food is removed from nearbyFood in FoodManager OnTriggerExit
     }
@@ -359,6 +361,12 @@ public class PlayerManager : MonoBehaviour
         float finalRange = Mathf.Lerp(minRange, maxRange, (totalChargeTime - minChargeTime) / (maxChargeTime - minChargeTime));
 
         return finalRange;
+    }
+
+    public Vector3 GetFinalThrowPosition()
+    {
+        Vector3 finalPosition = transform.position + transform.up * (CalculateThrowRange() + 0.2f);
+        return finalPosition;
     }
 
     public void DropFood()

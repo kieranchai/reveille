@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class FoodManager : MonoBehaviour
@@ -26,6 +27,8 @@ public class FoodManager : MonoBehaviour
     public float throwRange = 0.0f;
     private Vector3 initialPosition;
     public Food testData;
+    private bool hasShownPopUp = false;
+    public GameObject myPopUp;
     #endregion
 
     private void Awake()
@@ -55,6 +58,18 @@ public class FoodManager : MonoBehaviour
                 StartCoroutine(_noiseController.ProduceNoiseOnce());
             }
         }
+        else
+        {
+            if (!hasShownPopUp && _rigidBody.velocity.magnitude == 0.0f) ShowPopUp();
+        }
+    }
+
+    public void ShowPopUp()
+    {
+        hasShownPopUp = true;
+        myPopUp = Instantiate(Resources.Load<GameObject>("Prefabs/Food Popup"), transform);
+        myPopUp.transform.Find("Points").gameObject.GetComponent<TMP_Text>().text = $"{this.currentPoints}";
+        myPopUp.transform.Find("Weight").gameObject.GetComponent<TMP_Text>().text = $"{this.weight}g";
     }
 
     // Used only when spawning food from throwing to set their current points
@@ -79,7 +94,8 @@ public class FoodManager : MonoBehaviour
         this.foodName = data.foodName;
         this.tier = data.tier;
         this.maxPoints = data.maxPoints;
-        this.currentPoints = this.maxPoints;
+        data.currentPoints = data.maxPoints;
+        this.currentPoints = data.currentPoints;
         this.weight = data.weight;
         _data = data;
         // Update Food Sprite
