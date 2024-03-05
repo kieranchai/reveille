@@ -8,12 +8,12 @@ public class Slot : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Minigame Midring"))
+        if (minigame.inserted && collision.gameObject.CompareTag("Minigame Midring"))
         {
             minigame.midRingList[minigame.counter].GetComponent<SpriteRenderer>().color = Color.red;
             minigame.failed = true;
         }
-        else if (collision.gameObject.CompareTag("Minigame Hole"))
+        else if (minigame.inserted && !collision.gameObject.CompareTag("Minigame Midring"))
         {
             minigame.midRingList[minigame.counter].GetComponent<SpriteRenderer>().color = Color.green;
             minigame.solved = true;

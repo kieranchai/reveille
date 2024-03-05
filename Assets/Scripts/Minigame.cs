@@ -19,6 +19,7 @@ public class Minigame : MonoBehaviour
     public GameObject activeRing;
     public List<GameObject> midRingList = new List<GameObject>();
     public int counter;
+    public bool inserted;
     public bool solved; //based on slot
     public bool failed; //based on slot
 
@@ -37,6 +38,7 @@ public class Minigame : MonoBehaviour
         rotating = true;
 
         counter = 0;
+        inserted = false;
         solved = false;
         failed = false;
     }
@@ -86,6 +88,8 @@ public class Minigame : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
+            inserted = true;
+
             rotating = false;
             ring.transform.Rotate(0, 0, 0);
             slot.transform.position = Vector2.MoveTowards(startPos.transform.position, targetPos.transform.position, 1000 * Time.deltaTime);
@@ -122,6 +126,7 @@ public class Minigame : MonoBehaviour
                 ring.transform.TransformPoint(startPos.transform.localPosition - posChange);
                 ring.transform.TransformPoint(targetPos.transform.localPosition - posChange);
 
+                inserted = false;
                 rotating = true;
                 currentHackingState = HackState.PLAY;
             }
