@@ -61,6 +61,7 @@ public class EnemyScript : MonoBehaviour
     private Vector3 initialRotation;
     private Vector3 transitionRotation;
     private float rotationTime;
+    private GameObject targetedPulsingNoise;
     #endregion
 
     private void Awake()
@@ -243,10 +244,16 @@ public class EnemyScript : MonoBehaviour
         }
 
         // At current target
-        if (_agent.remainingDistance != 0 && _agent.remainingDistance <= _agent.stoppingDistance)
+        if (_agent.remainingDistance != 0 && _agent.remainingDistance <= _agent.stoppingDistance || _agent.pathStatus == NavMeshPathStatus.PathComplete && _agent.remainingDistance == 0)
         {
             if (!isDoneLooking)
             {
+                if (targetedPulsingNoise)
+                {
+                    targetedPulsingNoise.GetComponent<NoiseController>().isDeactivated = true;
+                    targetedPulsingNoise = null;
+                }
+
                 if (LookAround())
                 {
                     isDoneLooking = true;
@@ -378,8 +385,7 @@ public class EnemyScript : MonoBehaviour
         {
             playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
             currentState = ENEMY_STATE.CCTV_TARGET;
-            _noiseController.isDeactivated = false;
-            StartCoroutine(_noiseController.ProduceNoiseInfinitely());
+            if (!_noiseController.isDeactivated) StartCoroutine(_noiseController.ProduceNoiseTimer());
             confusedTimer = 0.0f;
         }
     }
@@ -393,15 +399,7 @@ public class EnemyScript : MonoBehaviour
         }
         else
         {
-            chaseTimer += Time.deltaTime;
-            transform.up = new Vector3(playerLastSeenPosition.x, playerLastSeenPosition.y) - new Vector3(transform.position.x, transform.position.y);
-
-            if (chaseTimer >= 1.0f)
-            {
-                currentState = ENEMY_STATE.CCTV;
-                _noiseController.isDeactivated = true;
-                chaseTimer = 0.0f;
-            }
+            currentState = ENEMY_STATE.CCTV;
         }
     }
     #endregion
@@ -557,9 +555,13 @@ public class EnemyScript : MonoBehaviour
             // If hear noise when alerted, stay alerted but go to new noise position 
             if (currentState == ENEMY_STATE.ALERTED)
             {
+                if (targetedPulsingNoise) return;
+                else if (!targetedPulsingNoise && collision.gameObject.GetComponent<NoiseController>().isPulsing) targetedPulsingNoise = collision.gameObject;
+
                 currentState = ENEMY_STATE.ALERTED;
                 ResetRotationVariables();
                 isTurning = true;
+
                 currentPathingTarget = collision.gameObject.transform.position;
                 _agent.SetDestination(currentPathingTarget);
             }
@@ -572,6 +574,9 @@ public class EnemyScript : MonoBehaviour
                 currentState = ENEMY_STATE.CONFUSED;
                 _agent.isStopped = true;
                 currentPathingTarget = collision.gameObject.transform.position;
+
+                if (collision.gameObject.GetComponent<NoiseController>().isPulsing) targetedPulsingNoise = collision.gameObject;
+                else targetedPulsingNoise = null;
             }
         }
     }

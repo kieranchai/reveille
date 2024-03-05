@@ -16,6 +16,8 @@ public class NoiseController : MonoBehaviour
     // Dynamic data
     private Vector3 currentNoiseScale;
     public bool isDeactivated = false;
+    public bool isPulsing = false;
+    public float pulseTimer;
     #endregion
 
     private void Awake()
@@ -27,6 +29,16 @@ public class NoiseController : MonoBehaviour
         _collider.enabled = false;
         currentNoiseScale = _transform.localScale;
         lerpSpeed = 1.0f * Time.deltaTime;
+    }
+
+    private void Update()
+    {
+        if (isPulsing)
+        {
+            pulseTimer += Time.deltaTime;
+
+            if (pulseTimer >= 8.0f) isDeactivated = true;
+        }
     }
 
     public void ResetNoise()
@@ -71,40 +83,11 @@ public class NoiseController : MonoBehaviour
         _collider.enabled = false;
     }
 
-    public IEnumerator ProduceNoiseMultiple(int numberOfTimes)
+    public IEnumerator ProduceNoiseTimer()
     {
         _collider.enabled = true;
-        for (int i = 0; i < numberOfTimes; i++)
-        {
-            float noiseSpreadTime = 0.0f;
-            float noiseSpreadDuration = 0.3f;
-            float noiseSpreadLerpSpeed = 12.0f * Time.deltaTime;
-            while (noiseSpreadTime < noiseSpreadDuration)
-            {
-                noiseSpreadTime += Time.deltaTime;
-                currentNoiseScale = Vector3.Lerp(currentNoiseScale, baseNoiseScale, noiseSpreadLerpSpeed);
-                _transform.localScale = currentNoiseScale;
-                yield return null;
-            }
-
-            float noiseShrinkTime = 0.0f;
-            float noiseShrinkDuration = 0.1f;
-            float noiseShrinkLerpSpeed = 9.0f * Time.deltaTime;
-            while (noiseShrinkTime < noiseShrinkDuration)
-            {
-                noiseShrinkTime += Time.deltaTime;
-                currentNoiseScale = Vector3.Lerp(currentNoiseScale, Vector3.zero, noiseShrinkLerpSpeed);
-                _transform.localScale = currentNoiseScale;
-                yield return null;
-            }
-            _transform.localScale = Vector3.zero;
-        }
-        _collider.enabled = false;
-    }
-
-    public IEnumerator ProduceNoiseInfinitely()
-    {
-        _collider.enabled = true;
+        isPulsing = true;
+        isDeactivated = false;
         float noiseShrinkTime, noiseShrinkDuration, noiseShrinkLerpSpeed;
 
         while (!isDeactivated)
@@ -138,18 +121,12 @@ public class NoiseController : MonoBehaviour
 
     public IEnumerator StopNoise()
     {
-        _collider.enabled = true;
-        float noiseShrinkTime = 0.0f;
-        float noiseShrinkDuration = 0.1f;
-        float noiseShrinkLerpSpeed = 9.0f * Time.deltaTime;
-        while (noiseShrinkTime < noiseShrinkDuration)
-        {
-            noiseShrinkTime += Time.deltaTime;
-            currentNoiseScale = Vector3.Lerp(currentNoiseScale, Vector3.zero, noiseShrinkLerpSpeed);
-            _transform.localScale = currentNoiseScale;
-            yield return null;
-        }
+        pulseTimer = 0.0f;
+        isPulsing = false;
+        isDeactivated = false;
+        currentNoiseScale = Vector3.zero;
         _transform.localScale = Vector3.zero;
         _collider.enabled = false;
+        yield return null;
     }
 }
