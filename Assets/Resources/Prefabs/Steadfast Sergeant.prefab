@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 663790775363712397}
   - component: {fileID: 6972021620125391293}
   m_Layer: 6
-  m_Name: Common Corporal
+  m_Name: Steadfast Sergeant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 867705947, guid: 994798edfcded7548bffedcbdf89c53e, type: 3}
+  m_Sprite: {fileID: 962823612, guid: 994798edfcded7548bffedcbdf89c53e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff9395d6238aa964c9e2134a950b11fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _data: {fileID: 11400000, guid: 655871379fb72c4478e3422346b3ff67, type: 2}
+  _data: {fileID: 11400000, guid: ad04af725fc851e4a8518cc5ab112ad3, type: 2}
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}

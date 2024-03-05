@@ -13,6 +13,8 @@ public class EnemyScript : MonoBehaviour
     public Enemy _data;
     private NavMeshAgent _agent;
     private NoiseController _noiseController;
+    private Animator _anim;
+    private AnimatorOverrideController _aoc;
 
     // Default Data
     private int id;
@@ -34,6 +36,8 @@ public class EnemyScript : MonoBehaviour
     public LayerMask blockedLayers;
     [SerializeField] private Transform pfFieldOfView; // fov prefab
     private FieldOfView fov;
+    private AnimationClip walkAnimClip;
+    private AnimationClip idleAnimClip;
     public enum ENEMY_STATE
     {
         PATROL,
@@ -67,6 +71,9 @@ public class EnemyScript : MonoBehaviour
             _agent = GetComponent<NavMeshAgent>();
             _agent.updateRotation = false;
             _agent.updateUpAxis = false;
+            _anim = GetComponent<Animator>();
+            _aoc = new AnimatorOverrideController(_anim.runtimeAnimatorController);
+            _anim.runtimeAnimatorController = _aoc;
         }
         else _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
     }
@@ -78,6 +85,8 @@ public class EnemyScript : MonoBehaviour
         {
             currentPathingTarget = patrolPoints[currentPatrolPoint].position;
             _agent.SetDestination(currentPathingTarget);
+            _aoc["Common Corporal_Idle"] = idleAnimClip;
+            _aoc["Common Corporal_Walk"] = walkAnimClip;
         }
         else initialRotation = transform.eulerAngles;
     }
@@ -108,6 +117,17 @@ public class EnemyScript : MonoBehaviour
                 break;
         }
         FovPos();
+        if (_anim != null)
+        {
+            if (!isTurning)
+            {
+                _anim.SetBool("isWalking", true);
+            }
+            else
+            {
+                _anim.SetBool("isWalking", false);
+            }
+        }
     }
 
     public void SetEnemyData(Enemy data)
@@ -118,7 +138,8 @@ public class EnemyScript : MonoBehaviour
         this.enemyName = data.enemyName;
         this.walkSpeed = data.walkSpeed;
         this.runSpeed = data.runSpeed;
-
+        this.walkAnimClip = Resources.Load<AnimationClip>($"Sprites/Animations/Clips/{this.enemyName}_Walk");
+        this.idleAnimClip = Resources.Load<AnimationClip>($"Sprites/Animations/Clips/{this.enemyName}_Idle");
         if (currentState != ENEMY_STATE.CCTV) _agent.speed = this.walkSpeed;
 
         fov = Instantiate(pfFieldOfView, null).GetComponent<FieldOfView>();
@@ -130,7 +151,6 @@ public class EnemyScript : MonoBehaviour
     private void PatrolState()
     {
         _agent.speed = walkSpeed;
-
         // Face target only when not turning
         if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
 
