@@ -161,11 +161,11 @@ public class PlayerManager : MonoBehaviour
             // Player moving normally
             else
             {
-                _anim.SetBool("isWalking", true);
                 currentState = PLAYER_STATE.WALKING;
                 movementSpeedMultiplier = 1.0f;
                 noiseSizeMultiplier = 1.0f;
             }
+            _anim.SetBool("isWalking", true);
         }
 
         moveDir = new Vector3(moveX, moveY).normalized;

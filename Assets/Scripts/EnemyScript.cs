@@ -48,12 +48,13 @@ public class EnemyScript : MonoBehaviour
         CCTV_TARGET
     };
     public ENEMY_STATE currentState;
-    private bool isTurning = false;
-    private bool isDoneLooking = false;
-    private bool isLookingLeft = true;
-    private bool isLookingRight = false;
-    private bool isLookingRightR = false;
-    private bool hasSetLookDirections = false;
+    public bool isTurning = false;
+    public bool isLooking = false;
+    public bool isDoneLooking = false;
+    public bool isLookingLeft = false;
+    public bool isLookingRight = false;
+    public bool isLookingRightR = false;
+    public bool hasSetLookDirections = false;
     private Vector3 initialUp;
     private Vector3 initialLeft;
     private Vector3 initialRight;
@@ -117,9 +118,10 @@ public class EnemyScript : MonoBehaviour
                 break;
         }
         FovPos();
+
         if (_anim != null)
         {
-            if (!isTurning)
+            if (!isTurning && !isLooking)
             {
                 _anim.SetBool("isWalking", true);
             }
@@ -164,7 +166,7 @@ public class EnemyScript : MonoBehaviour
             if (isTurning)
             {
                 // Stop the enemy movement when turning
-                _agent.ResetPath();
+                _agent.isStopped = true;
 
                 if (RotateToNextPoint(patrolPoints[currentPatrolPoint].position))
                 {
@@ -173,6 +175,7 @@ public class EnemyScript : MonoBehaviour
                     // Go to next pathing target
                     currentPathingTarget = patrolPoints[currentPatrolPoint].position;
                     _agent.SetDestination(currentPathingTarget);
+                    _agent.isStopped = false;
                 }
             }
         }
@@ -183,7 +186,7 @@ public class EnemyScript : MonoBehaviour
             ResetRotationVariables();
             UpdatePlayerLastSeenPosition();
             currentPathingTarget = playerLastSeenPosition;
-            _agent.ResetPath();
+            _agent.isStopped = true;
             currentState = ENEMY_STATE.CONFUSED;
         }
     }
@@ -215,21 +218,23 @@ public class EnemyScript : MonoBehaviour
                 }
             }
         }
-
-        if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
     }
 
     private void AlertState()
     {
         _agent.speed = walkSpeed;
 
-        if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
-        if (!isTurning) _agent.SetDestination(currentPathingTarget);
+        if (!isTurning)
+        {
+            transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
+            _agent.SetDestination(currentPathingTarget);
+            _agent.isStopped = false;
+        }
 
         if (isTurning && !isDoneLooking)
         {
             // Stop the enemy movement when turning
-            _agent.ResetPath();
+            _agent.isStopped = true;
 
             if (RotateToNextPoint(currentPathingTarget))
             {
@@ -238,7 +243,7 @@ public class EnemyScript : MonoBehaviour
         }
 
         // At current target
-        if (_agent.remainingDistance != 0 && _agent.remainingDistance <= _agent.stoppingDistance)
+        if (_agent.remainingDistance == 0 && isLooking && !isTurning || _agent.remainingDistance != 0 && _agent.remainingDistance <= _agent.stoppingDistance)
         {
             if (!isDoneLooking)
             {
@@ -252,6 +257,7 @@ public class EnemyScript : MonoBehaviour
             if (isDoneLooking)
             {
                 // Go back to patrolling
+                isLooking = false;
                 isTurning = true;
                 currentPathingTarget = patrolPoints[currentPatrolPoint].position;
                 if (isTurning)
@@ -259,6 +265,7 @@ public class EnemyScript : MonoBehaviour
                     if (RotateToNextPoint(currentPathingTarget))
                     {
                         _agent.SetDestination(currentPathingTarget);
+                        _agent.isStopped = false;
                         currentState = ENEMY_STATE.PATROL;
                         ResetRotationVariables();
                     }
@@ -279,8 +286,12 @@ public class EnemyScript : MonoBehaviour
     {
         _agent.speed = runSpeed;
 
-        if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
-        if (!isTurning) _agent.SetDestination(currentPathingTarget);
+        if (!isTurning)
+        {
+            transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
+            _agent.SetDestination(currentPathingTarget);
+            _agent.isStopped = false;
+        }
 
         // If see player, start chasing player
         if (PlayerInSight())
@@ -459,10 +470,15 @@ public class EnemyScript : MonoBehaviour
         if (!hasSetLookDirections)
         {
             hasSetLookDirections = true;
+            isLooking = false;
+            isLookingLeft = true;
+            isLookingRight = false;
+            isLookingRightR = false;
             initialUp = new Vector3(transform.up.x, transform.up.y, 0);
             initialLeft = new Vector3(-transform.right.x, -transform.right.y, 0);
             initialRight = new Vector3(transform.right.x, transform.right.y, 0);
         }
+        else isLooking = true;
 
         rotationTime += Time.deltaTime * 0.8f;
 
@@ -474,6 +490,7 @@ public class EnemyScript : MonoBehaviour
             rotationTime = 0.0f;
             isLookingLeft = false;
             isLookingRight = true;
+            isLookingRightR = false;
         }
 
         if (isLookingRight)
@@ -498,6 +515,10 @@ public class EnemyScript : MonoBehaviour
         if (isLookingRightR && Vector3.SqrMagnitude(transform.up - initialRight) <= 0.001f)
         {
             transform.up = initialRight;
+            rotationTime = 0.0f;
+            isLookingLeft = false;
+            isLookingRight = false;
+            isLookingRightR = false;
             return true;
         }
 
@@ -509,10 +530,8 @@ public class EnemyScript : MonoBehaviour
         // Reset rotation time and set turning false
         rotationTime = 0.0f;
         isTurning = false;
+        isLooking = false;
         hasSetLookDirections = false;
-        isLookingLeft = true;
-        isLookingRight = false;
-        isLookingRightR = false;
         initialLeft = Vector3.zero;
         initialRight = Vector3.zero;
         initialUp = Vector3.zero;
@@ -535,11 +554,10 @@ public class EnemyScript : MonoBehaviour
             // If hear noise when alerted, stay alerted but go to new noise position 
             if (currentState == ENEMY_STATE.ALERTED)
             {
+                currentState = ENEMY_STATE.ALERTED;
                 ResetRotationVariables();
                 isTurning = true;
-
                 currentPathingTarget = collision.gameObject.transform.position;
-                currentState = ENEMY_STATE.ALERTED;
             }
 
             // If hear noise when patrolling, get confused for 1 second
@@ -547,9 +565,9 @@ public class EnemyScript : MonoBehaviour
             {
                 ResetRotationVariables();
 
-                currentPathingTarget = collision.gameObject.transform.position;
-                _agent.ResetPath();
                 currentState = ENEMY_STATE.CONFUSED;
+                _agent.isStopped = true;
+                currentPathingTarget = collision.gameObject.transform.position;
             }
         }
     }

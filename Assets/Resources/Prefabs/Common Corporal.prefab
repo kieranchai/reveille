@@ -177,6 +177,13 @@ MonoBehaviour:
     m_Bits: 128
   pfFieldOfView: {fileID: 1993779790705325113, guid: 19555dd9e7dd10a41b209ebc1e82bf80, type: 3}
   currentState: 0
+  isTurning: 0
+  isLooking: 0
+  isDoneLooking: 0
+  isLookingLeft: 0
+  isLookingRight: 0
+  isLookingRightR: 0
+  hasSetLookDirections: 0
 --- !u!195 &663790775363712397
 NavMeshAgent:
   m_ObjectHideFlags: 0
