@@ -8,8 +8,6 @@ public class FieldOfView : MonoBehaviour
     [SerializeField] private LayerMask layermask;
 
     public Mesh mesh;
-    public GameObject parent;
-    public EnemyScript _data;
     public float startingAngle;
     public float fieldOfView;
     public Vector3 origin;
@@ -25,15 +23,15 @@ public class FieldOfView : MonoBehaviour
         mesh = GetComponent<MeshFilter>().mesh;
     }
     public void Update()
-    { 
-        rayCount = 50;
+    {
+        rayCount = 100;
         angle = startingAngle;
 
         angleIncrease = fieldOfView / rayCount;
         Vector3[] vertices = new Vector3[rayCount + 1 + 1];
         Vector2[] uv = new Vector2[vertices.Length];
         int[] triangles = new int[rayCount * 3];
-     
+
         vertices[0] = origin;
 
         int vertexIndex = 1;
@@ -41,12 +39,13 @@ public class FieldOfView : MonoBehaviour
 
         for (int i = 0; i <= rayCount; i++)
         {
-            Vector3 vertex; 
+            Vector3 vertex;
             RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), lineOfSight, layermask);
             if (raycastHit2D.collider == null)
             {
                 vertex = origin + GetVectorFromAngle(angle) * lineOfSight;
-            }else
+            }
+            else
             {
                 vertex = raycastHit2D.point;
             }
@@ -82,7 +81,7 @@ public class FieldOfView : MonoBehaviour
         dir = dir.normalized;
         float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         if (n < 0) n += 360;
-        
+
         return n;
     }
     public void SetAimDirection(Vector3 aimDirection)
@@ -95,11 +94,13 @@ public class FieldOfView : MonoBehaviour
         this.origin = position;
     }
 
-    public void SetFOV(float fov) {
+    public void SetFOV(float fov)
+    {
         this.fieldOfView = fov;
     }
 
-    public void SetLOS(float los) {
+    public void SetLOS(float los)
+    {
         this.lineOfSight = los;
     }
 

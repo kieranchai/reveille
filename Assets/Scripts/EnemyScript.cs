@@ -243,7 +243,7 @@ public class EnemyScript : MonoBehaviour
         }
 
         // At current target
-        if (_agent.remainingDistance == 0 && isLooking && !isTurning || _agent.remainingDistance != 0 && _agent.remainingDistance <= _agent.stoppingDistance)
+        if (_agent.remainingDistance != 0 && _agent.remainingDistance <= _agent.stoppingDistance)
         {
             if (!isDoneLooking)
             {
@@ -415,7 +415,7 @@ public class EnemyScript : MonoBehaviour
     public void FovPos()
     {
         fov.SetAimDirection(transform.up);
-        fov.SetOrigin(transform.position);
+        fov.SetOrigin(new Vector3(transform.position.x, transform.position.y, 0));
     }
 
     private bool PlayerInSight()
@@ -532,6 +532,9 @@ public class EnemyScript : MonoBehaviour
         isTurning = false;
         isLooking = false;
         hasSetLookDirections = false;
+        isLookingLeft = false;
+        isLookingRight = false;
+        isLookingRightR = false;
         initialLeft = Vector3.zero;
         initialRight = Vector3.zero;
         initialUp = Vector3.zero;
@@ -558,6 +561,7 @@ public class EnemyScript : MonoBehaviour
                 ResetRotationVariables();
                 isTurning = true;
                 currentPathingTarget = collision.gameObject.transform.position;
+                _agent.SetDestination(currentPathingTarget);
             }
 
             // If hear noise when patrolling, get confused for 1 second
