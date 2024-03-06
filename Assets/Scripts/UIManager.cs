@@ -12,14 +12,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text weightCount;
     [SerializeField] private TMP_Text foodIndicator;
 
-    public enum InteractableType
-    {
-        FOOD,
-        HACK,
-        DROPOFF,
-        NULL
-    }
-
     private void Update()
     {
         DisplayLevelTime(GameController.instance.currentLevelController.levelTimer);
@@ -36,6 +28,11 @@ public class UIManager : MonoBehaviour
     public void DisplayAlertDropOffFull()
     {
 
+    }
+
+    public void UpdateCurrentFood(string name)
+    {
+        foodIndicator.text = name;
     }
 
     public void UpdateWeightCount(int currentWeight, int weightLimit)
