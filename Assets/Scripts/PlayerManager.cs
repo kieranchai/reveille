@@ -78,11 +78,7 @@ public class PlayerManager : MonoBehaviour
         switch (currentState)
         {
             case PLAYER_STATE.STILL:
-            // _anim.SetBool("isWalking", false);
-            // break;
             case PLAYER_STATE.WALKING:
-            // _anim.SetBool("isWalking", true);
-            // break;
             case PLAYER_STATE.SPRINTING:
             case PLAYER_STATE.SNEAKING:
                 UpdateNoiseRadius();
@@ -207,6 +203,7 @@ public class PlayerManager : MonoBehaviour
         {
             ++currentSelectedFood;
             if (currentSelectedFood >= inventory.Count) currentSelectedFood = 0;
+            CancelThrowFood();
         }
 
         // Scroll Down
@@ -214,11 +211,8 @@ public class PlayerManager : MonoBehaviour
         {
             --currentSelectedFood;
             if (currentSelectedFood < 0) currentSelectedFood = inventory.Count - 1;
+            CancelThrowFood();
         }
-
-
-        // Cancel Aiming Food
-        CancelThrowFood();
     }
 
     public void MouseThrow()
