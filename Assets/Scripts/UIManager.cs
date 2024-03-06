@@ -25,7 +25,7 @@ public class UIManager : MonoBehaviour
         DisplayLevelTime(GameController.instance.currentLevelController.levelTimer);
     }
 
-    void DisplayLevelTime(float timeToDisplay)
+    public void DisplayLevelTime(float timeToDisplay)
     {
         timeToDisplay += 1;
         float minutes = Mathf.FloorToInt(timeToDisplay / 60);
@@ -38,37 +38,36 @@ public class UIManager : MonoBehaviour
 
     }
 
-    //public void UpdateCurrentFood(string name)
-    //{
-    //    foodIndicator.text = name;
-    //}
-
     public void UpdateWeightCount(int currentWeight, int weightLimit)
     {
-        weightCount.text = string.Format("Food Carried: {0} / {1} g", currentWeight.ToString(), weightLimit.ToString());
+        weightCount.text = $"Inventory Weight: {currentWeight}/{weightLimit}g";
     }
 
     public void UpdateTotalPoints(int points)
     {
-        pointsIndicator.text = string.Format("Points: {0}", points.ToString());
+        pointsIndicator.text = $"Points: {points}";
     }
 
-    public void DisplayInteractables(InteractableType interactable)
+    public void UpdateDisplayInteractables()
     {
-        switch (interactable)
+        if (PlayerManager.instance.nearbyFood.Count > 0)
         {
-            case InteractableType.FOOD:
-                interactIndicator.text = "Press E to Pickup Food";
-                break;
-            case InteractableType.HACK:
-                interactIndicator.text = "Press E to Hack Terminal";
-                break;
-            case InteractableType.DROPOFF:
-                interactIndicator.text = "Press E to Deposit Food";
-                break;
-            default:
-                interactIndicator.text = string.Empty;
-                break;
+            interactIndicator.text = $"Press E to pick up {PlayerManager.instance.nearbyFood[0].GetComponent<FoodManager>().foodName.ToUpper()}";
+            return;
         }
+
+        if (PlayerManager.instance.hackingTarget)
+        {
+            interactIndicator.text = "Press E to hack door";
+            return;
+        }
+
+        if (PlayerManager.instance.foodDropOffTarget)
+        {
+            interactIndicator.text = "Press E to deposit food";
+            return;
+        }
+
+        interactIndicator.text = string.Empty;
     }
 }

@@ -127,8 +127,8 @@ public class FoodManager : MonoBehaviour
         if (collision.gameObject.CompareTag("Player") && !isNearPlayer)
         {
             isNearPlayer = true;
-            GameController.instance.currentUIManager.DisplayInteractables(UIManager.InteractableType.FOOD);
             if (!PlayerManager.instance.nearbyFood.Contains(this.gameObject)) PlayerManager.instance.nearbyFood.Add(this.gameObject);
+            GameController.instance.currentUIManager.UpdateDisplayInteractables();
         }
     }
 
@@ -137,8 +137,8 @@ public class FoodManager : MonoBehaviour
         if (collision.gameObject.CompareTag("Player") && isNearPlayer)
         {
             isNearPlayer = false;
-            GameController.instance.currentUIManager.DisplayInteractables(UIManager.InteractableType.NULL);
             if (PlayerManager.instance.nearbyFood.Contains(this.gameObject)) PlayerManager.instance.nearbyFood.Remove(this.gameObject);
+            GameController.instance.currentUIManager.UpdateDisplayInteractables();
         }
     }
 }
