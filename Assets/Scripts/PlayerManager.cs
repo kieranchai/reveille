@@ -71,6 +71,10 @@ public class PlayerManager : MonoBehaviour
     private void Start()
     {
         SetPlayerData(_data);
+
+        //set text
+        GameController.instance.currentUIManager.UpdateTotalPoints(points);
+        GameController.instance.currentUIManager.UpdateWeightCount(currentInventoryWeight, inventoryWeightLimit);
     }
 
     private void Update()
@@ -206,6 +210,8 @@ public class PlayerManager : MonoBehaviour
         {
             ++currentSelectedFood;
             if (currentSelectedFood >= inventory.Count) currentSelectedFood = 0;
+
+            //GameController.instance.currentUIManager.UpdateCurrentFood(inventory[currentSelectedFood].foodName);
         }
 
         // Scroll Down
@@ -213,7 +219,10 @@ public class PlayerManager : MonoBehaviour
         {
             --currentSelectedFood;
             if (currentSelectedFood < 0) currentSelectedFood = inventory.Count - 1;
+
+            //GameController.instance.currentUIManager.UpdateCurrentFood(inventory[currentSelectedFood].foodName);
         }
+
 
         // Cancel Aiming Food
         CancelThrowFood();
@@ -308,6 +317,8 @@ public class PlayerManager : MonoBehaviour
         currentInventoryWeight += foodItem.weight;
         UpdateInventoryWeightPenalty();
         inventory.Add(foodItem);
+
+        GameController.instance.currentUIManager.UpdateWeightCount(currentInventoryWeight, inventoryWeightLimit);
     }
 
     public void RemoveFoodFromInventory(Food foodItem)
@@ -315,6 +326,9 @@ public class PlayerManager : MonoBehaviour
         currentInventoryWeight -= foodItem.weight;
         UpdateInventoryWeightPenalty();
         inventory.Remove(foodItem);
+
+        GameController.instance.currentUIManager.UpdateWeightCount(currentInventoryWeight, inventoryWeightLimit);
+        //GameController.instance.currentUIManager.UpdateCurrentFood(null);
     }
 
     public void UpdateInventoryWeightPenalty()
@@ -334,6 +348,7 @@ public class PlayerManager : MonoBehaviour
         Destroy(nearbyFood[0].GetComponent<FoodManager>().myPopUp);
         Destroy(nearbyFood[0]);
         //Nearest Food is removed from nearbyFood in FoodManager OnTriggerExit
+        //GameController.instance.currentUIManager.UpdateCurrentFood(inventory[currentSelectedFood].foodName);
     }
 
     public void ThrowFood()
@@ -410,6 +425,7 @@ public class PlayerManager : MonoBehaviour
     public void UpdatePoints(int foodCurrentPoints)
     {
         points += foodCurrentPoints;
+        GameController.instance.currentUIManager.UpdateTotalPoints(points);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -417,11 +433,13 @@ public class PlayerManager : MonoBehaviour
         if (collision.gameObject.CompareTag("Terminal"))
         {
             hackingTarget = collision.gameObject.transform.parent.gameObject;
+            GameController.instance.currentUIManager.DisplayInteractables(UIManager.InteractableType.HACK);
         }
 
         if (collision.gameObject.CompareTag("Dropoff"))
         {
             foodDropOffTarget = collision.gameObject.transform.parent.gameObject;
+            GameController.instance.currentUIManager.DisplayInteractables(UIManager.InteractableType.DROPOFF);
         }
     }
 
@@ -430,11 +448,13 @@ public class PlayerManager : MonoBehaviour
         if (collision.gameObject.CompareTag("Terminal"))
         {
             hackingTarget = null;
+            GameController.instance.currentUIManager.DisplayInteractables(UIManager.InteractableType.NULL);
         }
 
         if (collision.gameObject.CompareTag("Dropoff"))
         {
             foodDropOffTarget = null;
+            GameController.instance.currentUIManager.DisplayInteractables(UIManager.InteractableType.NULL);
         }
     }
 }
