@@ -204,7 +204,7 @@ public class PlayerManager : MonoBehaviour
             ++currentSelectedFood;
             if (currentSelectedFood >= inventory.Count) currentSelectedFood = 0;
 
-            GameController.instance.currentUIManager.UpdateCurrentFood(inventory[currentSelectedFood].foodName);
+            GameController.instance.currentUIManager.UpdateCurrentFood();
             CancelThrowFood();
         }
 
@@ -214,7 +214,7 @@ public class PlayerManager : MonoBehaviour
             --currentSelectedFood;
             if (currentSelectedFood < 0) currentSelectedFood = inventory.Count - 1;
 
-            GameController.instance.currentUIManager.UpdateCurrentFood(inventory[currentSelectedFood].foodName);
+            GameController.instance.currentUIManager.UpdateCurrentFood();
             CancelThrowFood();
         }
     }
@@ -310,7 +310,7 @@ public class PlayerManager : MonoBehaviour
         inventory.Add(foodItem);
 
         GameController.instance.currentUIManager.UpdateWeightCount(currentInventoryWeight, inventoryWeightLimit);
-        GameController.instance.currentUIManager.UpdateCurrentFood(inventory[currentSelectedFood].foodName);
+        GameController.instance.currentUIManager.UpdateCurrentFood();
     }
 
     public void RemoveFoodFromInventory(Food foodItem)
@@ -319,6 +319,7 @@ public class PlayerManager : MonoBehaviour
         UpdateInventoryWeightPenalty();
         inventory.Remove(foodItem);
 
+        GameController.instance.currentUIManager.UpdateCurrentFood();
         GameController.instance.currentUIManager.UpdateWeightCount(currentInventoryWeight, inventoryWeightLimit);
     }
 
@@ -327,7 +328,6 @@ public class PlayerManager : MonoBehaviour
         if (currentInventoryWeight == 0)
         {
             inventoryWeightPenalty = 0;
-            GameController.instance.currentUIManager.UpdateCurrentFood(null);
             return;
         }
 

@@ -30,9 +30,17 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void UpdateCurrentFood(string name)
+    public void UpdateCurrentFood()
     {
-        foodIndicator.text = name;
+        if (PlayerManager.instance.inventory.Count < 1)
+        {
+            foodIndicator.text = "None";
+        }
+        else
+        {
+            string currentFoodName = PlayerManager.instance.inventory[PlayerManager.instance.currentSelectedFood].foodName;
+            foodIndicator.text = currentFoodName;
+        }
     }
 
     public void UpdateWeightCount(int currentWeight, int weightLimit)

@@ -60,7 +60,7 @@ public class FoodManager : MonoBehaviour
         }
         else
         {
-            if (!hasShownPopUp && _rigidBody.velocity.magnitude == 0.0f) ShowPopUp();
+            if (!hasShownPopUp && _rigidBody.velocity.magnitude <= 0.3f) ShowPopUp();
         }
     }
 
