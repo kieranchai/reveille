@@ -10,7 +10,7 @@ public class Terminal : MonoBehaviour
     private bool playedAlertSound = false;
 
     [Header("Unlocks")]
-    public GameObject door;
+    public List<GameObject> doors;
 
     [Header("Minigame Difficulty")]
     public int speed;
@@ -57,7 +57,7 @@ public class Terminal : MonoBehaviour
         StopAllCoroutines();
         StartCoroutine(_noiseController.StopNoise());
 
-        if (door)
+        foreach (GameObject door in doors)
         {
             //disable door
             door.SetActive(false);

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Slot : MonoBehaviour
+public class MinigameSlot : MonoBehaviour
 {
     public Minigame minigame;
 
@@ -13,10 +13,15 @@ public class Slot : MonoBehaviour
             minigame.midRingList[minigame.counter].GetComponent<SpriteRenderer>().color = Color.red;
             minigame.failed = true;
         }
-        else if (minigame.inserted && !collision.gameObject.CompareTag("Minigame Midring"))
+        else if (minigame.inserted && !collision.gameObject.CompareTag("Minigame Midring") && collision.gameObject.CompareTag("Minigame Hole"))
         {
             minigame.midRingList[minigame.counter].GetComponent<SpriteRenderer>().color = Color.green;
             minigame.solved = true;
+        }
+
+        if (minigame.solved && minigame.failed)
+        {
+            minigame.midRingList[minigame.counter].GetComponent<SpriteRenderer>().color = Color.red;
         }
     }
 }
