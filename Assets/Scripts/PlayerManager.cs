@@ -405,7 +405,6 @@ public class PlayerManager : MonoBehaviour
     {
         if (!foodDropOffTarget) return;
         if (inventory.Count < 1) return;
-
         if (foodDropOffTarget.GetComponent<DropOff>().DepositFood(inventory[currentSelectedFood]))
         {
             UpdatePoints(inventory[currentSelectedFood].currentPoints);

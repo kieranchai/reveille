@@ -385,7 +385,6 @@ public class EnemyScript : MonoBehaviour
         {
             playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
             currentState = ENEMY_STATE.CCTV_TARGET;
-            if (!_noiseController.isDeactivated) StartCoroutine(_noiseController.ProduceNoiseTimer());
             confusedTimer = 0.0f;
         }
     }
@@ -394,6 +393,7 @@ public class EnemyScript : MonoBehaviour
     {
         if (PlayerInSight())
         {
+            if (!_noiseController.isDeactivated && !_noiseController.isPulsing) StartCoroutine(_noiseController.ProduceNoiseTimer());
             playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
             transform.up = new Vector3(playerLastSeenPosition.x, playerLastSeenPosition.y) - new Vector3(transform.position.x, transform.position.y);
         }
