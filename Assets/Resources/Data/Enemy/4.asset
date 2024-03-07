@@ -16,5 +16,5 @@ MonoBehaviour:
   enemyName: CCTV
   walkSpeed: 0
   runSpeed: 0
-  lineOfSight: 7
+  lineOfSight: 4
   fieldOfView: 60

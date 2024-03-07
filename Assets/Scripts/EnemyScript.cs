@@ -250,7 +250,7 @@ public class EnemyScript : MonoBehaviour
             {
                 if (targetedPulsingNoise)
                 {
-                    targetedPulsingNoise.GetComponent<NoiseController>().isDeactivated = true;
+                    if (!targetedPulsingNoise.GetComponent<NoiseController>().isDeactivated) targetedPulsingNoise.GetComponent<NoiseController>().isDeactivated = true;
                     targetedPulsingNoise = null;
                 }
 

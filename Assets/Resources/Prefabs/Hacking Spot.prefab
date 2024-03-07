@@ -75,7 +75,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 3
   m_Sprite: {fileID: 37609689, guid: 7d42ede52f071db478c92ef6e6725543, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -112,7 +112,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6668983610357067481}
-  - component: {fileID: 277304367496054508}
+  - component: {fileID: 127130642698775978}
   m_Layer: 0
   m_Name: Interact
   m_TagString: Terminal
@@ -135,8 +135,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7708560718989806263}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &277304367496054508
-CircleCollider2D:
+--- !u!61 &127130642698775978
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -168,8 +168,18 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   serializedVersion: 2
-  m_Radius: 1.25
+  m_Size: {x: 3, y: 2}
+  m_EdgeRadius: 0
 --- !u!1 &7146933905146609600
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,3 +315,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lerpSpeed: 0
   isDeactivated: 0
+  isPulsing: 0
+  pulseTimer: 0

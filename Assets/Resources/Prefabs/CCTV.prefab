@@ -141,8 +141,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.34202018, w: 0.9396927}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 20, y: 20, z: 40}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 20, y: 20, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6478590055763662980}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -247,3 +247,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lerpSpeed: 0
   isDeactivated: 0
+  isPulsing: 0
+  pulseTimer: 0
