@@ -55,7 +55,7 @@ public class Terminal : MonoBehaviour
     {
         playable = false;
         StopAllCoroutines();
-        StartCoroutine(_noiseController.StopNoise());
+        _noiseController.StopNoise();
 
         foreach (GameObject door in doors)
         {

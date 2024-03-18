@@ -225,6 +225,25 @@ public class EnemyScript : MonoBehaviour
     {
         _agent.speed = walkSpeed;
 
+        if (targetedPulsingNoise && !targetedPulsingNoise.GetComponent<NoiseController>().isActivated)
+        {
+            targetedPulsingNoise = null;
+            // Go back to patrolling
+            isLooking = false;
+            isTurning = true;
+            currentPathingTarget = patrolPoints[currentPatrolPoint].position;
+            if (isTurning)
+            {
+                if (RotateToNextPoint(currentPathingTarget))
+                {
+                    _agent.SetDestination(currentPathingTarget);
+                    _agent.isStopped = false;
+                    currentState = ENEMY_STATE.PATROL;
+                    ResetRotationVariables();
+                }
+            }
+        }
+
         if (!isTurning)
         {
             transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
@@ -248,9 +267,9 @@ public class EnemyScript : MonoBehaviour
         {
             if (!isDoneLooking)
             {
-                if (targetedPulsingNoise)
+                if (targetedPulsingNoise && Vector2.SqrMagnitude(transform.position - targetedPulsingNoise.transform.position) <= _agent.stoppingDistance)
                 {
-                    if (!targetedPulsingNoise.GetComponent<NoiseController>().isDeactivated) targetedPulsingNoise.GetComponent<NoiseController>().isDeactivated = true;
+                    targetedPulsingNoise.GetComponent<NoiseController>().DeactivateNoise();
                     targetedPulsingNoise = null;
                 }
 
@@ -393,7 +412,7 @@ public class EnemyScript : MonoBehaviour
     {
         if (PlayerInSight())
         {
-            if (!_noiseController.isDeactivated && !_noiseController.isPulsing) StartCoroutine(_noiseController.ProduceNoiseTimer());
+            if (!_noiseController.isActivated && !_noiseController.isPulsing) _noiseController.StartCoroutine(_noiseController.ProduceNoiseTimer());
             playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
             transform.up = new Vector3(playerLastSeenPosition.x, playerLastSeenPosition.y) - new Vector3(transform.position.x, transform.position.y);
         }
