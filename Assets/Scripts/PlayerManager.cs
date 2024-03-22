@@ -16,6 +16,7 @@ public class PlayerManager : MonoBehaviour
     private LineRenderer _lineRenderer;
     public Player _data;
     public Animator _anim;
+    private AudioSource _audio;
 
     // Default Data
     private float baseMovementSpeed;
@@ -51,6 +52,11 @@ public class PlayerManager : MonoBehaviour
     public GameObject foodDropOffTarget;
     #endregion
 
+    #region Audio Clips
+/*    [Header("Player Audio Clips")]
+    public AudioClip playerWalk;*/
+    #endregion
+
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -66,6 +72,7 @@ public class PlayerManager : MonoBehaviour
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
         _lineRenderer = GetComponent<LineRenderer>();
         _anim = GetComponent<Animator>();
+        _audio = GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -81,6 +88,7 @@ public class PlayerManager : MonoBehaviour
             case PLAYER_STATE.WALKING:
             case PLAYER_STATE.SPRINTING:
             case PLAYER_STATE.SNEAKING:
+                if (GameController.instance.isPaused) return;
                 UpdateNoiseRadius();
                 MovementInput();
                 LookAtMouse();
