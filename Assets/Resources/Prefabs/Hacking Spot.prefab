@@ -75,7 +75,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 2
   m_Sprite: {fileID: 37609689, guid: 7d42ede52f071db478c92ef6e6725543, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -100,7 +100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playable: 0
-  door: {fileID: 0}
+  doors: []
   speed: 0
   rings: 0
 --- !u!1 &7104528019399375273
@@ -314,6 +314,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lerpSpeed: 0
-  isDeactivated: 0
+  isActivated: 0
   isPulsing: 0
   pulseTimer: 0
