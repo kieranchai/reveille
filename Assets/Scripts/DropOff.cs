@@ -13,12 +13,12 @@ public class DropOff : MonoBehaviour
     {
         if (currentCapacity + foodItem.weight >= maxCapacity)
         {
-            GameController.instance.currentUIManager.DisplayAlertDropOffFull();
             return false;
         };
 
         droppedFood.Add(foodItem);
         currentCapacity += foodItem.weight;
+        GameController.instance.currentLevelController.droppedFoodCount++;
         return true;
     }
 }

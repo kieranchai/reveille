@@ -82,6 +82,8 @@ public class PlayerManager : MonoBehaviour
 
     private void Update()
     {
+        if (GameController.instance.isPanning) return;
+
         switch (currentState)
         {
             case PLAYER_STATE.STILL:

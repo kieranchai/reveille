@@ -12,6 +12,18 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text weightCount;
     [SerializeField] private TMP_Text foodIndicator;
 
+    [SerializeField] GameObject canvas;
+    [SerializeField] GameObject pauseMenu;
+    [SerializeField] GameObject gameOverMenu;
+    [SerializeField] GameObject winMenu;
+
+    private void Start()
+    {
+        HideWinMenu();
+        HideGameOverMenu();
+        HidePauseMenu();
+    }
+
     private void Update()
     {
         DisplayLevelTime(GameController.instance.currentLevelController.levelTimer);
@@ -23,11 +35,6 @@ public class UIManager : MonoBehaviour
         float minutes = Mathf.FloorToInt(timeToDisplay / 60);
         float seconds = Mathf.FloorToInt(timeToDisplay % 60);
         levelTimer.text = string.Format("{0:00}:{1:00}", minutes, seconds);
-    }
-
-    public void DisplayAlertDropOffFull()
-    {
-
     }
 
     public void UpdateCurrentFood()
@@ -74,5 +81,45 @@ public class UIManager : MonoBehaviour
         }
 
         interactIndicator.text = string.Empty;
+    }
+
+    public void HideAllUI()
+    {
+        canvas.SetActive(false);
+    }
+
+    public void ShowAllUI()
+    {
+        canvas.SetActive(true);
+    }
+
+    public void HidePauseMenu()
+    {
+        pauseMenu.SetActive(false);
+    }
+
+    public void ShowPauseMenu()
+    {
+        pauseMenu.SetActive(true);
+    }
+
+    public void HideGameOverMenu()
+    {
+        gameOverMenu.SetActive(false);
+    }
+
+    public void ShowGameOverMenu()
+    {
+        gameOverMenu.SetActive(true);
+    }
+
+    public void HideWinMenu()
+    {
+        winMenu.SetActive(false);
+    }
+
+    public void ShowWinMenu()
+    {
+        winMenu.SetActive(true);
     }
 }

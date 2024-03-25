@@ -59,7 +59,6 @@ public class EnemyScript : MonoBehaviour
     private Vector3 initialLeft;
     private Vector3 initialRight;
     private Vector3 initialRotation;
-    private Vector3 transitionRotation;
     private float rotationTime;
     private GameObject targetedPulsingNoise;
     #endregion
@@ -607,7 +606,8 @@ public class EnemyScript : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Player"))
         {
-            Debug.Log("Game Over!");
+            Time.timeScale = 0f;
+            GameController.instance.GameOver();
         }
     }
 }

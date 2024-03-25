@@ -11,29 +11,19 @@ public class GameController : MonoBehaviour
     public LevelController currentLevelController;
     public UIManager currentUIManager;
     public bool isPaused = false;
+    public bool isPanning = true;
+    public bool gameEnd = false;
 
     private void Awake()
     {
-        if (instance != null && instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
         instance = this;
-    }
 
-    private void Start()
-    {
         UpdateCurrentControllers();
+        Time.timeScale = 1.0f;
     }
 
     private void Update()
     {
-        if (currentScene != SceneManager.GetActiveScene().name)
-        {
-            UpdateCurrentControllers();
-        }
-
         CheckPause();
     }
 
@@ -49,6 +39,7 @@ public class GameController : MonoBehaviour
     public void CheckPause()
     {
         if (currentScene == "Main Menu") return;
+        if (isPanning) return;
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -61,14 +52,36 @@ public class GameController : MonoBehaviour
 
     public void PauseGame()
     {
+        isPaused = true;
+
         Time.timeScale = 0.0f;
-        // Display pause UI
+        currentUIManager.ShowPauseMenu();
     }
 
     public void ResumeGame()
     {
+        isPaused = false;
+
         Time.timeScale = 1.0f;
-        // Display pause UI
+        currentUIManager.HidePauseMenu();
+    }
+
+    public void GameOver()
+    {
+        isPaused = true;
+        gameEnd = true;
+
+        Time.timeScale = 0.0f;
+        currentUIManager.ShowGameOverMenu();
+    }
+
+    public void GameWon()
+    {
+        isPaused = true;
+        gameEnd = true;
+
+        Time.timeScale = 0.0f;
+        currentUIManager.ShowWinMenu();
     }
 
     public void PlayGame()
@@ -79,5 +92,17 @@ public class GameController : MonoBehaviour
     public void ExitGame()
     {
         SceneManager.LoadScene("Main Menu");
+    }
+
+    public void NextLevel()
+    {
+        Time.timeScale = 1.0f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
+    public void RetryGame()
+    {
+        Time.timeScale = 1.0f;
+        SceneManager.LoadScene(currentScene);
     }
 }

@@ -88,7 +88,7 @@ public class FoodManager : MonoBehaviour
 
     // Used only when spawning food at start of level since SO saves current points
     // In spawner script instantiate then call SetDefaultFoodData
-    private void SetDefaultFoodData(Food data)
+    public void SetDefaultFoodData(Food data)
     {
         this.id = data.id;
         this.foodName = data.foodName;
