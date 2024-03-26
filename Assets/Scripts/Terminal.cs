@@ -26,14 +26,15 @@ public class Terminal : MonoBehaviour
         if (isVerticle)
         {
             offset = new Vector3(0, 2, 0);
-        }else
+        }
+        else
         {
             offset = new Vector3(2, 0, 0);
         }
 
         playable = true;
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
-        _anim = gameObject.GetComponent<Animator>();   
+        _anim = gameObject.GetComponent<Animator>();
     }
 
     private void Update()
@@ -81,15 +82,17 @@ public class Terminal : MonoBehaviour
         StopAllCoroutines();
         _noiseController.StopNoise();
         _anim.SetBool("isOpen", true);
+        PlayerManager.instance.hackingTarget = null;
+        GameController.instance.currentUIManager.UpdateDisplayInteractables();
         foreach (GameObject door in doors)
         {
-            StartCoroutine(openDoor(door));
+            StartCoroutine(OpenDoor(door));
             door.GetComponent<SpriteRenderer>().sprite = openedDoor;
             door.GetComponent<NavMeshObstacle>().carving = false;
         }
     }
 
-    IEnumerator openDoor(GameObject Door)
+    IEnumerator OpenDoor(GameObject Door)
     {
         Vector3 target = Door.transform.position - offset;
 
@@ -99,7 +102,7 @@ public class Terminal : MonoBehaviour
             yield return null;
         }
     }
-    
+
     private void SoundAlarm()
     {
         if (!playedAlertSound)

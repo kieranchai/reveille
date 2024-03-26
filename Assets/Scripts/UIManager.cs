@@ -170,7 +170,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        if (PlayerManager.instance.hackingTarget)
+        if (PlayerManager.instance.hackingTarget && PlayerManager.instance.hackingTarget.GetComponent<Terminal>().playable)
         {
             controlsInteract.SetActive(true);
             controlsInteract.transform.Find("Text").GetComponent<TMP_Text>().text = "Hack door";
