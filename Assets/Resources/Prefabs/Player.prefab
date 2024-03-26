@@ -315,6 +315,7 @@ MonoBehaviour:
   nearbyFood: []
   hackingTarget: {fileID: 0}
   foodDropOffTarget: {fileID: 0}
+  inventoryOpen: 0
 --- !u!120 &1796992504182106682
 LineRenderer:
   serializedVersion: 2
@@ -360,13 +361,13 @@ LineRenderer:
   m_Positions: []
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.25
+    widthMultiplier: 0.5
     widthCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.509434
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -378,8 +379,8 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 0.78636414, b: 0.0047169924, a: 1}
-      key1: {r: 1, g: 0.78636414, b: 0.0047169924, a: 1}
+      key0: {r: 1, g: 1, b: 1, a: 1}
+      key1: {r: 1, g: 1, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
