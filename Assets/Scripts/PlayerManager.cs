@@ -110,7 +110,6 @@ public class PlayerManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Debug.Log(currentSelectedFood);
         switch (currentState)
         {
             case PLAYER_STATE.STILL:
