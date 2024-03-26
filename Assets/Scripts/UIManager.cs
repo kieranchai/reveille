@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -12,6 +15,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject playerHud;
     [SerializeField] GameObject pauseMenu;
     [SerializeField] GameObject gameOverMenu;
+    [SerializeField] GameObject controlsMenu;
+    [SerializeField] GameObject mainMenu;
     [SerializeField] GameObject winMenu;
 
     private GameObject controlsInteract;
@@ -27,6 +32,8 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
+        if (SceneManager.GetActiveScene().name == "Main Menu") return;
+
         controlsInteract = playerHud.transform.Find("Controls").Find("Interact").gameObject;
         controlsInteract.SetActive(false);
         controlsScroll = playerHud.transform.Find("Controls").Find("Scroll").gameObject;
@@ -58,6 +65,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
+        if (SceneManager.GetActiveScene().name == "Main Menu") return;
         DisplayLevelTime(GameController.instance.currentLevelController.levelTimer);
     }
 
@@ -92,7 +100,7 @@ public class UIManager : MonoBehaviour
             controlsDrop.SetActive(false);
             controlsThrow.SetActive(false);
             selectedFoodInfo.SetActive(false);
-            // selectedFood.transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/UI/No_Food}");
+            selectedFood.transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/No_Food");
             selectedFood.transform.Find("Name").gameObject.GetComponent<TMP_Text>().text = string.Empty;
         }
     }
@@ -106,16 +114,6 @@ public class UIManager : MonoBehaviour
     {
         playerHud.transform.Find("Controls").Find("Open Inventory").gameObject.transform.Find("Icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/TAB_Pressed");
 
-        /*        for (int i = 0; i < inventoryItems.Length - 1; i++)
-                {
-                    if (!PlayerManager.instance.inventory[i])
-                    {
-                        inventoryItems[i].transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/UI/No_Food");
-                        return;
-                    }
-                    else inventoryItems[i].transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/UI/{PlayerManager.instance.inventory[i].foodName}");
-                }*/
-
         UpdateInventorySelectedFood();
         inventoryDisplay.SetActive(true);
         DisplaySelectedFoodInfo();
@@ -123,8 +121,14 @@ public class UIManager : MonoBehaviour
 
     public void UpdateInventorySelectedFood()
     {
-        for (int i = 0; i < inventoryItems.Length - 1; i++)
+        for (int i = 0; i < inventoryItems.Length; i++)
         {
+            if (PlayerManager.instance.inventory.ElementAtOrDefault(i) == null)
+            {
+                inventoryItems[i].transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/No_Food");
+            }
+            else inventoryItems[i].transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/UI/{PlayerManager.instance.inventory[i].foodName}");
+
             if (PlayerManager.instance.currentSelectedFood == i && PlayerManager.instance.inventory.Count > 0) inventoryItems[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/Inventory_Equipped");
             else inventoryItems[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/Inventory_Default");
         }
@@ -180,7 +184,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        controlsInteract.SetActive(false);
+        if (controlsInteract.activeInHierarchy) controlsInteract.SetActive(false);
     }
 
     public void SetInteractKeyPressed()
@@ -253,6 +257,30 @@ public class UIManager : MonoBehaviour
     public void ShowWinMenu()
     {
         winMenu.SetActive(true);
+    }
+
+    public void ShowControlsMainMenu()
+    {
+        controlsMenu.SetActive(true);
+        mainMenu.SetActive(false);
+    }
+
+    public void HideControlsMainMenu()
+    {
+        controlsMenu.SetActive(false);
+        mainMenu.SetActive(true);
+    }
+
+    public void ShowControlsGame()
+    {
+        controlsMenu.SetActive(true);
+        pauseMenu.SetActive(false);
+    }
+
+    public void HideControlsGame()
+    {
+        controlsMenu.SetActive(false);
+        pauseMenu.SetActive(true);
     }
     #endregion
 }

@@ -95,6 +95,16 @@ public class GameController : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
+    public void QuitGame()
+    {
+#if UNITY_STANDALONE
+        Application.Quit();
+#endif
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
+
     public void NextLevel()
     {
         Time.timeScale = 1.0f;

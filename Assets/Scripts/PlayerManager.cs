@@ -110,6 +110,7 @@ public class PlayerManager : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Debug.Log(currentSelectedFood);
         switch (currentState)
         {
             case PLAYER_STATE.STILL:
@@ -285,7 +286,7 @@ public class PlayerManager : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.up, CalculateThrowRange(), mask1);
             if (hit.collider != null)
             {
-                _lineRenderer.SetPosition(0, new Vector3 (0f,0f,-0.1f));
+                _lineRenderer.SetPosition(0, new Vector3(0f, 0f, -0.1f));
                 _lineRenderer.SetPosition(1, transform.InverseTransformPoint(hit.point));
             }
             else
@@ -354,7 +355,8 @@ public class PlayerManager : MonoBehaviour
         currentInventoryWeight -= foodItem.weight;
         UpdateInventoryWeightPenalty();
         inventory.Remove(foodItem);
-
+        --currentSelectedFood;
+        if (currentSelectedFood < 0) currentSelectedFood = 0;
         GameController.instance.currentUIManager.UpdateCurrentFood();
         GameController.instance.currentUIManager.UpdateInventorySelectedFood();
         GameController.instance.currentUIManager.UpdateWeightCount(currentInventoryWeight, inventoryWeightLimit);
@@ -414,7 +416,7 @@ public class PlayerManager : MonoBehaviour
 
     public void DropFood()
     {
-        if (inventory.Count < 1) return;
+        if (inventory.Count == 0) return;
 
         GameObject droppedFood = Instantiate(Resources.Load<GameObject>("Prefabs/Food"), transform.position, Quaternion.identity);
         droppedFood.GetComponent<FoodManager>().SetFoodData(inventory[currentSelectedFood]);
