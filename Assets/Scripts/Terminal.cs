@@ -10,6 +10,8 @@ public class Terminal : MonoBehaviour
     private GameObject minigame;
     private bool playedAlertSound = false;
     public Sprite openedDoor;
+    public bool isVerticle;
+    private Vector3 offset;
 
     [Header("Unlocks")]
     public List<GameObject> doors;
@@ -20,6 +22,14 @@ public class Terminal : MonoBehaviour
 
     private void Awake()
     {
+        if (isVerticle)
+        {
+            offset = new Vector3(0, 2, 0);
+        }else
+        {
+            offset = new Vector3(2, 0, 0);
+        }
+
         playable = true;
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
     }
@@ -73,10 +83,11 @@ public class Terminal : MonoBehaviour
 
     IEnumerator openDoor(GameObject Door)
     {
-        Vector3 offset = new Vector3(5, 0, 0);
-        while (Vector3.SqrMagnitude(Door.transform.position - (Door.transform.position - offset)) >= 0.05f)
+        Vector3 target = Door.transform.position - offset;
+
+        while (Vector3.SqrMagnitude(Door.transform.position - target) >= 0.05f)
         {
-            Door.transform.position = Vector3.MoveTowards(Door.transform.position, Door.transform.position - offset, 2 * Time.deltaTime);
+            Door.transform.position = Vector3.MoveTowards(Door.transform.position, target, 2 * Time.deltaTime);
             yield return null;
         }
     }
