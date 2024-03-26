@@ -73,7 +73,7 @@ public class Terminal : MonoBehaviour
             StopAllCoroutines();
             _noiseController.ResetNoise();
             playedAlertSound = true;
-            StartCoroutine(_noiseController.ProduceNoiseTimer());
+            _noiseController.StartCoroutine(_noiseController.ProduceNoiseTimer());
         }
     }
 }

@@ -266,7 +266,7 @@ public class EnemyScript : MonoBehaviour
         {
             if (!isDoneLooking)
             {
-                if (targetedPulsingNoise && Vector2.SqrMagnitude(transform.position - targetedPulsingNoise.transform.position) <= _agent.stoppingDistance)
+                if (targetedPulsingNoise && Vector2.SqrMagnitude(transform.position - currentPathingTarget) <= _agent.stoppingDistance)
                 {
                     targetedPulsingNoise.GetComponent<NoiseController>().DeactivateNoise();
                     targetedPulsingNoise = null;
@@ -574,7 +574,11 @@ public class EnemyScript : MonoBehaviour
             if (currentState == ENEMY_STATE.ALERTED)
             {
                 if (targetedPulsingNoise) return;
-                else if (!targetedPulsingNoise && collision.gameObject.GetComponent<NoiseController>().isPulsing) targetedPulsingNoise = collision.gameObject;
+                else if (!targetedPulsingNoise && collision.gameObject.GetComponent<NoiseController>().isPulsing)
+                {
+                    targetedPulsingNoise = collision.gameObject;
+                    currentPathingTarget = targetedPulsingNoise.transform.parent.Find("Deactivate Pos").position;
+                }
 
                 currentState = ENEMY_STATE.ALERTED;
                 ResetRotationVariables();
@@ -593,7 +597,11 @@ public class EnemyScript : MonoBehaviour
                 _agent.isStopped = true;
                 currentPathingTarget = collision.gameObject.transform.position;
 
-                if (collision.gameObject.GetComponent<NoiseController>().isPulsing) targetedPulsingNoise = collision.gameObject;
+                if (collision.gameObject.GetComponent<NoiseController>().isPulsing)
+                {
+                    targetedPulsingNoise = collision.gameObject;
+                    currentPathingTarget = targetedPulsingNoise.transform.parent.Find("Deactivate Pos").position;
+                }
                 else targetedPulsingNoise = null;
             }
         }

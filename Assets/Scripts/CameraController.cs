@@ -79,7 +79,7 @@ public class CameraController : MonoBehaviour
         target = foodSpawnArea;
         while (Vector3.SqrMagnitude(foodPanda.transform.position - foodSpawnArea.position) >= 0.05f)
         {
-            foodPanda.transform.position = Vector3.MoveTowards(foodPanda.transform.position, foodSpawnArea.position, 5 * Time.deltaTime);
+            foodPanda.transform.position = Vector3.MoveTowards(foodPanda.transform.position, foodSpawnArea.position, 8 * Time.deltaTime);
             yield return null;
         }
         yield return new WaitForSeconds(0.5f);
@@ -87,13 +87,13 @@ public class CameraController : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         while (Vector3.SqrMagnitude(foodPanda.transform.position - initialFoodPandaPos) >= 0.05f)
         {
-            foodPanda.transform.position = Vector3.MoveTowards(foodPanda.transform.position, initialFoodPandaPos, 5 * Time.deltaTime);
+            foodPanda.transform.position = Vector3.MoveTowards(foodPanda.transform.position, initialFoodPandaPos, 8 * Time.deltaTime);
             yield return null;
         }
         yield return new WaitForSeconds(0.5f);
 
         target = PlayerManager.instance.gameObject.transform;
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(1.0f);
         yield return ZoomInCamera();
         smoothTime = playerSmoothTime;
         StartGame();

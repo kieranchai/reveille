@@ -50,11 +50,12 @@ public class PlayerManager : MonoBehaviour
     private bool isCharging = false;
     public GameObject hackingTarget;
     public GameObject foodDropOffTarget;
+    public bool inventoryOpen = false;
     #endregion
 
     #region Audio Clips
-/*    [Header("Player Audio Clips")]
-    public AudioClip playerWalk;*/
+    /*    [Header("Player Audio Clips")]
+        public AudioClip playerWalk;*/
     #endregion
 
     private void Awake()
@@ -98,6 +99,7 @@ public class PlayerManager : MonoBehaviour
                 InteractInput();
                 MouseThrow();
                 MouseDrop();
+                ToggleInventory();
                 break;
             case PLAYER_STATE.HACKING:
                 UpdateNoiseRadius();
@@ -152,6 +154,8 @@ public class PlayerManager : MonoBehaviour
             // Player press SHIFT to Sprint
             if (Input.GetKey(KeyCode.LeftShift))
             {
+                GameController.instance.currentUIManager.SetSprintKeyPressed();
+                GameController.instance.currentUIManager.SetSneakKeyDefault();
                 _anim.speed = 1.5f;
                 currentState = PLAYER_STATE.SPRINTING;
                 movementSpeedMultiplier = 1.5f;
@@ -160,6 +164,8 @@ public class PlayerManager : MonoBehaviour
             // Player press CTRL to Sneak
             else if (Input.GetKey(KeyCode.LeftControl))
             {
+                GameController.instance.currentUIManager.SetSneakKeyPressed();
+                GameController.instance.currentUIManager.SetSprintKeyDefault();
                 _anim.speed = 0.5f;
                 currentState = PLAYER_STATE.SNEAKING;
                 movementSpeedMultiplier = 0.5f;
@@ -168,6 +174,8 @@ public class PlayerManager : MonoBehaviour
             // Player moving normally
             else
             {
+                GameController.instance.currentUIManager.SetSprintKeyDefault();
+                GameController.instance.currentUIManager.SetSneakKeyDefault();
                 currentState = PLAYER_STATE.WALKING;
                 movementSpeedMultiplier = 1.0f;
                 noiseSizeMultiplier = 1.0f;
@@ -182,6 +190,8 @@ public class PlayerManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
+            GameController.instance.currentUIManager.SetInteractKeyPressed();
+
             // Pickup food higher priority
             if (nearbyFood.Count > 0)
             {
@@ -195,6 +205,21 @@ public class PlayerManager : MonoBehaviour
 
             // Deliver food
             DropOffFood();
+        }
+        else
+        {
+            GameController.instance.currentUIManager.SetInteractKeyDefault();
+        }
+    }
+
+    public void ToggleInventory()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            inventoryOpen = !inventoryOpen;
+
+            if (inventoryOpen) GameController.instance.currentUIManager.DisplayInventory();
+            else GameController.instance.currentUIManager.HideInventory();
         }
     }
 
@@ -215,6 +240,7 @@ public class PlayerManager : MonoBehaviour
             if (currentSelectedFood >= inventory.Count) currentSelectedFood = 0;
 
             GameController.instance.currentUIManager.UpdateCurrentFood();
+            GameController.instance.currentUIManager.UpdateInventorySelectedFood();
             CancelThrowFood();
         }
 
@@ -225,6 +251,7 @@ public class PlayerManager : MonoBehaviour
             if (currentSelectedFood < 0) currentSelectedFood = inventory.Count - 1;
 
             GameController.instance.currentUIManager.UpdateCurrentFood();
+            GameController.instance.currentUIManager.UpdateInventorySelectedFood();
             CancelThrowFood();
         }
     }
@@ -271,8 +298,6 @@ public class PlayerManager : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             ThrowFood();
-            _lineRenderer.positionCount = 0;
-            _lineRenderer.enabled = false;
         }
     }
 
@@ -321,6 +346,7 @@ public class PlayerManager : MonoBehaviour
 
         GameController.instance.currentUIManager.UpdateWeightCount(currentInventoryWeight, inventoryWeightLimit);
         GameController.instance.currentUIManager.UpdateCurrentFood();
+        GameController.instance.currentUIManager.UpdateInventorySelectedFood();
     }
 
     public void RemoveFoodFromInventory(Food foodItem)
@@ -330,6 +356,7 @@ public class PlayerManager : MonoBehaviour
         inventory.Remove(foodItem);
 
         GameController.instance.currentUIManager.UpdateCurrentFood();
+        GameController.instance.currentUIManager.UpdateInventorySelectedFood();
         GameController.instance.currentUIManager.UpdateWeightCount(currentInventoryWeight, inventoryWeightLimit);
     }
 
@@ -359,7 +386,7 @@ public class PlayerManager : MonoBehaviour
         thrownFood.GetComponent<FoodManager>().SetFoodData(inventory[currentSelectedFood]);
         thrownFood.GetComponent<FoodManager>().Throw(CalculateThrowRange());
         RemoveFoodFromInventory(inventory[currentSelectedFood]);
-        throwTimer = 0.0f;
+        CancelThrowFood();
     }
 
     public float CalculateThrowRange()
@@ -399,6 +426,7 @@ public class PlayerManager : MonoBehaviour
         throwTimer = 0.0f;
         _lineRenderer.positionCount = 0;
         _lineRenderer.enabled = false;
+        isCharging = false;
     }
 
     public void AttemptHack()

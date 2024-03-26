@@ -2,23 +2,55 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] private TMP_Text levelTimer;
-    [SerializeField] private TMP_Text pointsIndicator;
-    [SerializeField] private TMP_Text interactIndicator;
-    [SerializeField] private TMP_Text weightCount;
-    [SerializeField] private TMP_Text foodIndicator;
-
     [SerializeField] GameObject canvas;
+    [SerializeField] GameObject playerHud;
     [SerializeField] GameObject pauseMenu;
     [SerializeField] GameObject gameOverMenu;
     [SerializeField] GameObject winMenu;
 
+    private GameObject controlsInteract;
+    private GameObject controlsScroll;
+    private GameObject controlsThrow;
+    private GameObject controlsDrop;
+    private GameObject inventoryDisplay;
+    private GameObject inventory;
+    private GameObject[] inventoryItems;
+    private GameObject inventoryItemInfo;
+    private GameObject selectedFood;
+    private GameObject selectedFoodInfo;
+
     private void Start()
     {
+        controlsInteract = playerHud.transform.Find("Controls").Find("Interact").gameObject;
+        controlsInteract.SetActive(false);
+        controlsScroll = playerHud.transform.Find("Controls").Find("Scroll").gameObject;
+        controlsScroll.SetActive(false);
+        controlsThrow = playerHud.transform.Find("Controls").Find("Throw").gameObject;
+        controlsThrow.SetActive(false);
+        controlsDrop = playerHud.transform.Find("Controls").Find("Drop").gameObject;
+        controlsDrop.SetActive(false);
+
+        inventoryDisplay = playerHud.transform.Find("Inventory Display").gameObject;
+        inventory = inventoryDisplay.transform.Find("Inventory").gameObject;
+        inventoryItems = new GameObject[inventory.transform.childCount];
+        for (int i = 0; i < inventory.transform.childCount; i++)
+        {
+            inventoryItems[i] = inventory.transform.GetChild(i).gameObject;
+        }
+        inventoryItemInfo = inventoryDisplay.transform.Find("Item Info").gameObject;
+        inventoryDisplay.SetActive(false);
+        inventoryItemInfo.SetActive(false);
+
+        selectedFood = playerHud.transform.Find("Selected Food").gameObject;
+        selectedFoodInfo = selectedFood.transform.Find("Info").gameObject;
+        selectedFoodInfo.SetActive(false);
+
         HideWinMenu();
         HideGameOverMenu();
         HidePauseMenu();
@@ -29,60 +61,160 @@ public class UIManager : MonoBehaviour
         DisplayLevelTime(GameController.instance.currentLevelController.levelTimer);
     }
 
+    #region Player HUD
     public void DisplayLevelTime(float timeToDisplay)
     {
         timeToDisplay += 1;
         float minutes = Mathf.FloorToInt(timeToDisplay / 60);
         float seconds = Mathf.FloorToInt(timeToDisplay % 60);
-        levelTimer.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        playerHud.transform.Find("Level Timer").Find("Timer").GetComponent<TMP_Text>().text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
     public void UpdateCurrentFood()
     {
-        if (PlayerManager.instance.inventory.Count < 1)
+        if (PlayerManager.instance.inventory.Count < 2) controlsScroll.SetActive(false);
+        else controlsScroll.SetActive(true);
+
+        if (PlayerManager.instance.inventory.Count > 0)
         {
-            foodIndicator.text = "None";
+            controlsDrop.SetActive(true);
+            controlsThrow.SetActive(true);
+
+            // selectedFood.transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/UI/{PlayerManager.instance.inventory[PlayerManager.instance.currentSelectedFood].foodName}");
+            selectedFood.transform.Find("Name").gameObject.GetComponent<TMP_Text>().text = $"{PlayerManager.instance.inventory[PlayerManager.instance.currentSelectedFood].foodName}";
+
+            selectedFoodInfo.SetActive(true);
+            selectedFoodInfo.transform.Find("Points").gameObject.GetComponent<TMP_Text>().text = $"{PlayerManager.instance.inventory[PlayerManager.instance.currentSelectedFood].currentPoints}";
+            selectedFoodInfo.transform.Find("Weight").gameObject.GetComponent<TMP_Text>().text = $"{PlayerManager.instance.inventory[PlayerManager.instance.currentSelectedFood].weight} <color=#C9A610>G</color>";
         }
         else
         {
-            string currentFoodName = PlayerManager.instance.inventory[PlayerManager.instance.currentSelectedFood].foodName;
-            foodIndicator.text = currentFoodName;
+            controlsDrop.SetActive(false);
+            controlsThrow.SetActive(false);
+            selectedFoodInfo.SetActive(false);
+            // selectedFood.transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/UI/No_Food}");
+            selectedFood.transform.Find("Name").gameObject.GetComponent<TMP_Text>().text = string.Empty;
         }
     }
 
     public void UpdateWeightCount(int currentWeight, int weightLimit)
     {
-        weightCount.text = $"Inventory Weight: {currentWeight}/{weightLimit}g";
+        playerHud.transform.Find("Controls").Find("Open Inventory").Find("Weight Limit").gameObject.GetComponent<TMP_Text>().text = $"{currentWeight}/{weightLimit} <color=#C9A610>G</color>";
+    }
+
+    public void DisplayInventory()
+    {
+        playerHud.transform.Find("Controls").Find("Open Inventory").gameObject.transform.Find("Icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/TAB_Pressed");
+
+        /*        for (int i = 0; i < inventoryItems.Length - 1; i++)
+                {
+                    if (!PlayerManager.instance.inventory[i])
+                    {
+                        inventoryItems[i].transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/UI/No_Food");
+                        return;
+                    }
+                    else inventoryItems[i].transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/UI/{PlayerManager.instance.inventory[i].foodName}");
+                }*/
+
+        UpdateInventorySelectedFood();
+        inventoryDisplay.SetActive(true);
+        DisplaySelectedFoodInfo();
+    }
+
+    public void UpdateInventorySelectedFood()
+    {
+        for (int i = 0; i < inventoryItems.Length - 1; i++)
+        {
+            if (PlayerManager.instance.currentSelectedFood == i && PlayerManager.instance.inventory.Count > 0) inventoryItems[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/Inventory_Equipped");
+            else inventoryItems[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/Inventory_Default");
+        }
+
+        if (inventory.activeInHierarchy) DisplaySelectedFoodInfo();
+    }
+
+    public void DisplaySelectedFoodInfo()
+    {
+        if (PlayerManager.instance.inventory.Count <= 0)
+        {
+            inventoryItemInfo.SetActive(false);
+            return;
+        }
+
+        inventoryItemInfo.SetActive(true);
+        inventoryItemInfo.transform.Find("Name").gameObject.GetComponent<TMP_Text>().text = $"{PlayerManager.instance.inventory[PlayerManager.instance.currentSelectedFood].foodName}";
+        inventoryItemInfo.transform.Find("Points").gameObject.GetComponent<TMP_Text>().text = $"{PlayerManager.instance.inventory[PlayerManager.instance.currentSelectedFood].currentPoints}";
+        inventoryItemInfo.transform.Find("Weight").gameObject.GetComponent<TMP_Text>().text = $"{PlayerManager.instance.inventory[PlayerManager.instance.currentSelectedFood].weight} <color=#C9A610>G</color>";
+    }
+
+    public void HideInventory()
+    {
+        playerHud.transform.Find("Controls").Find("Open Inventory").gameObject.transform.Find("Icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/TAB_Default");
+        inventoryDisplay.SetActive(false);
     }
 
     public void UpdateTotalPoints(int points)
     {
-        pointsIndicator.text = $"Points: {points}";
+        playerHud.transform.Find("Points").Find("Points").GetComponent<TMP_Text>().text = $"{points}";
     }
 
     public void UpdateDisplayInteractables()
     {
         if (PlayerManager.instance.nearbyFood.Count > 0)
         {
-            interactIndicator.text = $"Press E to pick up {PlayerManager.instance.nearbyFood[0].GetComponent<FoodManager>().foodName.ToUpper()}";
+            controlsInteract.SetActive(true);
+            controlsInteract.transform.Find("Text").GetComponent<TMP_Text>().text = $"Pick up {PlayerManager.instance.nearbyFood[0].GetComponent<FoodManager>().foodName.ToUpper()}";
             return;
         }
 
         if (PlayerManager.instance.hackingTarget)
         {
-            interactIndicator.text = "Press E to hack door";
+            controlsInteract.SetActive(true);
+            controlsInteract.transform.Find("Text").GetComponent<TMP_Text>().text = "Hack door";
             return;
         }
 
-        if (PlayerManager.instance.foodDropOffTarget)
+        if (PlayerManager.instance.foodDropOffTarget && PlayerManager.instance.inventory.Count > 0)
         {
-            interactIndicator.text = "Press E to deposit food";
+            controlsInteract.SetActive(true);
+            controlsInteract.transform.Find("Text").GetComponent<TMP_Text>().text = "Deposit food";
             return;
         }
 
-        interactIndicator.text = string.Empty;
+        controlsInteract.SetActive(false);
     }
 
+    public void SetInteractKeyPressed()
+    {
+        controlsInteract.transform.Find("Icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/E_Pressed");
+    }
+
+    public void SetInteractKeyDefault()
+    {
+        controlsInteract.transform.Find("Icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/E_Default");
+    }
+
+    public void SetSprintKeyPressed()
+    {
+        playerHud.transform.Find("Controls").Find("Sprint").gameObject.transform.Find("Icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/SHIFT_Pressed");
+    }
+
+    public void SetSprintKeyDefault()
+    {
+        playerHud.transform.Find("Controls").Find("Sprint").gameObject.transform.Find("Icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/SHIFT_Default");
+    }
+
+    public void SetSneakKeyPressed()
+    {
+        playerHud.transform.Find("Controls").Find("Sneak").gameObject.transform.Find("Icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/CTRL_Pressed");
+    }
+
+    public void SetSneakKeyDefault()
+    {
+        playerHud.transform.Find("Controls").Find("Sneak").gameObject.transform.Find("Icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/CTRL_Default");
+    }
+    #endregion
+
+    #region Menus
     public void HideAllUI()
     {
         canvas.SetActive(false);
@@ -122,4 +254,5 @@ public class UIManager : MonoBehaviour
     {
         winMenu.SetActive(true);
     }
+    #endregion
 }

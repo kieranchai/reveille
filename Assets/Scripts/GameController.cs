@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static PlayerManager;
 
 public class GameController : MonoBehaviour
 {
@@ -41,7 +42,7 @@ public class GameController : MonoBehaviour
         if (currentScene == "Main Menu") return;
         if (isPanning) return;
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && PlayerManager.instance.currentState != PLAYER_STATE.HACKING)
         {
             isPaused = !isPaused;
 
