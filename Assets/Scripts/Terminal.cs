@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class Terminal : MonoBehaviour
 {
     private NoiseController _noiseController;
+    private Animator _anim;
     public bool playable;
     private GameObject minigame;
     private bool playedAlertSound = false;
@@ -32,10 +33,20 @@ public class Terminal : MonoBehaviour
 
         playable = true;
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
+        _anim = gameObject.GetComponent<Animator>();   
     }
 
     private void Update()
     {
+        if (_noiseController.isPulsing)
+        {
+            _anim.SetBool("isPlayingAlarm", true);
+        }
+        else
+        {
+            _anim.SetBool("isPlayingAlarm", false);
+        }
+
         if (minigame == null) return;
 
         if (minigame.GetComponent<Minigame>().currentHackingState == Minigame.HackState.WIN)
@@ -48,6 +59,7 @@ public class Terminal : MonoBehaviour
             SoundAlarm();
             StopHacking();
         }
+
     }
 
     public void StartHacking()
@@ -68,16 +80,12 @@ public class Terminal : MonoBehaviour
         playable = false;
         StopAllCoroutines();
         _noiseController.StopNoise();
-
+        _anim.SetBool("isOpen", true);
         foreach (GameObject door in doors)
         {
-            //disable door
-            /*door.SetActive(false);*/
             StartCoroutine(openDoor(door));
             door.GetComponent<SpriteRenderer>().sprite = openedDoor;
             door.GetComponent<NavMeshObstacle>().carving = false;
-            //door.GetComponent<BoxCollider2D>().enabled = false;
-            //animate door
         }
     }
 

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7708560718989806263}
   - component: {fileID: 7064881823120224244}
   - component: {fileID: 7619041425578762912}
+  - component: {fileID: 8009701811053066488}
   m_Layer: 0
   m_Name: Hacking Spot
   m_TagString: Untagged
@@ -77,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 37609689, guid: 7d42ede52f071db478c92ef6e6725543, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 38a2e704f480a184cb785b39f72e143f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -102,9 +103,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playable: 0
   openedDoor: {fileID: 21300000, guid: b2f08d12342ba244c98cb63c67a8acc5, type: 3}
+  isVerticle: 0
   doors: []
   speed: 0
   rings: 0
+--- !u!95 &8009701811053066488
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2766377628199779769}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d0e01c4c4bded324cb9fbbfe89a28815, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &5233787865420047582
 GameObject:
   m_ObjectHideFlags: 0
