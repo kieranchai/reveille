@@ -101,6 +101,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playable: 0
+  openedDoor: {fileID: 21300000, guid: b2f08d12342ba244c98cb63c67a8acc5, type: 3}
   doors: []
   speed: 0
   rings: 0
