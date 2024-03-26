@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5572000079883729772}
   - component: {fileID: 995852584923732678}
   - component: {fileID: 7590247030203257990}
+  - component: {fileID: 5154546355268597681}
   m_Layer: 7
   m_Name: Door
   m_TagString: Untagged
@@ -130,3 +131,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.0051169, y: 0.21988872}
   m_EdgeRadius: 0
+--- !u!208 &5154546355268597681
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6617362450544541358}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.125, z: 0.1}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5

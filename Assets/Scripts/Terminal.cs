@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Terminal : MonoBehaviour
 {
@@ -64,6 +65,7 @@ public class Terminal : MonoBehaviour
             /*door.SetActive(false);*/
             StartCoroutine(openDoor(door));
             door.GetComponent<SpriteRenderer>().sprite = openedDoor;
+            door.GetComponent<NavMeshObstacle>().carving = false;
             //door.GetComponent<BoxCollider2D>().enabled = false;
             //animate door
         }
