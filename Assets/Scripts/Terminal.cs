@@ -8,6 +8,7 @@ public class Terminal : MonoBehaviour
     public bool playable;
     private GameObject minigame;
     private bool playedAlertSound = false;
+    public Sprite openedDoor;
 
     [Header("Unlocks")]
     public List<GameObject> doors;
@@ -60,12 +61,24 @@ public class Terminal : MonoBehaviour
         foreach (GameObject door in doors)
         {
             //disable door
-            door.SetActive(false);
+            /*door.SetActive(false);*/
+            StartCoroutine(openDoor(door));
+            door.GetComponent<SpriteRenderer>().sprite = openedDoor;
             //door.GetComponent<BoxCollider2D>().enabled = false;
             //animate door
         }
     }
 
+    IEnumerator openDoor(GameObject Door)
+    {
+        Vector3 offset = new Vector3(5, 0, 0);
+        while (Vector3.SqrMagnitude(Door.transform.position - (Door.transform.position - offset)) >= 0.05f)
+        {
+            Door.transform.position = Vector3.MoveTowards(Door.transform.position, Door.transform.position - offset, 2 * Time.deltaTime);
+            yield return null;
+        }
+    }
+    
     private void SoundAlarm()
     {
         if (!playedAlertSound)
