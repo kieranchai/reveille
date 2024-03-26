@@ -258,13 +258,12 @@ public class PlayerManager : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.up, CalculateThrowRange(), mask1);
             if (hit.collider != null)
             {
-                /*_lineRenderer.SetPosition(0, Vector3.zero);*/
-                _lineRenderer.SetPosition(0, new Vector3 (0f,0f,-1f));
+                _lineRenderer.SetPosition(0, new Vector3 (0f,0f,-0.1f));
                 _lineRenderer.SetPosition(1, transform.InverseTransformPoint(hit.point));
             }
             else
             {
-                _lineRenderer.SetPosition(0, new Vector3(0f, 0f, -1f));
+                _lineRenderer.SetPosition(0, new Vector3(0f, 0f, -0.1f));
                 _lineRenderer.SetPosition(1, transform.InverseTransformPoint(GetFinalThrowPosition()));
             }
         }
