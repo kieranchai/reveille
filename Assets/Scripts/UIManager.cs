@@ -88,7 +88,7 @@ public class UIManager : MonoBehaviour
             controlsDrop.SetActive(true);
             controlsThrow.SetActive(true);
 
-            // selectedFood.transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/UI/{PlayerManager.instance.inventory[PlayerManager.instance.currentSelectedFood].foodName}");
+            selectedFood.transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/UI/{PlayerManager.instance.inventory[PlayerManager.instance.currentSelectedFood].foodName}");
             selectedFood.transform.Find("Name").gameObject.GetComponent<TMP_Text>().text = $"{PlayerManager.instance.inventory[PlayerManager.instance.currentSelectedFood].foodName}";
 
             selectedFoodInfo.SetActive(true);

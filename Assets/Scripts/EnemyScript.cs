@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -61,6 +62,7 @@ public class EnemyScript : MonoBehaviour
     private Vector3 initialRotation;
     private float rotationTime;
     private GameObject targetedPulsingNoise;
+    private GameObject popUp;
     #endregion
 
     private void Awake()
@@ -94,6 +96,8 @@ public class EnemyScript : MonoBehaviour
 
     private void Update()
     {
+        if (popUp) popUp.transform.position = new Vector3(transform.position.x, transform.position.y + 1);
+
         switch (currentState)
         {
             case ENEMY_STATE.PATROL:
@@ -183,6 +187,13 @@ public class EnemyScript : MonoBehaviour
         // If see player, become confused "Huh?!"
         if (PlayerInSight())
         {
+            if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Popup"));
+            if (popUp)
+            {
+                popUp.GetComponent<TMP_Text>().text = "?";
+                popUp.GetComponent<TMP_Text>().color = Color.white;
+            }
+
             ResetRotationVariables();
             UpdatePlayerLastSeenPosition();
             currentPathingTarget = playerLastSeenPosition;
@@ -196,6 +207,11 @@ public class EnemyScript : MonoBehaviour
         _agent.speed = walkSpeed;
         confusedTimer += Time.deltaTime;
 
+        if (popUp)
+        {
+            popUp.GetComponent<TMP_Text>().color = Color.Lerp(popUp.GetComponent<TMP_Text>().color, Color.yellow, 1 * Time.deltaTime);
+        }
+
         isTurning = true;
         if (isTurning)
         {
@@ -204,6 +220,11 @@ public class EnemyScript : MonoBehaviour
                 // After confused for 1 second, go to alerted
                 if (confusedTimer >= 1.0f)
                 {
+                    if (popUp)
+                    {
+                        popUp.GetComponent<TMP_Text>().color = Color.yellow;
+                    }
+
                     ResetRotationVariables();
                     confusedTimer = 0.0f;
                     currentState = ENEMY_STATE.ALERTED;
@@ -212,6 +233,12 @@ public class EnemyScript : MonoBehaviour
                 // If confused but still see player after 0.5 second, start chasing "HEY!"
                 if (PlayerInSight() && confusedTimer >= 0.5f)
                 {
+                    if (popUp)
+                    {
+                        popUp.GetComponent<TMP_Text>().text = "!";
+                        popUp.GetComponent<TMP_Text>().color = Color.red;
+                    }
+
                     ResetRotationVariables();
                     confusedTimer = 0.0f;
                     currentState = ENEMY_STATE.CHASE;
@@ -223,6 +250,12 @@ public class EnemyScript : MonoBehaviour
     private void AlertState()
     {
         _agent.speed = walkSpeed;
+
+        if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Popup"));
+        if (popUp)
+        {
+            popUp.GetComponent<TMP_Text>().text = "?";
+        }
 
         if (targetedPulsingNoise && !targetedPulsingNoise.GetComponent<NoiseController>().isActivated)
         {
@@ -238,6 +271,11 @@ public class EnemyScript : MonoBehaviour
                     _agent.SetDestination(currentPathingTarget);
                     _agent.isStopped = false;
                     currentState = ENEMY_STATE.PATROL;
+                    if (popUp)
+                    {
+                        Destroy(popUp);
+                        popUp = null;
+                    }
                     ResetRotationVariables();
                 }
             }
@@ -248,6 +286,10 @@ public class EnemyScript : MonoBehaviour
             transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
             _agent.SetDestination(currentPathingTarget);
             _agent.isStopped = false;
+            if (popUp)
+            {
+                popUp.GetComponent<TMP_Text>().color = Color.Lerp(popUp.GetComponent<TMP_Text>().color, Color.yellow, 3 * Time.deltaTime);
+            }
         }
 
         if (isTurning && !isDoneLooking)
@@ -264,6 +306,12 @@ public class EnemyScript : MonoBehaviour
         // At current target
         if (_agent.remainingDistance != 0 && _agent.remainingDistance <= _agent.stoppingDistance || _agent.pathStatus == NavMeshPathStatus.PathComplete && _agent.remainingDistance == 0)
         {
+            if (popUp)
+            {
+                popUp.GetComponent<TMP_Text>().text = "?";
+                popUp.GetComponent<TMP_Text>().color = Color.Lerp(popUp.GetComponent<TMP_Text>().color, Color.white, 3 * Time.deltaTime);
+            }
+
             if (!isDoneLooking)
             {
                 if (targetedPulsingNoise && Vector2.SqrMagnitude(transform.position - currentPathingTarget) <= _agent.stoppingDistance)
@@ -292,6 +340,11 @@ public class EnemyScript : MonoBehaviour
                         _agent.SetDestination(currentPathingTarget);
                         _agent.isStopped = false;
                         currentState = ENEMY_STATE.PATROL;
+                        if (popUp)
+                        {
+                            Destroy(popUp);
+                            popUp = null;
+                        }
                         ResetRotationVariables();
                     }
                 }
@@ -303,6 +356,11 @@ public class EnemyScript : MonoBehaviour
         {
             ResetRotationVariables();
             UpdatePlayerLastSeenPosition();
+            if (popUp)
+            {
+                popUp.GetComponent<TMP_Text>().text = "!";
+                popUp.GetComponent<TMP_Text>().color = Color.red;
+            }
             currentState = ENEMY_STATE.CHASE;
         }
     }
@@ -310,6 +368,8 @@ public class EnemyScript : MonoBehaviour
     private void ChaseState()
     {
         _agent.speed = runSpeed;
+
+        if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Popup"));
 
         if (!isTurning)
         {
@@ -322,7 +382,11 @@ public class EnemyScript : MonoBehaviour
         if (PlayerInSight())
         {
             UpdatePlayerLastSeenPosition();
-
+            if (popUp)
+            {
+                popUp.GetComponent<TMP_Text>().text = "!";
+                popUp.GetComponent<TMP_Text>().color = Color.red;
+            }
             chaseTimer = 0.0f;
             predictTimer = 0.0f;
 
@@ -333,6 +397,7 @@ public class EnemyScript : MonoBehaviour
         {
             chaseTimer += Time.deltaTime;
             predictTimer += Time.deltaTime;
+            if (popUp) popUp.GetComponent<TMP_Text>().color = Color.Lerp(popUp.GetComponent<TMP_Text>().color, Color.yellow, 1 * Time.deltaTime);
 
             // Method 1: Go to player's position every 2 second?
             Vector3 predictedPosition = PlayerManager.instance.CurrentPosition() - PlayerManager.instance.CurrentVelocity() * 0.15f;
@@ -362,6 +427,12 @@ public class EnemyScript : MonoBehaviour
         // If player not in sight for 5 seconds, look around
         if (chaseTimer >= 5.0f)
         {
+            if (popUp)
+            {
+                popUp.GetComponent<TMP_Text>().text = "?";
+                popUp.GetComponent<TMP_Text>().color = Color.Lerp(popUp.GetComponent<TMP_Text>().color, Color.white, 3 * Time.deltaTime);
+            }
+
             _agent.isStopped = true;
 
             if (!isDoneLooking)
@@ -388,6 +459,11 @@ public class EnemyScript : MonoBehaviour
                         _agent.SetDestination(currentPathingTarget);
                         _agent.isStopped = false;
                         currentState = ENEMY_STATE.PATROL;
+                        if (popUp)
+                        {
+                            Destroy(popUp);
+                            popUp = null;
+                        }
                     }
                 }
             }
@@ -404,6 +480,13 @@ public class EnemyScript : MonoBehaviour
             playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
             currentState = ENEMY_STATE.CCTV_TARGET;
             confusedTimer = 0.0f;
+
+            if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Popup"));
+            if (popUp)
+            {
+                popUp.GetComponent<TMP_Text>().text = "!";
+                popUp.GetComponent<TMP_Text>().color = Color.red;
+            }
         }
     }
 
@@ -418,6 +501,11 @@ public class EnemyScript : MonoBehaviour
         else
         {
             currentState = ENEMY_STATE.CCTV;
+            if (popUp)
+            {
+                Destroy(popUp);
+                popUp = null;
+            }
         }
     }
     #endregion
@@ -579,7 +667,6 @@ public class EnemyScript : MonoBehaviour
                     targetedPulsingNoise = collision.gameObject;
                     currentPathingTarget = targetedPulsingNoise.transform.parent.Find("Deactivate Pos").position;
                 }
-
                 currentState = ENEMY_STATE.ALERTED;
                 ResetRotationVariables();
                 isTurning = true;
@@ -592,6 +679,13 @@ public class EnemyScript : MonoBehaviour
             if (currentState == ENEMY_STATE.PATROL)
             {
                 ResetRotationVariables();
+
+                if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Popup"));
+                if (popUp)
+                {
+                    popUp.GetComponent<TMP_Text>().text = "?";
+                    popUp.GetComponent<TMP_Text>().color = Color.white;
+                }
 
                 currentState = ENEMY_STATE.CONFUSED;
                 _agent.isStopped = true;

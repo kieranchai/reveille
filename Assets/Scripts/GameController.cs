@@ -111,6 +111,11 @@ public class GameController : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
+    public void FinishGame()
+    {
+        ExitGame();
+    }
+
     public void RetryGame()
     {
         Time.timeScale = 1.0f;
