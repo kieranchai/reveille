@@ -23,6 +23,14 @@ public class GameController : MonoBehaviour
         Time.timeScale = 1.0f;
     }
 
+    private void Start()
+    {
+        if (currentScene == "Main Menu")
+        {
+            AudioManager.instance.PlayBGM(AudioManager.instance.mainMenuMusic);
+        }
+    }
+
     private void Update()
     {
         CheckPause();
