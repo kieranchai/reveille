@@ -1443,7 +1443,6 @@ MonoBehaviour:
   musicSource: {fileID: 0}
   SFXSource: {fileID: 0}
   mainMenuMusic: {fileID: 0}
-  mainGameMusic: {fileID: 0}
 --- !u!1001 &369118610
 PrefabInstance:
   m_ObjectHideFlags: 0
