@@ -472,6 +472,7 @@ public class EnemyScript : MonoBehaviour
 
     private void CCTVScanState()
     {
+        gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>($"Sprites/CCTV_Normal");
         Quaternion targetRotation = Quaternion.Euler(initialRotation.x, initialRotation.y, 70 * Mathf.Sin(Time.time * 0.8f) + initialRotation.z);
         transform.localRotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime * 90f);
 
@@ -492,8 +493,10 @@ public class EnemyScript : MonoBehaviour
 
     private void CCTVTargetState()
     {
+        gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>($"Sprites/CCTV_Alert");
         if (PlayerInSight())
         {
+
             if (!_noiseController.isActivated && !_noiseController.isPulsing) _noiseController.StartCoroutine(_noiseController.ProduceNoiseTimer());
             playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
             transform.up = new Vector3(playerLastSeenPosition.x, playerLastSeenPosition.y) - new Vector3(transform.position.x, transform.position.y);
