@@ -22,6 +22,7 @@ public class CameraController : MonoBehaviour
     private float playerSmoothTime = 0.3f;
     private float introSmoothTime = 1f;
     private Transform foodSpawnArea;
+    private Vector3 initialFoodPandaPos;
 
     private void Start()
     {
@@ -75,7 +76,7 @@ public class CameraController : MonoBehaviour
         GameController.instance.currentUIManager.HideAllUI();
 
         GameObject foodPanda = GameObject.Find("Foodpanda");
-        Vector3 initialFoodPandaPos = foodPanda.transform.position;
+        initialFoodPandaPos = foodPanda.transform.position;
         target = foodSpawnArea;
         while (Vector3.SqrMagnitude(foodPanda.transform.position - foodSpawnArea.position) >= 0.05f)
         {
@@ -106,6 +107,7 @@ public class CameraController : MonoBehaviour
         target = PlayerManager.instance.gameObject.transform;
         Camera.main.orthographicSize = initialZoom;
         GameController.instance.currentLevelController.SpawnFood();
+        GameObject.Find("Foodpanda").transform.position = initialFoodPandaPos;
         StartGame();
     }
 

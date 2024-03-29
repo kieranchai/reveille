@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.ParticleSystem;
 
 public class FoodManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class FoodManager : MonoBehaviour
     private Collider2D _collider;
     private SpriteRenderer _spriteRenderer;
     private NoiseController _noiseController;
+    private ParticleSystem _particle;
     public Food _data;
 
     // Default Data
@@ -37,6 +39,7 @@ public class FoodManager : MonoBehaviour
         _collider = GetComponent<Collider2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
+        _particle = transform.Find("Particle").GetComponent<ParticleSystem>();
 
         if (testData) SetDefaultFoodData(testData);
     }
@@ -49,12 +52,14 @@ public class FoodManager : MonoBehaviour
             {
                 isThrown = false;
                 _rigidBody.velocity = Vector3.zero;
+                _particle.Play();
                 StartCoroutine(_noiseController.ProduceNoiseOnce());
             }
 
             if (_rigidBody.velocity.magnitude < 1.0f)
             {
                 isThrown = false;
+                _particle.Play();
                 StartCoroutine(_noiseController.ProduceNoiseOnce());
             }
         }
@@ -68,8 +73,7 @@ public class FoodManager : MonoBehaviour
     {
         hasShownPopUp = true;
         myPopUp = Instantiate(Resources.Load<GameObject>("Prefabs/Food Popup"), transform);
-        myPopUp.transform.Find("Points").gameObject.GetComponent<TMP_Text>().text = $"{this.currentPoints}";
-        myPopUp.transform.Find("Weight").gameObject.GetComponent<TMP_Text>().text = $"{this.weight}g";
+        myPopUp.transform.Find("Weight").gameObject.GetComponent<TMP_Text>().text = $"{this.weight} <color=#C9A610>G</color>";
     }
 
     // Used only when spawning food from throwing to set their current points
@@ -116,6 +120,7 @@ public class FoodManager : MonoBehaviour
         if (collision.gameObject.layer == 7)
         {
             if (!isThrown) return;
+            _particle.Play();
             StartCoroutine(_noiseController.ProduceNoiseOnce());
             // Lose velocity when hit wall
             _rigidBody.velocity *= 0.10f;
