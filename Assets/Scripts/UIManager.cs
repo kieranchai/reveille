@@ -257,6 +257,9 @@ public class UIManager : MonoBehaviour
     public void ShowWinMenu()
     {
         winMenu.SetActive(true);
+        winMenu.transform.Find("Scores").Find("Food").Find("Food Score").GetComponent<TMP_Text>().text = $"{PlayerManager.instance.points}";
+        winMenu.transform.Find("Scores").Find("Time").Find("Time Score").GetComponent<TMP_Text>().text = $"{PlayerManager.instance.timePoints}";
+        winMenu.transform.Find("Scores").Find("Overall").Find("Overall Score").GetComponent<TMP_Text>().text = $"{PlayerManager.instance.points + PlayerManager.instance.timePoints}";
     }
 
     public void ShowControlsMainMenu()

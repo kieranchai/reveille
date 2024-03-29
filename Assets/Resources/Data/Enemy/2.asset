@@ -16,5 +16,5 @@ MonoBehaviour:
   enemyName: Steadfast Sergeants
   walkSpeed: 5
   runSpeed: 6
-  lineOfSight: 3
-  fieldOfView: 60
+  lineOfSight: 5
+  fieldOfView: 80

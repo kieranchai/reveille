@@ -5,7 +5,7 @@ using UnityEngine;
 public class LevelController : MonoBehaviour
 {
     public float levelTimer;
-    public float targetScore;
+    private float targetScore;
     public int droppedFoodCount;
     private int totalFoodCount;
 
@@ -26,14 +26,16 @@ public class LevelController : MonoBehaviour
         if (levelTimer > 0)
         {
             levelTimer -= Time.deltaTime;
+            PlayerManager.instance.timePoints = (int)levelTimer;
 
             if (droppedFoodCount == totalFoodCount) GameController.instance.GameWon();
         }
         else
         {
             levelTimer = 0;
+            PlayerManager.instance.timePoints = (int)levelTimer;
 
-            if (PlayerManager.instance.points >= targetScore) GameController.instance.GameWon();
+            if (PlayerManager.instance.points + PlayerManager.instance.timePoints >= targetScore) GameController.instance.GameWon();
             else GameController.instance.GameOver();
         }
     }
@@ -44,6 +46,9 @@ public class LevelController : MonoBehaviour
         {
             GameObject thrownFood = Instantiate(Resources.Load<GameObject>("Prefabs/Food"), foodTable[i].position, Quaternion.identity);
             thrownFood.GetComponent<FoodManager>().SetDefaultFoodData(levelFood[i]);
+            targetScore += 0.7f * levelFood[i].maxPoints;
         }
+
+        targetScore += 0.5f * levelTimer;
     }
 }

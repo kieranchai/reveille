@@ -42,6 +42,7 @@ public class PlayerManager : MonoBehaviour
     public List<Food> inventory = new List<Food>();
     public int currentSelectedFood;
     public int points;
+    public int timePoints;
     public List<GameObject> nearbyFood = new List<GameObject>();
     private float throwTimer = 0.0f;
     private float throwInterval = 0.5f;
@@ -369,7 +370,7 @@ public class PlayerManager : MonoBehaviour
             return;
         }
 
-        inventoryWeightPenalty = (float)((0.8 * Mathf.Log(currentInventoryWeight)) / 5);
+        inventoryWeightPenalty = (float)((1.0 * Mathf.Log(currentInventoryWeight)) / 5);
     }
 
     public void PickUpNearestFood()
@@ -396,7 +397,7 @@ public class PlayerManager : MonoBehaviour
         float minChargeTime = 0.5f; // Minimum charge time in seconds
         float maxChargeTime = 2f; // Maximum charge time in seconds
         float minRange = 1.0f; // Minimum food range
-        float maxRange = 200 / Mathf.Sqrt(inventory[currentSelectedFood].weight); // Maximum food range
+        float maxRange = 150 / Mathf.Sqrt(inventory[currentSelectedFood].weight); // Maximum food range
 
         // Clamp totalChargeTime to be within the specified range
         totalChargeTime = Mathf.Clamp(totalChargeTime, minChargeTime, maxChargeTime);
