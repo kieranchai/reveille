@@ -80,14 +80,23 @@ public class CameraController : MonoBehaviour
         target = foodSpawnArea;
         while (Vector3.SqrMagnitude(foodPanda.transform.position - foodSpawnArea.position) >= 0.05f)
         {
+            foodPanda.GetComponent<Animator>().SetBool("isWalking", true);
+            var dir = foodSpawnArea.position - foodPanda.transform.position;
+            var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
+            foodPanda.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
             foodPanda.transform.position = Vector3.MoveTowards(foodPanda.transform.position, foodSpawnArea.position, 8 * Time.deltaTime);
             yield return null;
         }
+        foodPanda.GetComponent<Animator>().SetBool("isWalking", false);
         yield return new WaitForSeconds(0.5f);
         GameController.instance.currentLevelController.SpawnFood();
         yield return new WaitForSeconds(0.5f);
         while (Vector3.SqrMagnitude(foodPanda.transform.position - initialFoodPandaPos) >= 0.05f)
         {
+            foodPanda.GetComponent<Animator>().SetBool("isWalking", true);
+            var dir = initialFoodPandaPos - foodPanda.transform.position;
+            var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
+            foodPanda.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
             foodPanda.transform.position = Vector3.MoveTowards(foodPanda.transform.position, initialFoodPandaPos, 8 * Time.deltaTime);
             yield return null;
         }
