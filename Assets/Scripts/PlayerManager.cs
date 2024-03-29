@@ -470,6 +470,8 @@ public class PlayerManager : MonoBehaviour
         {
             foodDropOffTarget = collision.gameObject.transform.parent.gameObject;
             GameController.instance.currentUIManager.UpdateDisplayInteractables();
+            Animator animator = collision.gameObject.transform.parent.gameObject.GetComponent<Animator>();
+            animator.SetTrigger("Open");
         }
     }
 
@@ -485,6 +487,8 @@ public class PlayerManager : MonoBehaviour
         {
             foodDropOffTarget = null;
             GameController.instance.currentUIManager.UpdateDisplayInteractables();
+            Animator animator = collision.gameObject.transform.parent.gameObject.GetComponent<Animator>();
+            animator.SetTrigger("Close");
         }
     }
 }
