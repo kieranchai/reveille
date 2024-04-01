@@ -41,6 +41,7 @@ public class FoodManager : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
         _particle = transform.Find("Particle").GetComponent<ParticleSystem>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (testData) SetDefaultFoodData(testData);
     }
@@ -93,7 +94,8 @@ public class FoodManager : MonoBehaviour
         this.currentPoints = data.currentPoints;
         this.weight = data.weight;
         _data = data;
-        // Update Food Sprite
+        _spriteRenderer.sprite = Resources.Load<Sprite>($"Sprites/Food/{foodName}");
+
     }
 
     // Used only when spawning food at start of level since SO saves current points
@@ -108,7 +110,7 @@ public class FoodManager : MonoBehaviour
         this.currentPoints = data.currentPoints;
         this.weight = data.weight;
         _data = data;
-        // Update Food Sprite
+        _spriteRenderer.sprite = Resources.Load<Sprite>($"Sprites/Food/{foodName}");
     }
 
     public void Throw(float throwRange)
