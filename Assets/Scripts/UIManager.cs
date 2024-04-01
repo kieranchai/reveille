@@ -231,6 +231,7 @@ public class UIManager : MonoBehaviour
 
     public void HidePauseMenu()
     {
+        controlsMenu.SetActive(false);
         pauseMenu.SetActive(false);
     }
 
