@@ -12157,7 +12157,6 @@ MonoBehaviour:
   isPaused: 0
   isPanning: 1
   gameEnd: 0
-  chaseCounter: 0
 --- !u!114 &360893154
 MonoBehaviour:
   m_ObjectHideFlags: 0

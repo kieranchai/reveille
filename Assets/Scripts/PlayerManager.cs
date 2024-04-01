@@ -242,6 +242,8 @@ public class PlayerManager : MonoBehaviour
         {
             inventoryOpen = !inventoryOpen;
 
+            AudioManager.instance.PlaySFX(AudioManager.instance.openInventory);
+
             if (inventoryOpen) GameController.instance.currentUIManager.DisplayInventory();
             else GameController.instance.currentUIManager.HideInventory();
         }

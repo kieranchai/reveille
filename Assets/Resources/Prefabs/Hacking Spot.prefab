@@ -111,10 +111,10 @@ MonoBehaviour:
   doors: []
   speed: 0
   rings: 0
-  terminalInteract: {fileID: 0}
-  terminalExit: {fileID: 0}
-  minigameFail: {fileID: 0}
-  minigameSuccess: {fileID: 0}
+  terminalInteract: {fileID: 8300000, guid: 42fdbcc3c57273d4e9bbd739d09e93d3, type: 3}
+  terminalExit: {fileID: 8300000, guid: feba6b4c38f172a4c9aa5db14d927fe5, type: 3}
+  minigameFail: {fileID: 8300000, guid: 959bf15179d6eaa43a69dc368722f737, type: 3}
+  minigameSuccess: {fileID: 8300000, guid: 03dbd7a38457e9f4986e56714a160604, type: 3}
   doorOpen: {fileID: 8300000, guid: 541ee291e5c4b094a99c188203265cd6, type: 3}
 --- !u!95 &8009701811053066488
 Animator:

@@ -36,6 +36,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip clickSfx;
     public AudioClip hoverSfx;
     public AudioClip scrollSfx;
+    public AudioClip openInventory;
 
     void Awake()
     {

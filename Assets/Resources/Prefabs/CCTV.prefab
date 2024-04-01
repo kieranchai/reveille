@@ -148,7 +148,7 @@ MonoBehaviour:
   enemyWalk: {fileID: 0}
   enemyConfused: {fileID: 0}
   enemyAlerted: {fileID: 0}
-  cctvIdle: {fileID: 0}
+  cctvIdle: {fileID: 8300000, guid: f3b9d7123ef15404ab69f5f244e50829, type: 3}
   cctvAlert: {fileID: 8300000, guid: 736aef29681fb834588f144f165551c6, type: 3}
   cctvNoise: {fileID: 8300000, guid: 39f05a7a107228e44bb635609626e7e2, type: 3}
 --- !u!82 &6343881006593578587

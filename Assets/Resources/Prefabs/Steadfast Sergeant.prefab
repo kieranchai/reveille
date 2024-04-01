@@ -185,7 +185,7 @@ MonoBehaviour:
   isLookingRight: 0
   isLookingRightR: 0
   hasSetLookDirections: 0
-  enemyWalk: {fileID: 0}
+  enemyWalk: {fileID: 8300000, guid: 0495aea614c541644817a3948b541788, type: 3}
   enemyConfused: {fileID: 8300000, guid: 6a674d8e27acd2f4da30d99f11b9c03d, type: 3}
   enemyAlerted: {fileID: 8300000, guid: 50ea7fa9424c0e946b57664d2814b791, type: 3}
   cctvIdle: {fileID: 0}
