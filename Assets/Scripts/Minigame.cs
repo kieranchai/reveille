@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Minigame : MonoBehaviour
 {
+    private AudioSource _audio;
+    public AudioClip insertSlot;
+
     public GameObject ring;
     public GameObject slot;
     public GameObject startPos;
@@ -35,6 +38,8 @@ public class Minigame : MonoBehaviour
 
     private void Start()
     {
+        _audio = GetComponent<AudioSource>();
+
         rotating = true;
 
         counter = 0;
@@ -89,6 +94,9 @@ public class Minigame : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             inserted = true;
+
+            _audio.clip = insertSlot;
+            _audio.Play();
 
             rotating = false;
             ring.transform.Rotate(0, 0, 0);

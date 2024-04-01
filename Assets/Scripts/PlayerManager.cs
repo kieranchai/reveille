@@ -55,8 +55,12 @@ public class PlayerManager : MonoBehaviour
     #endregion
 
     #region Audio Clips
-    /*    [Header("Player Audio Clips")]
-        public AudioClip playerWalk;*/
+    [Header("Player Audio Clips")]
+    public AudioClip playerWalk;
+    public AudioClip pickUpFood;
+    public AudioClip dropFood;
+    public AudioClip throwFood;
+    public AudioClip deliverFood;
     #endregion
 
     private void Awake()
@@ -149,6 +153,8 @@ public class PlayerManager : MonoBehaviour
             currentState = PLAYER_STATE.STILL;
             movementSpeedMultiplier = 1.0f;
             noiseSizeMultiplier = 0.0f;
+
+            _audio.Stop();
         }
         else
         {
@@ -161,6 +167,8 @@ public class PlayerManager : MonoBehaviour
                 currentState = PLAYER_STATE.SPRINTING;
                 movementSpeedMultiplier = 1.5f;
                 noiseSizeMultiplier = 1.5f;
+
+                _audio.volume = 1f;
             }
             // Player press CTRL to Sneak
             else if (Input.GetKey(KeyCode.LeftControl))
@@ -171,6 +179,8 @@ public class PlayerManager : MonoBehaviour
                 currentState = PLAYER_STATE.SNEAKING;
                 movementSpeedMultiplier = 0.5f;
                 noiseSizeMultiplier = 0.5f;
+
+                _audio.volume = 0.2f;
             }
             // Player moving normally
             else
@@ -180,8 +190,16 @@ public class PlayerManager : MonoBehaviour
                 currentState = PLAYER_STATE.WALKING;
                 movementSpeedMultiplier = 1.0f;
                 noiseSizeMultiplier = 1.0f;
+
+                _audio.volume = 0.5f;
             }
             _anim.SetBool("isWalking", true);
+
+            if (!_audio.isPlaying)
+            {
+                _audio.clip = playerWalk;
+                _audio.Play();
+            }
         }
 
         moveDir = new Vector3(moveX, moveY).normalized;
@@ -240,6 +258,7 @@ public class PlayerManager : MonoBehaviour
             ++currentSelectedFood;
             if (currentSelectedFood >= inventory.Count) currentSelectedFood = 0;
 
+            AudioManager.instance.PlaySFX(AudioManager.instance.scrollSfx);
             GameController.instance.currentUIManager.UpdateCurrentFood();
             GameController.instance.currentUIManager.UpdateInventorySelectedFood();
             CancelThrowFood();
@@ -251,6 +270,7 @@ public class PlayerManager : MonoBehaviour
             --currentSelectedFood;
             if (currentSelectedFood < 0) currentSelectedFood = inventory.Count - 1;
 
+            AudioManager.instance.PlaySFX(AudioManager.instance.scrollSfx);
             GameController.instance.currentUIManager.UpdateCurrentFood();
             GameController.instance.currentUIManager.UpdateInventorySelectedFood();
             CancelThrowFood();
@@ -313,9 +333,12 @@ public class PlayerManager : MonoBehaviour
 
     public void ExitHack()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             hackingTarget.GetComponent<Terminal>().StopHacking();
+
+            hackingTarget.GetComponent<Terminal>()._audio.clip = hackingTarget.GetComponent<Terminal>().terminalExit;
+            hackingTarget.GetComponent<Terminal>()._audio.Play();
         }
     }
     #endregion
@@ -375,6 +398,9 @@ public class PlayerManager : MonoBehaviour
 
     public void PickUpNearestFood()
     {
+        //_audio.clip = pickUpFood;
+        //_audio.Play();
+
         AddFoodToInventory(nearbyFood[0].GetComponent<FoodManager>()._data);
         Destroy(nearbyFood[0].GetComponent<FoodManager>().myPopUp);
         Destroy(nearbyFood[0]);
@@ -383,6 +409,9 @@ public class PlayerManager : MonoBehaviour
 
     public void ThrowFood()
     {
+        _audio.clip = throwFood;
+        _audio.Play();
+
         inventory[currentSelectedFood].currentPoints -= thrownFoodPointsDeduction;
         GameObject thrownFood = Instantiate(Resources.Load<GameObject>("Prefabs/Food"), transform.position, Quaternion.identity);
         thrownFood.GetComponent<FoodManager>().SetFoodData(inventory[currentSelectedFood]);
@@ -418,6 +447,9 @@ public class PlayerManager : MonoBehaviour
     {
         if (inventory.Count == 0) return;
 
+        //_audio.clip = dropFood;
+        //_audio.Play();
+
         GameObject droppedFood = Instantiate(Resources.Load<GameObject>("Prefabs/Food"), transform.position, Quaternion.identity);
         droppedFood.GetComponent<FoodManager>().SetFoodData(inventory[currentSelectedFood]);
         RemoveFoodFromInventory(inventory[currentSelectedFood]);
@@ -448,6 +480,9 @@ public class PlayerManager : MonoBehaviour
         if (inventory.Count < 1) return;
         if (foodDropOffTarget.GetComponent<DropOff>().DepositFood(inventory[currentSelectedFood]))
         {
+            //_audio.clip = deliverFood;
+            //_audio.Play();
+
             UpdatePoints(inventory[currentSelectedFood].currentPoints);
             RemoveFoodFromInventory(inventory[currentSelectedFood]);
         }

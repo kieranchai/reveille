@@ -25,9 +25,17 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        if (currentScene == "Main Menu")
+        switch (currentScene)
         {
-            AudioManager.instance.PlayBGM(AudioManager.instance.mainMenuMusic);
+            case "Level 1":
+                AudioManager.instance.PlayBGM(AudioManager.instance.levelOneMusic);
+                break;
+            case "Level 2":
+                AudioManager.instance.PlayBGM(AudioManager.instance.levelTwoMusic);
+                break;
+            default:
+                AudioManager.instance.PlayBGM(AudioManager.instance.mainMenuMusic);
+                break;
         }
     }
 
@@ -52,10 +60,17 @@ public class GameController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape) && PlayerManager.instance.currentState != PLAYER_STATE.HACKING)
         {
-            isPaused = !isPaused;
+            if (currentUIManager.controlsMenu.activeSelf)
+            {
+                currentUIManager.HideControlsGame();
+            }
+            else
+            {
+                isPaused = !isPaused;
 
-            if (isPaused) PauseGame();
-            else ResumeGame();
+                if (isPaused) PauseGame();
+                else ResumeGame();
+            }
         }
     }
 
@@ -80,6 +95,8 @@ public class GameController : MonoBehaviour
         isPaused = true;
         gameEnd = true;
 
+        AudioManager.instance.PlaySFX(AudioManager.instance.gameLose);
+
         Time.timeScale = 0.0f;
         currentUIManager.ShowGameOverMenu();
     }
@@ -88,6 +105,8 @@ public class GameController : MonoBehaviour
     {
         isPaused = true;
         gameEnd = true;
+
+        AudioManager.instance.PlaySFX(AudioManager.instance.gameWin);
 
         Time.timeScale = 0.0f;
         currentUIManager.ShowWinMenu();

@@ -312,10 +312,15 @@ MonoBehaviour:
   inventory: []
   currentSelectedFood: 0
   points: 0
+  timePoints: 0
   nearbyFood: []
   hackingTarget: {fileID: 0}
   foodDropOffTarget: {fileID: 0}
   inventoryOpen: 0
+  playerWalk: {fileID: 8300000, guid: e773273ce1743fc47b64d3ca63301cb7, type: 3}
+  pickUpFood: {fileID: 8300000, guid: 938676dcb927a994a92208e1c8249e73, type: 3}
+  dropFood: {fileID: 0}
+  throwFood: {fileID: 8300000, guid: b83825fe1fef3584dae38b38da75cdd3, type: 3}
 --- !u!120 &1796992504182106682
 LineRenderer:
   serializedVersion: 2
@@ -450,7 +455,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -6635137695513204895, guid: 8355c4a46b5fafe48ba0c221fd26bca9, type: 2}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0

@@ -12,6 +12,13 @@ public class AudioManager : MonoBehaviour
 
     [Header("Global Audio Clips")]
     public AudioClip mainMenuMusic;
+    public AudioClip levelOneMusic;
+    public AudioClip levelTwoMusic;
+    public AudioClip gameLose;
+    public AudioClip gameWin;
+    public AudioClip clickSfx;
+    public AudioClip hoverSfx;
+    public AudioClip scrollSfx;
 
     void Awake()
     {

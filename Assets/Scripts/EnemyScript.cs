@@ -16,6 +16,7 @@ public class EnemyScript : MonoBehaviour
     private NoiseController _noiseController;
     private Animator _anim;
     private AnimatorOverrideController _aoc;
+    private AudioSource _audio;
 
     // Default Data
     private int id;
@@ -65,6 +66,16 @@ public class EnemyScript : MonoBehaviour
     private GameObject popUp;
     #endregion
 
+    #region Audio Clips
+    [Header("Enemy Audio Clips")]
+    public AudioClip enemyWalk;
+    public AudioClip enemyConfused;
+    public AudioClip enemyAlerted;
+    public AudioClip cctvIdle;
+    public AudioClip cctvAlert;
+    public AudioClip cctvNoise;
+    #endregion
+
     private void Awake()
     {
         if (currentState != ENEMY_STATE.CCTV)
@@ -78,7 +89,11 @@ public class EnemyScript : MonoBehaviour
             _aoc = new AnimatorOverrideController(_anim.runtimeAnimatorController);
             _anim.runtimeAnimatorController = _aoc;
         }
-        else _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
+        else
+        {
+            _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
+            _audio = GetComponent<AudioSource>();
+        }
     }
 
     private void Start()
@@ -157,6 +172,7 @@ public class EnemyScript : MonoBehaviour
     private void PatrolState()
     {
         _agent.speed = walkSpeed;
+
         // Face target only when not turning
         if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
 
@@ -193,6 +209,9 @@ public class EnemyScript : MonoBehaviour
                 popUp.GetComponent<TMP_Text>().text = "?";
                 popUp.GetComponent<TMP_Text>().color = Color.white;
             }
+
+            _audio.clip = enemyConfused;
+            _audio.Play();
 
             ResetRotationVariables();
             UpdatePlayerLastSeenPosition();
@@ -238,6 +257,9 @@ public class EnemyScript : MonoBehaviour
                         popUp.GetComponent<TMP_Text>().text = "!";
                         popUp.GetComponent<TMP_Text>().color = Color.red;
                     }
+
+                    _audio.clip = enemyAlerted;
+                    _audio.Play();
 
                     ResetRotationVariables();
                     confusedTimer = 0.0f;
@@ -361,6 +383,10 @@ public class EnemyScript : MonoBehaviour
                 popUp.GetComponent<TMP_Text>().text = "!";
                 popUp.GetComponent<TMP_Text>().color = Color.red;
             }
+
+            //_audio.clip = enemyChase;
+            //_audio.Play();
+
             currentState = ENEMY_STATE.CHASE;
         }
     }
@@ -488,12 +514,19 @@ public class EnemyScript : MonoBehaviour
                 popUp.GetComponent<TMP_Text>().text = "!";
                 popUp.GetComponent<TMP_Text>().color = Color.red;
             }
+
+            //_audio.clip = cctvAlert;
+            //_audio.Play();
         }
     }
 
     private void CCTVTargetState()
     {
         gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>($"Sprites/CCTV_Alert");
+    
+        //_audio.clip = cctvNoise;
+        //_audio.Play();
+
         if (PlayerInSight())
         {
 

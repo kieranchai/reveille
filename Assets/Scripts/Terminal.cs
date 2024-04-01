@@ -7,6 +7,7 @@ public class Terminal : MonoBehaviour
 {
     private NoiseController _noiseController;
     private Animator _anim;
+    [HideInInspector] public AudioSource _audio;
     public bool playable;
     private GameObject minigame;
     private bool playedAlertSound = false;
@@ -20,6 +21,13 @@ public class Terminal : MonoBehaviour
     [Header("Minigame Difficulty")]
     public int speed;
     public int rings;
+
+    [Header("Terminal Audio Clips")]
+    public AudioClip terminalInteract;
+    public AudioClip terminalExit;
+    public AudioClip minigameFail;
+    public AudioClip minigameSuccess;
+    public AudioClip doorOpen;
 
     private void Awake()
     {
@@ -35,6 +43,7 @@ public class Terminal : MonoBehaviour
         playable = true;
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
         _anim = gameObject.GetComponent<Animator>();
+        _audio = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -65,6 +74,9 @@ public class Terminal : MonoBehaviour
 
     public void StartHacking()
     {
+        _audio.clip = terminalInteract;
+        _audio.Play();
+
         minigame = Instantiate(Resources.Load<GameObject>("Prefabs/Minigame"), Camera.main.transform.GetChild(0).position, Quaternion.identity);
         minigame.GetComponent<Minigame>().Initialise(speed, rings);
     }
@@ -78,6 +90,9 @@ public class Terminal : MonoBehaviour
 
     private void Unlock()
     {
+        _audio.clip = minigameSuccess;
+        _audio.Play();
+
         playable = false;
         StopAllCoroutines();
         _noiseController.StopNoise();
@@ -94,6 +109,9 @@ public class Terminal : MonoBehaviour
 
     IEnumerator OpenDoor(GameObject Door)
     {
+        _audio.clip = doorOpen;
+        _audio.Play();
+
         Vector3 target = Door.transform.position - offset;
 
         while (Vector3.SqrMagnitude(Door.transform.position - target) >= 0.05f)
@@ -107,6 +125,9 @@ public class Terminal : MonoBehaviour
     {
         if (!playedAlertSound)
         {
+            _audio.clip = minigameFail;
+            _audio.Play();
+
             StopAllCoroutines();
             _noiseController.ResetNoise();
             playedAlertSound = true;
