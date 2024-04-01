@@ -8003,9 +8003,9 @@ Tilemap:
   - first: {x: 5, y: 11, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 35
-      m_TileSpriteIndex: 35
-      m_TileMatrixIndex: 2
+      m_TileIndex: 34
+      m_TileSpriteIndex: 34
+      m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
@@ -8013,9 +8013,9 @@ Tilemap:
   - first: {x: 6, y: 11, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 34
-      m_TileSpriteIndex: 34
-      m_TileMatrixIndex: 2
+      m_TileIndex: 35
+      m_TileSpriteIndex: 35
+      m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
@@ -11958,7 +11958,7 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 1151529354, guid: 123232aa8dc5204468b269887c1c40f6, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 639
+  - m_RefCount: 641
     m_Data:
       e00: 1
       e01: 0
@@ -11994,7 +11994,7 @@ Tilemap:
       e31: 0
       e32: 0
       e33: 1
-  - m_RefCount: 121
+  - m_RefCount: 119
     m_Data:
       e00: -1
       e01: 0
@@ -31632,10 +31632,10 @@ SceneRoots:
   - {fileID: 301168123}
   - {fileID: 4043832372036470974}
   - {fileID: 145166276}
+  - {fileID: 1870372675}
   - {fileID: 893070627}
   - {fileID: 1569031526}
-  - {fileID: 561620273}
-  - {fileID: 1870372675}
-  - {fileID: 136215222}
   - {fileID: 1644907761}
+  - {fileID: 136215222}
+  - {fileID: 561620273}
   - {fileID: 2087463747}
