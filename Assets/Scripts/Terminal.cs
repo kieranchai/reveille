@@ -86,6 +86,9 @@ public class Terminal : MonoBehaviour
         Destroy(minigame);
         PlayerManager.instance.currentState = PlayerManager.PLAYER_STATE.STILL;
         playedAlertSound = false;
+
+        _audio.clip = terminalExit;
+        _audio.Play();
     }
 
     private void Unlock()

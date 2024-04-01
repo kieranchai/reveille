@@ -46,6 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19b40ff1895c2cb42a6ab9dfd9dd3f55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioMixer: {fileID: 24100000, guid: 8355c4a46b5fafe48ba0c221fd26bca9, type: 2}
+  isPlayingChase: 0
+  lastPlayedBGM: {fileID: 0}
   musicSource: {fileID: 2936887749036214825}
   SFXSource: {fileID: 8870152506644374439}
   mainMenuMusic: {fileID: 8300000, guid: 4523324f05dbe9440a813e028959da9d, type: 3}

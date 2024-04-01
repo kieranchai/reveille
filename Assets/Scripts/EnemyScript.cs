@@ -78,6 +78,8 @@ public class EnemyScript : MonoBehaviour
 
     private void Awake()
     {
+        _audio = GetComponent<AudioSource>();
+
         if (currentState != ENEMY_STATE.CCTV)
         {
             _rigidBody = GetComponent<Rigidbody2D>();
@@ -92,7 +94,6 @@ public class EnemyScript : MonoBehaviour
         else
         {
             _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
-            _audio = GetComponent<AudioSource>();
         }
     }
 
@@ -203,7 +204,7 @@ public class EnemyScript : MonoBehaviour
         // If see player, become confused "Huh?!"
         if (PlayerInSight())
         {
-            if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Popup"));
+            if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Enemy Popup"));
             if (popUp)
             {
                 popUp.GetComponent<TMP_Text>().text = "?";
@@ -264,6 +265,7 @@ public class EnemyScript : MonoBehaviour
                     ResetRotationVariables();
                     confusedTimer = 0.0f;
                     currentState = ENEMY_STATE.CHASE;
+                    AudioManager.instance.chaseCounter++;
                 }
             }
         }
@@ -273,7 +275,7 @@ public class EnemyScript : MonoBehaviour
     {
         _agent.speed = walkSpeed;
 
-        if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Popup"));
+        if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Enemy Popup"));
         if (popUp)
         {
             popUp.GetComponent<TMP_Text>().text = "?";
@@ -384,10 +386,11 @@ public class EnemyScript : MonoBehaviour
                 popUp.GetComponent<TMP_Text>().color = Color.red;
             }
 
-            //_audio.clip = enemyChase;
-            //_audio.Play();
+            _audio.clip = enemyAlerted;
+            _audio.Play();
 
             currentState = ENEMY_STATE.CHASE;
+            AudioManager.instance.chaseCounter++;
         }
     }
 
@@ -395,7 +398,7 @@ public class EnemyScript : MonoBehaviour
     {
         _agent.speed = runSpeed;
 
-        if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Popup"));
+        if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Enemy Popup"));
 
         if (!isTurning)
         {
@@ -485,6 +488,7 @@ public class EnemyScript : MonoBehaviour
                         _agent.SetDestination(currentPathingTarget);
                         _agent.isStopped = false;
                         currentState = ENEMY_STATE.PATROL;
+                        AudioManager.instance.chaseCounter--;
                         if (popUp)
                         {
                             Destroy(popUp);
@@ -508,7 +512,7 @@ public class EnemyScript : MonoBehaviour
             currentState = ENEMY_STATE.CCTV_TARGET;
             confusedTimer = 0.0f;
 
-            if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Popup"));
+            if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Enemy Popup"));
             if (popUp)
             {
                 popUp.GetComponent<TMP_Text>().text = "!";
@@ -703,6 +707,10 @@ public class EnemyScript : MonoBehaviour
                     targetedPulsingNoise = collision.gameObject;
                     currentPathingTarget = targetedPulsingNoise.transform.parent.Find("Deactivate Pos").position;
                 }
+
+                _audio.clip = enemyConfused;
+                _audio.Play();
+
                 currentState = ENEMY_STATE.ALERTED;
                 ResetRotationVariables();
                 isTurning = true;
@@ -716,12 +724,15 @@ public class EnemyScript : MonoBehaviour
             {
                 ResetRotationVariables();
 
-                if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Popup"));
+                if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Enemy Popup"));
                 if (popUp)
                 {
                     popUp.GetComponent<TMP_Text>().text = "?";
                     popUp.GetComponent<TMP_Text>().color = Color.white;
                 }
+
+                _audio.clip = enemyConfused;
+                _audio.Play();
 
                 currentState = ENEMY_STATE.CONFUSED;
                 _agent.isStopped = true;

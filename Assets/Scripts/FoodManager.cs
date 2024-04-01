@@ -14,6 +14,7 @@ public class FoodManager : MonoBehaviour
     private NoiseController _noiseController;
     private ParticleSystem _particle;
     public Food _data;
+    private Transform popUpPrefab;
 
     // Default Data
     public int id;
@@ -29,13 +30,13 @@ public class FoodManager : MonoBehaviour
     public float throwRange = 0.0f;
     private Vector3 initialPosition;
     public Food testData;
-    private bool hasShownPopUp = false;
-    public GameObject myPopUp;
+    private bool hasShownDamage = false;
     #endregion
 
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
+        popUpPrefab = Resources.Load<RectTransform>("Prefabs/Popup");
         _collider = GetComponent<Collider2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
@@ -53,6 +54,14 @@ public class FoodManager : MonoBehaviour
                 isThrown = false;
                 _rigidBody.velocity = Vector3.zero;
                 _particle.Play();
+
+                if (!hasShownDamage)
+                {
+                    hasShownDamage = true;
+                    Transform dmgNumber = Instantiate(popUpPrefab, transform.position, Quaternion.identity);
+                    dmgNumber.GetComponent<Popup>().SetDamage(-PlayerManager.instance.thrownFoodPointsDeduction);
+                }
+
                 StartCoroutine(_noiseController.ProduceNoiseOnce());
             }
 
@@ -60,20 +69,17 @@ public class FoodManager : MonoBehaviour
             {
                 isThrown = false;
                 _particle.Play();
+
+                if (!hasShownDamage)
+                {
+                    hasShownDamage = true;
+                    Transform dmgNumber = Instantiate(popUpPrefab, transform.position, Quaternion.identity);
+                    dmgNumber.GetComponent<Popup>().SetDamage(-PlayerManager.instance.thrownFoodPointsDeduction);
+                }
+
                 StartCoroutine(_noiseController.ProduceNoiseOnce());
             }
         }
-        else
-        {
-            if (!hasShownPopUp && _rigidBody.velocity.magnitude <= 0.3f) ShowPopUp();
-        }
-    }
-
-    public void ShowPopUp()
-    {
-        hasShownPopUp = true;
-        myPopUp = Instantiate(Resources.Load<GameObject>("Prefabs/Food Popup"), transform);
-        myPopUp.transform.Find("Weight").gameObject.GetComponent<TMP_Text>().text = $"{this.weight} <color=#C9A610>G</color>";
     }
 
     // Used only when spawning food from throwing to set their current points
@@ -121,6 +127,14 @@ public class FoodManager : MonoBehaviour
         {
             if (!isThrown) return;
             _particle.Play();
+
+            if (!hasShownDamage)
+            {
+                hasShownDamage = true;
+                Transform dmgNumber = Instantiate(popUpPrefab, transform.position, Quaternion.identity);
+                dmgNumber.GetComponent<Popup>().SetDamage(-PlayerManager.instance.thrownFoodPointsDeduction);
+            }
+
             StartCoroutine(_noiseController.ProduceNoiseOnce());
             // Lose velocity when hit wall
             _rigidBody.velocity *= 0.10f;

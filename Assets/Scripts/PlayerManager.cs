@@ -17,13 +17,14 @@ public class PlayerManager : MonoBehaviour
     public Player _data;
     public Animator _anim;
     private AudioSource _audio;
+    private AudioSource _footstepsAudio;
 
     // Default Data
     private float baseMovementSpeed;
     private int inventoryWeightLimit;
     private float movementSpeedMultiplier;
     private float noiseSizeMultiplier;
-    [SerializeField] private int thrownFoodPointsDeduction;
+    public int thrownFoodPointsDeduction;
 
     // Dynamic Data
     private Vector3 moveDir;
@@ -79,6 +80,7 @@ public class PlayerManager : MonoBehaviour
         _lineRenderer = GetComponent<LineRenderer>();
         _anim = GetComponent<Animator>();
         _audio = GetComponent<AudioSource>();
+        _footstepsAudio = transform.Find("Footsteps SFX").GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -154,7 +156,7 @@ public class PlayerManager : MonoBehaviour
             movementSpeedMultiplier = 1.0f;
             noiseSizeMultiplier = 0.0f;
 
-            _audio.Stop();
+            _footstepsAudio.Stop();
         }
         else
         {
@@ -168,7 +170,8 @@ public class PlayerManager : MonoBehaviour
                 movementSpeedMultiplier = 1.5f;
                 noiseSizeMultiplier = 1.5f;
 
-                _audio.volume = 1f;
+                _footstepsAudio.pitch = 1.5f;
+                _footstepsAudio.volume = 1f;
             }
             // Player press CTRL to Sneak
             else if (Input.GetKey(KeyCode.LeftControl))
@@ -180,7 +183,8 @@ public class PlayerManager : MonoBehaviour
                 movementSpeedMultiplier = 0.5f;
                 noiseSizeMultiplier = 0.5f;
 
-                _audio.volume = 0.2f;
+                _footstepsAudio.pitch = 0.5f;
+                _footstepsAudio.volume = 0.2f;
             }
             // Player moving normally
             else
@@ -191,14 +195,15 @@ public class PlayerManager : MonoBehaviour
                 movementSpeedMultiplier = 1.0f;
                 noiseSizeMultiplier = 1.0f;
 
-                _audio.volume = 0.5f;
+                _footstepsAudio.pitch = 1f;
+                _footstepsAudio.volume = 0.5f;
             }
             _anim.SetBool("isWalking", true);
 
             if (!_audio.isPlaying)
             {
-                _audio.clip = playerWalk;
-                _audio.Play();
+                _footstepsAudio.clip = playerWalk;
+                _footstepsAudio.Play();
             }
         }
 
@@ -336,9 +341,6 @@ public class PlayerManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             hackingTarget.GetComponent<Terminal>().StopHacking();
-
-            hackingTarget.GetComponent<Terminal>()._audio.clip = hackingTarget.GetComponent<Terminal>().terminalExit;
-            hackingTarget.GetComponent<Terminal>()._audio.Play();
         }
     }
     #endregion
@@ -398,11 +400,10 @@ public class PlayerManager : MonoBehaviour
 
     public void PickUpNearestFood()
     {
-        //_audio.clip = pickUpFood;
-        //_audio.Play();
+        _audio.clip = pickUpFood;
+        _audio.Play();
 
         AddFoodToInventory(nearbyFood[0].GetComponent<FoodManager>()._data);
-        Destroy(nearbyFood[0].GetComponent<FoodManager>().myPopUp);
         Destroy(nearbyFood[0]);
         //Nearest Food is removed from nearbyFood in FoodManager OnTriggerExit
     }

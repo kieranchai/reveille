@@ -8,7 +8,7 @@ public class GameController : MonoBehaviour
 {
     public static GameController instance { get; private set; }
 
-    private string currentScene;
+    public string currentScene;
     public LevelController currentLevelController;
     public UIManager currentUIManager;
     public bool isPaused = false;
@@ -21,22 +21,6 @@ public class GameController : MonoBehaviour
 
         UpdateCurrentControllers();
         Time.timeScale = 1.0f;
-    }
-
-    private void Start()
-    {
-        switch (currentScene)
-        {
-            case "Level 1":
-                AudioManager.instance.PlayBGM(AudioManager.instance.levelOneMusic);
-                break;
-            case "Level 2":
-                AudioManager.instance.PlayBGM(AudioManager.instance.levelTwoMusic);
-                break;
-            default:
-                AudioManager.instance.PlayBGM(AudioManager.instance.mainMenuMusic);
-                break;
-        }
     }
 
     private void Update()
@@ -147,5 +131,7 @@ public class GameController : MonoBehaviour
     {
         Time.timeScale = 1.0f;
         SceneManager.LoadScene(currentScene);
+        AudioManager.instance.PlayBGM(AudioManager.instance.levelOneMusic);
+        AudioManager.instance.chaseCounter = 0;
     }
 }

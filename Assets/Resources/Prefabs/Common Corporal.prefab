@@ -188,6 +188,9 @@ MonoBehaviour:
   enemyWalk: {fileID: 8300000, guid: 0495aea614c541644817a3948b541788, type: 3}
   enemyConfused: {fileID: 8300000, guid: 6a674d8e27acd2f4da30d99f11b9c03d, type: 3}
   enemyAlerted: {fileID: 8300000, guid: 50ea7fa9424c0e946b57664d2814b791, type: 3}
+  cctvIdle: {fileID: 0}
+  cctvAlert: {fileID: 0}
+  cctvNoise: {fileID: 0}
 --- !u!195 &663790775363712397
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -287,7 +290,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
