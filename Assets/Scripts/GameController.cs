@@ -99,10 +99,13 @@ public class GameController : MonoBehaviour
     public void PlayGame()
     {
         SceneManager.LoadScene("Level 1");
+        AudioManager.instance.PlayBGM(AudioManager.instance.levelOneMusic);
     }
 
     public void ExitGame()
     {
+        AudioManager.instance.PlayBGM(AudioManager.instance.mainMenuMusic);
+        AudioManager.instance.chaseCounter = 0;
         SceneManager.LoadScene("Main Menu");
     }
 
@@ -119,6 +122,8 @@ public class GameController : MonoBehaviour
     public void NextLevel()
     {
         Time.timeScale = 1.0f;
+        AudioManager.instance.PlayBGM(AudioManager.instance.levelOneMusic);
+        AudioManager.instance.chaseCounter = 0;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 

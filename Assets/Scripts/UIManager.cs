@@ -127,7 +127,7 @@ public class UIManager : MonoBehaviour
             {
                 inventoryItems[i].transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/No_Food");
             }
-            else inventoryItems[i].transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/UI/{PlayerManager.instance.inventory[i].foodName}");
+            else inventoryItems[i].transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Sprites/UI/Food/{PlayerManager.instance.inventory[i].foodName}");
 
             if (PlayerManager.instance.currentSelectedFood == i && PlayerManager.instance.inventory.Count > 0) inventoryItems[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/Inventory_Equipped");
             else inventoryItems[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/Inventory_Default");
