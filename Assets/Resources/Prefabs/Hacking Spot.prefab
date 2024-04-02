@@ -573,3 +573,4 @@ MonoBehaviour:
   isActivated: 0
   isPulsing: 0
   pulseTimer: 0
+  alarmSound: {fileID: 8300000, guid: 39f05a7a107228e44bb635609626e7e2, type: 3}

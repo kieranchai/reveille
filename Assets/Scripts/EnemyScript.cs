@@ -535,9 +535,6 @@ public class EnemyScript : MonoBehaviour
     private void CCTVTargetState()
     {
         gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>($"Sprites/CCTV_Alert");
-    
-        _audio.clip = cctvNoise;
-        _audio.Play();
 
         if (PlayerInSight())
         {

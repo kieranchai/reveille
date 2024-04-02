@@ -18,6 +18,8 @@ public class NoiseController : MonoBehaviour
     public bool isActivated = false;
     public bool isPulsing = false;
     public float pulseTimer;
+
+    public AudioClip alarmSound;
     #endregion
 
     private void Awake()
@@ -108,6 +110,9 @@ public class NoiseController : MonoBehaviour
                 _transform.localScale = currentNoiseScale;
                 yield return null;
             }
+
+            GetComponentInParent<AudioSource>().clip = alarmSound;
+            GetComponentInParent<AudioSource>().Play();
 
             noiseShrinkTime = 0.0f;
             noiseShrinkDuration = 0.1f;
