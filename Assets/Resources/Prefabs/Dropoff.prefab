@@ -215,6 +215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxCapacity: 2000
+  currentCapacity: 0
   droppedFood: []
   _lightSource: {fileID: 0}
   dropOffToggle: {fileID: 8300000, guid: 98960b9e8a62c3e4182cb24842de9f64, type: 3}
@@ -254,9 +255,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 3
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.118
+  m_FalloffIntensity: 0
   m_Color: {r: 0.95455587, g: 1, b: 0.08018869, a: 1}
-  m_Intensity: 0.52
+  m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 00000000734438e4

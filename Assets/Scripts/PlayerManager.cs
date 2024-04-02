@@ -227,8 +227,11 @@ public class PlayerManager : MonoBehaviour
             if (nearbyFood.Count > 0)
             {
                 // Pickup Food
-                PickUpNearestFood();
-                return;
+                if (currentInventoryWeight < inventoryWeightLimit)
+                {
+                    PickUpNearestFood();
+                    return;
+                }
             }
 
             // Toggle hack

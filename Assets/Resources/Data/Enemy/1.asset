@@ -15,6 +15,6 @@ MonoBehaviour:
   id: 1
   enemyName: Common Corporal
   walkSpeed: 3
-  runSpeed: 5
+  runSpeed: 4
   lineOfSight: 5
   fieldOfView: 80
