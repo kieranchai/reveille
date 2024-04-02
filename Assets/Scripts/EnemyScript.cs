@@ -148,10 +148,19 @@ public class EnemyScript : MonoBehaviour
             if (!isTurning && !isLooking)
             {
                 _anim.SetBool("isWalking", true);
+
+                if (!_footstepsAudio.isPlaying)
+                {
+                    if (currentState == ENEMY_STATE.CHASE) _footstepsAudio.pitch = 1.3f;
+                    else _footstepsAudio.pitch = 1;
+                    _footstepsAudio.clip = enemyWalk;
+                    _footstepsAudio.Play();
+                }
             }
             else
             {
                 _anim.SetBool("isWalking", false);
+                _footstepsAudio.Stop();
             }
         }
     }
@@ -178,9 +187,6 @@ public class EnemyScript : MonoBehaviour
     {
         _agent.speed = walkSpeed;
 
-        //_footstepsAudio.clip = enemyWalk;
-        //_footstepsAudio.Play();
-
         // Face target only when not turning
         if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
 
@@ -195,8 +201,6 @@ public class EnemyScript : MonoBehaviour
             {
                 // Stop the enemy movement when turning
                 _agent.isStopped = true;
-
-                //_footstepsAudio.Stop();
 
                 if (RotateToNextPoint(patrolPoints[currentPatrolPoint].position))
                 {
@@ -304,6 +308,8 @@ public class EnemyScript : MonoBehaviour
                     _agent.SetDestination(currentPathingTarget);
                     _agent.isStopped = false;
                     currentState = ENEMY_STATE.PATROL;
+                    _audio.clip = enemyHmm;
+                    _audio.Play();
                     if (popUp)
                     {
                         Destroy(popUp);
@@ -363,9 +369,6 @@ public class EnemyScript : MonoBehaviour
             if (isDoneLooking)
             {
                 // Go back to patrolling
-                _audio.clip = enemyHmm;
-                _audio.Play();
-
                 isLooking = false;
                 isTurning = true;
                 currentPathingTarget = patrolPoints[currentPatrolPoint].position;
@@ -376,6 +379,8 @@ public class EnemyScript : MonoBehaviour
                         _agent.SetDestination(currentPathingTarget);
                         _agent.isStopped = false;
                         currentState = ENEMY_STATE.PATROL;
+                        _audio.clip = enemyHmm;
+                        _audio.Play();
                         if (popUp)
                         {
                             Destroy(popUp);
@@ -500,6 +505,8 @@ public class EnemyScript : MonoBehaviour
                         _agent.SetDestination(currentPathingTarget);
                         _agent.isStopped = false;
                         currentState = ENEMY_STATE.PATROL;
+                        _audio.clip = enemyHmm;
+                        _audio.Play();
                         AudioManager.instance.chaseCounter--;
                         if (popUp)
                         {
@@ -518,15 +525,13 @@ public class EnemyScript : MonoBehaviour
         Quaternion targetRotation = Quaternion.Euler(initialRotation.x, initialRotation.y, 70 * Mathf.Sin(Time.time * 0.8f) + initialRotation.z);
         transform.localRotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime * 90f);
 
-        _audio.clip = cctvIdle;
-        _audio.Play();
-
         if (PlayerInSight())
         {
             playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
             currentState = ENEMY_STATE.CCTV_TARGET;
             confusedTimer = 0.0f;
-
+            _audio.clip = cctvIdle;
+            _audio.Play();
             if (!popUp) popUp = Instantiate(Resources.Load<GameObject>("Prefabs/Enemy Popup"));
             if (popUp)
             {
@@ -542,13 +547,13 @@ public class EnemyScript : MonoBehaviour
 
         if (PlayerInSight())
         {
-
             if (!_noiseController.isActivated && !_noiseController.isPulsing) _noiseController.StartCoroutine(_noiseController.ProduceNoiseTimer());
             playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
             transform.up = new Vector3(playerLastSeenPosition.x, playerLastSeenPosition.y) - new Vector3(transform.position.x, transform.position.y);
         }
         else
         {
+            _audio.Stop();
             currentState = ENEMY_STATE.CCTV;
             if (popUp)
             {
@@ -764,6 +769,13 @@ public class EnemyScript : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Player"))
         {
+            if (GameController.instance.isTutorialScene)
+            {
+                currentState = ENEMY_STATE.PATROL;
+                PlayerManager.instance.Respawn();
+                return;
+            }
+
             Time.timeScale = 0f;
             GameController.instance.GameOver();
         }

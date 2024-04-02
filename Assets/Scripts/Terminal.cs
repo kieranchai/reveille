@@ -69,6 +69,8 @@ public class Terminal : MonoBehaviour
         }
         else if (minigame.GetComponent<Minigame>().currentHackingState == Minigame.HackState.LOSE)
         {
+            _audio.clip = minigameFail;
+            _audio.Play();
             SoundAlarm();
             StopHacking();
         }
@@ -140,9 +142,6 @@ public class Terminal : MonoBehaviour
     {
         if (!playedAlertSound)
         {
-            _audio.clip = minigameFail;
-            _audio.Play();
-
             StopAllCoroutines();
             _noiseController.ResetNoise();
             playedAlertSound = true;

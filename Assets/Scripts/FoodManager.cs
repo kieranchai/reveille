@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.ParticleSystem;
 
 public class FoodManager : MonoBehaviour
 {
@@ -10,6 +9,7 @@ public class FoodManager : MonoBehaviour
     // Food Item Components
     private Rigidbody2D _rigidBody;
     private Collider2D _collider;
+    private AudioSource _audio;
     private SpriteRenderer _spriteRenderer;
     private NoiseController _noiseController;
     private ParticleSystem _particle;
@@ -42,6 +42,7 @@ public class FoodManager : MonoBehaviour
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
         _particle = transform.Find("Particle").GetComponent<ParticleSystem>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _audio = GetComponent<AudioSource>();
 
         if (testData) SetDefaultFoodData(testData);
     }
@@ -61,6 +62,7 @@ public class FoodManager : MonoBehaviour
                     hasShownDamage = true;
                     Transform dmgNumber = Instantiate(popUpPrefab, transform.position, Quaternion.identity);
                     dmgNumber.GetComponent<Popup>().SetDamage(-PlayerManager.instance.thrownFoodPointsDeduction);
+                    _audio.PlayOneShot(Resources.Load<AudioClip>($"Audio/{foodName}_impact"));
                 }
 
                 StartCoroutine(_noiseController.ProduceNoiseOnce());
@@ -76,6 +78,7 @@ public class FoodManager : MonoBehaviour
                     hasShownDamage = true;
                     Transform dmgNumber = Instantiate(popUpPrefab, transform.position, Quaternion.identity);
                     dmgNumber.GetComponent<Popup>().SetDamage(-PlayerManager.instance.thrownFoodPointsDeduction);
+                    _audio.PlayOneShot(Resources.Load<AudioClip>($"Audio/{foodName}_impact"));
                 }
 
                 StartCoroutine(_noiseController.ProduceNoiseOnce());
@@ -135,6 +138,7 @@ public class FoodManager : MonoBehaviour
                 hasShownDamage = true;
                 Transform dmgNumber = Instantiate(popUpPrefab, transform.position, Quaternion.identity);
                 dmgNumber.GetComponent<Popup>().SetDamage(-PlayerManager.instance.thrownFoodPointsDeduction);
+                _audio.PlayOneShot(Resources.Load<AudioClip>($"Audio/{foodName}_impact"));
             }
 
             StartCoroutine(_noiseController.ProduceNoiseOnce());
@@ -148,7 +152,7 @@ public class FoodManager : MonoBehaviour
         if (collision.gameObject.CompareTag("Player") && !isNearPlayer)
         {
             isNearPlayer = true;
-            if (!PlayerManager.instance.nearbyFood.Contains(this.gameObject)) PlayerManager.instance.nearbyFood.Add(this.gameObject);
+            if (!PlayerManager.instance.nearbyFood.Contains(gameObject)) PlayerManager.instance.nearbyFood.Add(gameObject);
             GameController.instance.currentUIManager.UpdateDisplayInteractables();
         }
     }
@@ -158,7 +162,7 @@ public class FoodManager : MonoBehaviour
         if (collision.gameObject.CompareTag("Player") && isNearPlayer)
         {
             isNearPlayer = false;
-            if (PlayerManager.instance.nearbyFood.Contains(this.gameObject)) PlayerManager.instance.nearbyFood.Remove(this.gameObject);
+            if (PlayerManager.instance.nearbyFood.Contains(gameObject)) PlayerManager.instance.nearbyFood.Remove(gameObject);
             GameController.instance.currentUIManager.UpdateDisplayInteractables();
         }
     }

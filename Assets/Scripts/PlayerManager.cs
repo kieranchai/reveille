@@ -91,6 +91,7 @@ public class PlayerManager : MonoBehaviour
     private void Update()
     {
         if (GameController.instance.isPanning) return;
+        if (!GameController.instance.canInteract) return;
 
         switch (currentState)
         {
@@ -113,6 +114,12 @@ public class PlayerManager : MonoBehaviour
                 ExitHack();
                 break;
         }
+
+        if (nearbyFood.Count > 0) GameController.instance.currentUIManager.DisplayFoodInfo(nearbyFood[0].GetComponent<FoodManager>().foodName, nearbyFood[0].GetComponent<FoodManager>().currentPoints, nearbyFood[0].GetComponent<FoodManager>().weight);
+        else GameController.instance.currentUIManager.HideFoodInfo();
+
+        if (foodDropOffTarget) GameController.instance.currentUIManager.DisplayDropOffInfo(foodDropOffTarget.GetComponent<DropOff>().currentCapacity, foodDropOffTarget.GetComponent<DropOff>().maxCapacity);
+        else GameController.instance.currentUIManager.HideDropOffInfo();
     }
 
     private void FixedUpdate()
@@ -170,7 +177,7 @@ public class PlayerManager : MonoBehaviour
                 movementSpeedMultiplier = 1.5f;
                 noiseSizeMultiplier = 1.5f;
 
-                _footstepsAudio.pitch = 1.5f;
+                _footstepsAudio.pitch = 1.2f;
                 _footstepsAudio.volume = 1f;
             }
             // Player press CTRL to Sneak
@@ -183,7 +190,7 @@ public class PlayerManager : MonoBehaviour
                 movementSpeedMultiplier = 0.5f;
                 noiseSizeMultiplier = 0.5f;
 
-                _footstepsAudio.pitch = 0.5f;
+                _footstepsAudio.pitch = 0.3f;
                 _footstepsAudio.volume = 0.2f;
             }
             // Player moving normally
@@ -496,6 +503,12 @@ public class PlayerManager : MonoBehaviour
     {
         points += foodCurrentPoints;
         GameController.instance.currentUIManager.UpdateTotalPoints(points);
+    }
+
+    public void Respawn()
+    {
+        AudioManager.instance.PlaySFX(AudioManager.instance.gameLose);
+        transform.position = GameObject.Find("Respawn Point").transform.position;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     // Camera follow target
-    private Transform target;
+    public Transform target;
 
     Vector3 velocity = Vector3.zero;
 
@@ -102,8 +102,6 @@ public class CameraController : MonoBehaviour
         while (Vector3.SqrMagnitude(foodPanda.transform.position - foodSpawnArea.position) >= 0.05f)
         {
             foodPanda.GetComponent<Animator>().SetBool("isWalking", true);
-            _audioSourceFoodPanda.clip = foodpandaFootsteps;
-            _audioSourceFoodPanda.Play();
             var dir = foodSpawnArea.position - foodPanda.transform.position;
             var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
             foodPanda.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
@@ -152,5 +150,6 @@ public class CameraController : MonoBehaviour
     {
         GameController.instance.isPanning = false;
         GameController.instance.currentUIManager.ShowAllUI();
+        if (GameController.instance.isTutorialScene) GameController.instance.StartTutorial();
     }
 }

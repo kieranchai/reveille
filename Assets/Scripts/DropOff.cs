@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -7,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 public class DropOff : MonoBehaviour
 {
     public int maxCapacity; // MAX WEIGHT
-    private int currentCapacity = 0;
+    public int currentCapacity = 0;
     public List<Food> droppedFood = new List<Food>();
 
     public Light2D _lightSource;
@@ -17,6 +16,7 @@ public class DropOff : MonoBehaviour
     {
         GetComponent<AudioSource>().clip = dropOffToggle;
         _lightSource = GetComponent<Light2D>();
+        currentCapacity = 0;
     }
 
     private void Update()

@@ -18,6 +18,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] public GameObject controlsMenu;
     [SerializeField] GameObject mainMenu;
     [SerializeField] GameObject winMenu;
+    [SerializeField] GameObject foodInfo;
+    [SerializeField] GameObject dropOffInfo;
 
     private GameObject controlsInteract;
     private GameObject controlsScroll;
@@ -221,6 +223,31 @@ public class UIManager : MonoBehaviour
     {
         playerHud.transform.Find("Controls").Find("Sneak").gameObject.transform.Find("Icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/CTRL_Default");
     }
+
+    public void DisplayFoodInfo(string foodName, int currentPoints, int weight)
+    {
+        foodInfo.SetActive(true);
+        foodInfo.transform.Find("Name").GetComponent<TMP_Text>().text = foodName;
+        foodInfo.transform.Find("Item Info").Find("Points").GetComponent<TMP_Text>().text = $"{currentPoints}";
+        foodInfo.transform.Find("Item Info").Find("Weight").GetComponent<TMP_Text>().text = $"{weight} <color=#C9A610>G</color>"; ;
+    }
+
+    public void HideFoodInfo()
+    {
+        foodInfo.SetActive(false);
+    }
+
+    public void DisplayDropOffInfo(int currentCapacity, int maxCapacity)
+    {
+        dropOffInfo.SetActive(true);
+        dropOffInfo.transform.Find("Capacity").GetComponent<TMP_Text>().text = $"{currentCapacity}/{maxCapacity} <color=#C9A610>G</color>";
+    }
+
+    public void HideDropOffInfo()
+    {
+        dropOffInfo.SetActive(false);
+    }
+
     #endregion
 
     #region Menus

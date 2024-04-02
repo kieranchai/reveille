@@ -60,6 +60,10 @@ public class NoiseController : MonoBehaviour
     public void DeactivateNoise()
     {
         isActivated = false;
+        if (GetComponentInParent<AudioSource>().isPlaying)
+        {
+            GetComponentInParent<AudioSource>().Stop();
+        }
         StopNoise();
     }
 
@@ -101,7 +105,7 @@ public class NoiseController : MonoBehaviour
         while (isActivated)
         {
             float noiseSpreadTime = 0.0f;
-            float noiseSpreadDuration = 0.3f;
+            float noiseSpreadDuration = 0.8f;
             float noiseSpreadLerpSpeed = 12.0f * Time.deltaTime;
             while (noiseSpreadTime < noiseSpreadDuration)
             {
@@ -111,8 +115,11 @@ public class NoiseController : MonoBehaviour
                 yield return null;
             }
 
-            GetComponentInParent<AudioSource>().clip = alarmSound;
-            GetComponentInParent<AudioSource>().Play();
+            if (!GetComponentInParent<AudioSource>().isPlaying)
+            {
+                GetComponentInParent<AudioSource>().clip = alarmSound;
+                GetComponentInParent<AudioSource>().Play();
+            }
 
             noiseShrinkTime = 0.0f;
             noiseShrinkDuration = 0.1f;
