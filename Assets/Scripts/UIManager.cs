@@ -197,6 +197,11 @@ public class UIManager : MonoBehaviour
         controlsInteract.transform.Find("Icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/E_Default");
     }
 
+    public void SetInteractHacking()
+    {
+        controlsInteract.transform.Find("Text").GetComponent<TMP_Text>().text = "Stop hacking";
+    }
+
     public void SetSprintKeyPressed()
     {
         playerHud.transform.Find("Controls").Find("Sprint").gameObject.transform.Find("Icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/UI/SHIFT_Pressed");

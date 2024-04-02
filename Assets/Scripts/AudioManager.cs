@@ -85,7 +85,6 @@ public class AudioManager : MonoBehaviour
                 if (isPlayingChase)
                 {
                     timeTillNextBeat = musicSource.time % bps;
-                    Debug.Log(timeTillNextBeat);
                     if (timeTillNextBeat < 0.1f) timeTillNextBeat = 0;
                     if (timeTillNextBeat == 0)
                     {

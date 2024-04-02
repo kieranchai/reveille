@@ -471,6 +471,7 @@ public class PlayerManager : MonoBehaviour
         if (!hackingTarget) return;
         if (!hackingTarget.GetComponent<Terminal>().playable) return;
 
+        GameController.instance.currentUIManager.SetInteractHacking();
         currentState = PLAYER_STATE.HACKING;
         _anim.SetBool("isWalking", false);
         noiseSizeMultiplier = 0.0f;

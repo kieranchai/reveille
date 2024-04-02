@@ -46,6 +46,19 @@ public class CameraController : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Escape)) SkipPanning();
         }
+
+        if (foodPanda.GetComponent<Animator>().GetBool("isWalking"))
+        {
+            if (!_audioSourceFoodPanda.isPlaying)
+            {
+                _audioSourceFoodPanda.clip = foodpandaFootsteps;
+                _audioSourceFoodPanda.Play();
+            }
+        }
+        else
+        {
+            _audioSourceFoodPanda.Stop();
+        }
     }
 
     private void FixedUpdate()
@@ -83,17 +96,14 @@ public class CameraController : MonoBehaviour
         Camera.main.orthographicSize = 13;
         GameController.instance.currentUIManager.HideAllUI();
 
-        //GameObject foodPanda = GameObject.Find("Foodpanda");
-        //AudioSource _audioSourceFoodPanda = foodPanda.GetComponent<AudioSource>();
         initialFoodPandaPos = foodPanda.transform.position;
         target = foodSpawnArea;
-
-        _audioSourceFoodPanda.clip = foodpandaFootsteps;
-        _audioSourceFoodPanda.Play();
 
         while (Vector3.SqrMagnitude(foodPanda.transform.position - foodSpawnArea.position) >= 0.05f)
         {
             foodPanda.GetComponent<Animator>().SetBool("isWalking", true);
+            _audioSourceFoodPanda.clip = foodpandaFootsteps;
+            _audioSourceFoodPanda.Play();
             var dir = foodSpawnArea.position - foodPanda.transform.position;
             var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
             foodPanda.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
