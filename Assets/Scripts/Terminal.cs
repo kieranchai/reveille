@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering.Universal;
 
 public class Terminal : MonoBehaviour
 {
     private NoiseController _noiseController;
     private Animator _anim;
     [HideInInspector] public AudioSource _audio;
+    private Light2D _lightSource;
     public bool playable;
     private GameObject minigame;
     private bool playedAlertSound = false;
@@ -44,6 +46,7 @@ public class Terminal : MonoBehaviour
         _noiseController = transform.Find("Noise").GetComponent<NoiseController>();
         _anim = gameObject.GetComponent<Animator>();
         _audio = GetComponent<AudioSource>();
+        _lightSource = GetComponent<Light2D>();
     }
 
     private void Update()
@@ -100,6 +103,8 @@ public class Terminal : MonoBehaviour
     {
         _audio.clip = minigameSuccess;
         _audio.Play();
+
+        _lightSource.color = Color.green;
 
         playable = false;
         StopAllCoroutines();

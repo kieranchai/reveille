@@ -185,10 +185,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Common Corporal
       objectReference: {fileID: 0}
-    - target: {fileID: 6466163813145754118, guid: 48aaf38474c89434eafb34dc7ee57db9, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7297351032224332990, guid: 48aaf38474c89434eafb34dc7ee57db9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 12.480059
@@ -2757,10 +2753,6 @@ PrefabInstance:
     - target: {fileID: 6466163813145754118, guid: 48aaf38474c89434eafb34dc7ee57db9, type: 3}
       propertyPath: m_Name
       value: Common Corporal (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 6466163813145754118, guid: 48aaf38474c89434eafb34dc7ee57db9, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7297351032224332990, guid: 48aaf38474c89434eafb34dc7ee57db9, type: 3}
       propertyPath: m_LocalPosition.x

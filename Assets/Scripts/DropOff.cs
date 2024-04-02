@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class DropOff : MonoBehaviour
 {
@@ -9,11 +10,18 @@ public class DropOff : MonoBehaviour
     private int currentCapacity = 0;
     public List<Food> droppedFood = new List<Food>();
 
+    public Light2D _lightSource;
     public AudioClip dropOffToggle;
 
     private void Start()
     {
         GetComponent<AudioSource>().clip = dropOffToggle;
+        _lightSource = GetComponent<Light2D>();
+    }
+
+    private void Update()
+    {
+        ChangeLight();
     }
 
     public bool DepositFood(Food foodItem)
@@ -27,5 +35,12 @@ public class DropOff : MonoBehaviour
         currentCapacity += foodItem.weight;
         GameController.instance.currentLevelController.droppedFoodCount++;
         return true;
+    }
+
+    public void ChangeLight()
+    {
+        if (currentCapacity < maxCapacity) return;
+
+        _lightSource.color = Color.red;
     }
 }
