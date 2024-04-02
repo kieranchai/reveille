@@ -70,6 +70,7 @@ public class EnemyScript : MonoBehaviour
     #region Audio Clips
     [Header("Enemy Audio Clips")]
     public AudioClip enemyWalk;
+    public AudioClip enemyHmm;
     public AudioClip enemyConfused;
     public AudioClip enemyAlerted;
     public AudioClip cctvIdle;
@@ -362,6 +363,9 @@ public class EnemyScript : MonoBehaviour
             if (isDoneLooking)
             {
                 // Go back to patrolling
+                _audio.clip = enemyHmm;
+                _audio.Play();
+
                 isLooking = false;
                 isTurning = true;
                 currentPathingTarget = patrolPoints[currentPatrolPoint].position;
