@@ -9,6 +9,13 @@ public class DropOff : MonoBehaviour
     private int currentCapacity = 0;
     public List<Food> droppedFood = new List<Food>();
 
+    public AudioClip dropOffToggle;
+
+    private void Start()
+    {
+        GetComponent<AudioSource>().clip = dropOffToggle;
+    }
+
     public bool DepositFood(Food foodItem)
     {
         if (currentCapacity + foodItem.weight >= maxCapacity)

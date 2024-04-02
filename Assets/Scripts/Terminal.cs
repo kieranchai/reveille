@@ -86,6 +86,11 @@ public class Terminal : MonoBehaviour
         Destroy(minigame);
         PlayerManager.instance.currentState = PlayerManager.PLAYER_STATE.STILL;
         playedAlertSound = false;
+    }
+
+    public void ExitingHack()
+    {
+        StopHacking();
 
         _audio.clip = terminalExit;
         _audio.Play();
@@ -112,6 +117,8 @@ public class Terminal : MonoBehaviour
 
     IEnumerator OpenDoor(GameObject Door)
     {
+        yield return new WaitForSeconds(0.5f);
+
         _audio.clip = doorOpen;
         _audio.Play();
 

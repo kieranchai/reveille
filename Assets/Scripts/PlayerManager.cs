@@ -200,7 +200,7 @@ public class PlayerManager : MonoBehaviour
             }
             _anim.SetBool("isWalking", true);
 
-            if (!_audio.isPlaying)
+            if (!_footstepsAudio.isPlaying)
             {
                 _footstepsAudio.clip = playerWalk;
                 _footstepsAudio.Play();
@@ -342,7 +342,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            hackingTarget.GetComponent<Terminal>().StopHacking();
+            hackingTarget.GetComponent<Terminal>().ExitingHack();
         }
     }
     #endregion
@@ -450,8 +450,8 @@ public class PlayerManager : MonoBehaviour
     {
         if (inventory.Count == 0) return;
 
-        //_audio.clip = dropFood;
-        //_audio.Play();
+        _audio.clip = dropFood;
+        _audio.Play();
 
         GameObject droppedFood = Instantiate(Resources.Load<GameObject>("Prefabs/Food"), transform.position, Quaternion.identity);
         droppedFood.GetComponent<FoodManager>().SetFoodData(inventory[currentSelectedFood]);
@@ -483,8 +483,8 @@ public class PlayerManager : MonoBehaviour
         if (inventory.Count < 1) return;
         if (foodDropOffTarget.GetComponent<DropOff>().DepositFood(inventory[currentSelectedFood]))
         {
-            //_audio.clip = deliverFood;
-            //_audio.Play();
+            _audio.clip = deliverFood;
+            _audio.Play();
 
             UpdatePoints(inventory[currentSelectedFood].currentPoints);
             RemoveFoodFromInventory(inventory[currentSelectedFood]);
@@ -511,6 +511,8 @@ public class PlayerManager : MonoBehaviour
             GameController.instance.currentUIManager.UpdateDisplayInteractables();
             Animator animator = collision.gameObject.transform.parent.gameObject.GetComponent<Animator>();
             animator.SetTrigger("Open");
+
+            collision.gameObject.GetComponentInParent<DropOff>().GetComponent<AudioSource>().Play();
         }
     }
 
@@ -528,6 +530,8 @@ public class PlayerManager : MonoBehaviour
             GameController.instance.currentUIManager.UpdateDisplayInteractables();
             Animator animator = collision.gameObject.transform.parent.gameObject.GetComponent<Animator>();
             animator.SetTrigger("Close");
+
+            collision.gameObject.GetComponentInParent<DropOff>().GetComponent<AudioSource>().Play();
         }
     }
 }

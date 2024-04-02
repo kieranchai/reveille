@@ -18,6 +18,11 @@ public class CameraController : MonoBehaviour
     public Vector2 xLimit;
     public Vector2 yLimit;
 
+    [Header("Foodpanda Variables")]
+    public GameObject foodPanda;
+    public AudioSource _audioSourceFoodPanda;
+    public AudioClip foodpandaFootsteps;
+
     private float initialZoom;
     private float playerSmoothTime = 0.3f;
     private float introSmoothTime = 1f;
@@ -28,6 +33,9 @@ public class CameraController : MonoBehaviour
     {
         initialZoom = Camera.main.orthographicSize;
         foodSpawnArea = GameObject.Find("Food Spawn Area").transform;
+
+        foodPanda = GameObject.Find("Foodpanda");
+        _audioSourceFoodPanda = foodPanda.GetComponent<AudioSource>();
 
         if (GameController.instance.isPanning) StartCoroutine(PanMap());
     }
@@ -75,9 +83,14 @@ public class CameraController : MonoBehaviour
         Camera.main.orthographicSize = 13;
         GameController.instance.currentUIManager.HideAllUI();
 
-        GameObject foodPanda = GameObject.Find("Foodpanda");
+        //GameObject foodPanda = GameObject.Find("Foodpanda");
+        //AudioSource _audioSourceFoodPanda = foodPanda.GetComponent<AudioSource>();
         initialFoodPandaPos = foodPanda.transform.position;
         target = foodSpawnArea;
+
+        _audioSourceFoodPanda.clip = foodpandaFootsteps;
+        _audioSourceFoodPanda.Play();
+
         while (Vector3.SqrMagnitude(foodPanda.transform.position - foodSpawnArea.position) >= 0.05f)
         {
             foodPanda.GetComponent<Animator>().SetBool("isWalking", true);
@@ -102,6 +115,8 @@ public class CameraController : MonoBehaviour
         }
         yield return new WaitForSeconds(0.5f);
 
+        _audioSourceFoodPanda.Stop();
+
         target = PlayerManager.instance.gameObject.transform;
         yield return new WaitForSeconds(1.0f);
         yield return ZoomInCamera();
@@ -117,6 +132,9 @@ public class CameraController : MonoBehaviour
         Camera.main.orthographicSize = initialZoom;
         GameController.instance.currentLevelController.SpawnFood();
         GameObject.Find("Foodpanda").transform.position = initialFoodPandaPos;
+
+        _audioSourceFoodPanda.Stop();
+
         StartGame();
     }
 

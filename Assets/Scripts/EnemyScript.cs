@@ -17,6 +17,7 @@ public class EnemyScript : MonoBehaviour
     private Animator _anim;
     private AnimatorOverrideController _aoc;
     private AudioSource _audio;
+    private AudioSource _footstepsAudio;
 
     // Default Data
     private int id;
@@ -90,6 +91,8 @@ public class EnemyScript : MonoBehaviour
             _anim = GetComponent<Animator>();
             _aoc = new AnimatorOverrideController(_anim.runtimeAnimatorController);
             _anim.runtimeAnimatorController = _aoc;
+
+            _footstepsAudio = transform.Find("Footsteps SFX").GetComponent<AudioSource>();
         }
         else
         {
@@ -174,6 +177,9 @@ public class EnemyScript : MonoBehaviour
     {
         _agent.speed = walkSpeed;
 
+        //_footstepsAudio.clip = enemyWalk;
+        //_footstepsAudio.Play();
+
         // Face target only when not turning
         if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
 
@@ -188,6 +194,8 @@ public class EnemyScript : MonoBehaviour
             {
                 // Stop the enemy movement when turning
                 _agent.isStopped = true;
+
+                //_footstepsAudio.Stop();
 
                 if (RotateToNextPoint(patrolPoints[currentPatrolPoint].position))
                 {
@@ -506,6 +514,9 @@ public class EnemyScript : MonoBehaviour
         Quaternion targetRotation = Quaternion.Euler(initialRotation.x, initialRotation.y, 70 * Mathf.Sin(Time.time * 0.8f) + initialRotation.z);
         transform.localRotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime * 90f);
 
+        _audio.clip = cctvIdle;
+        _audio.Play();
+
         if (PlayerInSight())
         {
             playerLastSeenPosition = PlayerManager.instance.CurrentPosition();
@@ -518,9 +529,6 @@ public class EnemyScript : MonoBehaviour
                 popUp.GetComponent<TMP_Text>().text = "!";
                 popUp.GetComponent<TMP_Text>().color = Color.red;
             }
-
-            //_audio.clip = cctvAlert;
-            //_audio.Play();
         }
     }
 
@@ -528,8 +536,8 @@ public class EnemyScript : MonoBehaviour
     {
         gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>($"Sprites/CCTV_Alert");
     
-        //_audio.clip = cctvNoise;
-        //_audio.Play();
+        _audio.clip = cctvNoise;
+        _audio.Play();
 
         if (PlayerInSight())
         {
