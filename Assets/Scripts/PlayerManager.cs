@@ -62,6 +62,7 @@ public class PlayerManager : MonoBehaviour
     public AudioClip dropFood;
     public AudioClip throwFood;
     public AudioClip deliverFood;
+    public AudioClip depositError;
     #endregion
 
     private void Awake()
@@ -504,6 +505,10 @@ public class PlayerManager : MonoBehaviour
 
             UpdatePoints(inventory[currentSelectedFood].currentPoints);
             RemoveFoodFromInventory(inventory[currentSelectedFood]);
+        }else
+        {
+            _audio.clip = depositError;
+            _audio.Play();
         }
     }
 
