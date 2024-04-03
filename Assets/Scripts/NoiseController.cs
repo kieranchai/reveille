@@ -41,6 +41,8 @@ public class NoiseController : MonoBehaviour
 
             if (pulseTimer >= 8.0f) DeactivateNoise();
         }
+
+        if (GameController.instance.gameEnd && GetComponentInParent<AudioSource>().isPlaying) GetComponentInParent<AudioSource>().Stop();
     }
 
     public void ResetNoise()
