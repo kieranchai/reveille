@@ -728,7 +728,10 @@ public class EnemyScript : MonoBehaviour
             if (currentState == ENEMY_STATE.ALERTED)
             {
                 if (targetedPulsingNoise) return;
-                else if (!targetedPulsingNoise && collision.gameObject.GetComponent<NoiseController>().isPulsing)
+
+                currentPathingTarget = collision.gameObject.transform.position;
+
+                if (!targetedPulsingNoise && collision.gameObject.GetComponent<NoiseController>().isPulsing)
                 {
                     targetedPulsingNoise = collision.gameObject;
                     currentPathingTarget = targetedPulsingNoise.transform.parent.Find("Deactivate Pos").position;
@@ -741,7 +744,6 @@ public class EnemyScript : MonoBehaviour
                 ResetRotationVariables();
                 isTurning = true;
 
-                currentPathingTarget = collision.gameObject.transform.position;
                 _agent.SetDestination(currentPathingTarget);
             }
 

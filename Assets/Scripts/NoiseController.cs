@@ -62,6 +62,10 @@ public class NoiseController : MonoBehaviour
     public void DeactivateNoise()
     {
         isActivated = false;
+        if (GetComponentInParent<AudioSource>().isPlaying)
+        {
+            GetComponentInParent<AudioSource>().Stop();
+        }
         StopCoroutine(ProduceNoiseTimer());
         StopNoise();
     }
@@ -136,10 +140,6 @@ public class NoiseController : MonoBehaviour
 
     public void StopNoise()
     {
-        if (GetComponentInParent<AudioSource>().isPlaying)
-        {
-            GetComponentInParent<AudioSource>().Stop();
-        }
         pulseTimer = 0.0f;
         isPulsing = false;
         isActivated = false;
