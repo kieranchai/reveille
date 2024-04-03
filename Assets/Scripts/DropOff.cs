@@ -26,7 +26,7 @@ public class DropOff : MonoBehaviour
 
     public bool DepositFood(Food foodItem)
     {
-        if (currentCapacity + foodItem.weight >= maxCapacity)
+        if (currentCapacity + foodItem.weight > maxCapacity)
         {
             return false;
         };

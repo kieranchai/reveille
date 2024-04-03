@@ -227,7 +227,7 @@ public class PlayerManager : MonoBehaviour
             if (nearbyFood.Count > 0)
             {
                 // Pickup Food
-                if (currentInventoryWeight < inventoryWeightLimit)
+                if (currentInventoryWeight + nearbyFood[0].GetComponent<FoodManager>().weight <= inventoryWeightLimit)
                 {
                     PickUpNearestFood();
                     return;
