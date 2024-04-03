@@ -67,6 +67,8 @@ public class GameController : MonoBehaviour
                 else ResumeGame();
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.N) && isTutorialScene) SkipTutorial();
     }
 
     public void PauseGame()
@@ -182,6 +184,16 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
     }
 
+    public void SkipTutorial()
+    {
+        StopCoroutine(Tutorial());
+        GameObject.Find("Main Camera").GetComponent<CameraController>().target = PlayerManager.instance.gameObject.transform;
+        canInteract = true;
+        tutorialDialogue.SetActive(false);
+        GameObject.Find("Tutorial Barrier 1").SetActive(false);
+        GameObject.Find("Tutorial Barrier 2").SetActive(false);
+    }
+
     IEnumerator Tutorial()
     {
         tutorialDialogue.SetActive(true);
@@ -272,6 +284,5 @@ public class GameController : MonoBehaviour
         yield return StartCoroutine(Typewriter("Food can also be dropped using MOUSE2 to be removed from your inventory silently."));
         yield return new WaitForSeconds(1f);
         tutorialDialogue.SetActive(false);
-
     }
 }

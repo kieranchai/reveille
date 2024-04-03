@@ -191,8 +191,14 @@ public class EnemyScript : MonoBehaviour
         // Face target only when not turning
         if (!isTurning) transform.up = new Vector3(_agent.steeringTarget.x, _agent.steeringTarget.y) - new Vector3(transform.position.x, transform.position.y);
 
+        if (_agent.remainingDistance >= _agent.stoppingDistance && isTurning && _agent.isStopped)
+        {
+            _agent.isStopped = false;
+            isTurning = false;
+        }
+
         // If at current patrol point, set and go towards next patrol point
-        if (_agent.remainingDistance <= _agent.stoppingDistance)
+        if (_agent.remainingDistance != 0 && _agent.remainingDistance <= _agent.stoppingDistance || _agent.pathStatus == NavMeshPathStatus.PathComplete && _agent.remainingDistance == 0)
         {
             // Immediately set next patrol point then set turning true
             if (!isTurning) SetNextPatrolPoint();
@@ -308,7 +314,6 @@ public class EnemyScript : MonoBehaviour
                 {
                     _agent.SetDestination(patrolPoints[currentPatrolPoint].position);
                     _agent.isStopped = false;
-                    currentState = ENEMY_STATE.PATROL;
                     _audio.clip = enemyHmm;
                     _audio.Play();
                     if (popUp)
@@ -317,6 +322,7 @@ public class EnemyScript : MonoBehaviour
                         popUp = null;
                     }
                     ResetRotationVariables();
+                    currentState = ENEMY_STATE.PATROL;
                 }
             }
         }
@@ -379,7 +385,6 @@ public class EnemyScript : MonoBehaviour
                     {
                         _agent.SetDestination(patrolPoints[currentPatrolPoint].position);
                         _agent.isStopped = false;
-                        currentState = ENEMY_STATE.PATROL;
                         _audio.clip = enemyHmm;
                         _audio.Play();
                         if (popUp)
@@ -388,6 +393,7 @@ public class EnemyScript : MonoBehaviour
                             popUp = null;
                         }
                         ResetRotationVariables();
+                        currentState = ENEMY_STATE.PATROL;
                     }
                 }
             }
@@ -505,7 +511,6 @@ public class EnemyScript : MonoBehaviour
                         ResetRotationVariables();
                         _agent.SetDestination(currentPathingTarget);
                         _agent.isStopped = false;
-                        currentState = ENEMY_STATE.PATROL;
                         _audio.clip = enemyHmm;
                         _audio.Play();
                         AudioManager.instance.chaseCounter--;
@@ -514,6 +519,7 @@ public class EnemyScript : MonoBehaviour
                             Destroy(popUp);
                             popUp = null;
                         }
+                        currentState = ENEMY_STATE.PATROL;
                     }
                 }
             }
@@ -619,6 +625,7 @@ public class EnemyScript : MonoBehaviour
         {
             return true;
         }
+
         if (elapsedTime >= 5.0f)
         {
             elapsedTime = 0;

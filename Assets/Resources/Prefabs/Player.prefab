@@ -219,7 +219,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 3
   m_Sprite: {fileID: -203131639, guid: 83cc9a6ca17e7214dadcc9726430ff44, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -325,6 +325,7 @@ MonoBehaviour:
   dropFood: {fileID: 8300000, guid: 544f15b212fa7cf43b8e75240706d5cb, type: 3}
   throwFood: {fileID: 8300000, guid: b83825fe1fef3584dae38b38da75cdd3, type: 3}
   deliverFood: {fileID: 8300000, guid: c0633d82cf1d43143a42a9123afd120c, type: 3}
+  depositError: {fileID: 0}
 --- !u!120 &1796992504182106682
 LineRenderer:
   serializedVersion: 2
