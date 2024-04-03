@@ -91,7 +91,12 @@ public class PlayerManager : MonoBehaviour
     private void Update()
     {
         if (GameController.instance.isPanning) return;
-        if (!GameController.instance.canInteract) return;
+        if (!GameController.instance.canInteract)
+        {
+            _rigidBody.velocity = Vector3.zero;
+            _anim.SetBool("isWalking", false);
+            return;
+        }
 
         switch (currentState)
         {
