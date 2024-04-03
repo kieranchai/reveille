@@ -63,6 +63,7 @@ public class EnemyScript : MonoBehaviour
     private Vector3 initialRight;
     private Vector3 initialRotation;
     private float rotationTime;
+    private float elapsedTime;
     private GameObject targetedPulsingNoise;
     private GameObject popUp;
     #endregion
@@ -303,9 +304,9 @@ public class EnemyScript : MonoBehaviour
             currentPathingTarget = patrolPoints[currentPatrolPoint].position;
             if (isTurning)
             {
-                if (RotateToNextPoint(currentPathingTarget))
+                if (RotateToNextPoint(patrolPoints[currentPatrolPoint].position))
                 {
-                    _agent.SetDestination(currentPathingTarget);
+                    _agent.SetDestination(patrolPoints[currentPatrolPoint].position);
                     _agent.isStopped = false;
                     currentState = ENEMY_STATE.PATROL;
                     _audio.clip = enemyHmm;
@@ -374,9 +375,9 @@ public class EnemyScript : MonoBehaviour
                 currentPathingTarget = patrolPoints[currentPatrolPoint].position;
                 if (isTurning)
                 {
-                    if (RotateToNextPoint(currentPathingTarget))
+                    if (RotateToNextPoint(patrolPoints[currentPatrolPoint].position))
                     {
-                        _agent.SetDestination(currentPathingTarget);
+                        _agent.SetDestination(patrolPoints[currentPatrolPoint].position);
                         _agent.isStopped = false;
                         currentState = ENEMY_STATE.PATROL;
                         _audio.clip = enemyHmm;
@@ -497,7 +498,7 @@ public class EnemyScript : MonoBehaviour
                 currentPathingTarget = patrolPoints[currentPatrolPoint].position;
                 if (isTurning)
                 {
-                    if (RotateToNextPoint(currentPathingTarget))
+                    if (RotateToNextPoint(patrolPoints[currentPatrolPoint].position))
                     {
                         chaseTimer = 0.0f;
                         predictTimer = 0.0f;
@@ -607,16 +608,20 @@ public class EnemyScript : MonoBehaviour
         float angle = Mathf.Atan2((nextPoint - transform.position).y, (nextPoint - transform.position).x) * Mathf.Rad2Deg;
         finalRotation = Quaternion.AngleAxis(angle - 90.0f, Vector3.forward);
         rotationTime += Time.deltaTime * 0.1f;
-
+        elapsedTime += Time.deltaTime;
         // Method 1: Lerp enemy's rotation to to next pathing target
         /*transform.rotation = Quaternion.Lerp(transform.rotation, finalRotation, rotationTime);*/
 
         // Method 2: Lerp enemy's transform.up to vector towards next pathing target
         transform.up = Vector3.Lerp(transform.up, new Vector3((nextPoint - transform.position).normalized.x, (nextPoint - transform.position).normalized.y, 0), rotationTime);
-
         // Once rotation complete return true
         if (Quaternion.Angle(transform.rotation, finalRotation) <= 0.0f)
         {
+            return true;
+        }
+        if (elapsedTime >= 5.0f)
+        {
+            elapsedTime = 0;
             return true;
         }
 
