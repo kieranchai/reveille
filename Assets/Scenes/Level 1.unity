@@ -1499,7 +1499,7 @@ GameObject:
   - component: {fileID: 539203729}
   - component: {fileID: 539203731}
   - component: {fileID: 539203732}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Table 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1516,7 +1516,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.04, y: -0.72, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1398235491}
@@ -8287,7 +8287,7 @@ GameObject:
   - component: {fileID: 1685980016}
   - component: {fileID: 1685980017}
   - component: {fileID: 1685980018}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Table 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8304,7 +8304,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.01, y: -0.72, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1398235491}
@@ -8432,7 +8432,7 @@ GameObject:
   - component: {fileID: 1711597553}
   - component: {fileID: 1711597555}
   - component: {fileID: 1711597556}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Table 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8449,7 +8449,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.06, y: -0.72, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1398235491}
