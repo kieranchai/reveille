@@ -4,7 +4,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static PlayerManager;
-using static UnityEngine.GraphicsBuffer;
 
 public class GameController : MonoBehaviour
 {
@@ -36,6 +35,8 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
+        CheatCode();
+
         CheckPause();
     }
 
@@ -284,5 +285,27 @@ public class GameController : MonoBehaviour
         yield return StartCoroutine(Typewriter("Food can also be dropped using MOUSE2 to be removed from your inventory silently."));
         yield return new WaitForSeconds(1f);
         tutorialDialogue.SetActive(false);
+    }
+
+    public void CheatCode()
+    {
+        if (Input.GetKeyDown(KeyCode.F10))
+        {
+            AudioManager.instance.PlayBGM(AudioManager.instance.mainMenuMusic);
+            AudioManager.instance.chaseCounter = 0;
+            SceneManager.LoadScene("Main Menu");
+        }
+        else if (Input.GetKeyDown(KeyCode.F11))
+        {
+            AudioManager.instance.PlayBGM(AudioManager.instance.levelOneMusic);
+            AudioManager.instance.chaseCounter = 0;
+            SceneManager.LoadScene("Level 1");
+        }
+        else if (Input.GetKeyDown (KeyCode.F12))
+        {
+            AudioManager.instance.PlayBGM(AudioManager.instance.levelTwoMusic);
+            AudioManager.instance.chaseCounter = 0;
+            SceneManager.LoadScene("Level 2");
+        }
     }
 }
