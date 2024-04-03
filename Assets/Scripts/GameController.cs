@@ -135,7 +135,11 @@ public class GameController : MonoBehaviour
         Time.timeScale = 1.0f;
         AudioManager.instance.PlayBGM(AudioManager.instance.levelOneMusic);
         AudioManager.instance.chaseCounter = 0;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        if (SceneManager.GetActiveScene().buildIndex == 2) {
+            ExitGame();
+        } else {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        }
     }
 
     public void FinishGame()
