@@ -84,6 +84,10 @@ public class FoodManager : MonoBehaviour
                 StartCoroutine(_noiseController.ProduceNoiseOnce());
             }
         }
+
+        if (currentPoints <= 0) {
+            Destroy(gameObject);
+        }
     }
 
     // Used only when spawning food from throwing to set their current points
