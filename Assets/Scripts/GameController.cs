@@ -160,6 +160,16 @@ public class GameController : MonoBehaviour
         StartCoroutine(Tutorial());
     }
 
+    public void ButtonHover()
+    {
+        AudioManager.instance.PlaySFX(AudioManager.instance.hoverSfx);
+    }
+
+    public void ButtonPress()
+    {
+        AudioManager.instance.PlaySFX(AudioManager.instance.clickSfx);
+    }
+
     IEnumerator Typewriter(string text)
     {
         tutorialDialogue.GetComponent<TMP_Text>().text = "";
