@@ -243,9 +243,9 @@ public class GameController : MonoBehaviour
         GameObject.Find("Main Camera").GetComponent<CameraController>().target = GameObject.Find("Food Spawn Area").transform;
         yield return StartCoroutine(Typewriter("Your goal is to collect the food delivery without getting caught within the time limit."));
         GameObject.Find("Main Camera").GetComponent<CameraController>().target = GameObject.Find("Dropoff").transform;
-        yield return StartCoroutine(Typewriter("Afterwards, you have to deliver the food back to a drop off area."));
+        yield return StartCoroutine(Typewriter("Afterwards, you have to find and deliver the food to a drop off point."));
         yield return StartCoroutine(Typewriter("You can take as many trips as you want, but remember,"));
-        yield return StartCoroutine(Typewriter("the more weight you carry on you, the slower you'll move."));
+        yield return StartCoroutine(Typewriter("the more food you carry, the slower you'll move."));
         yield return StartCoroutine(Typewriter("Take note that you can only carry 3000 g worth of food!"));
         yield return StartCoroutine(Typewriter("Each drop off area also has a different amount of food capacity!"));
         tutorialDialogue.SetActive(false);
