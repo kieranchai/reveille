@@ -42,5 +42,7 @@ public class DropOff : MonoBehaviour
         if (currentCapacity < maxCapacity) return;
 
         _lightSource.color = Color.red;
+        Animator animator = GetComponent<Animator>();
+        animator.SetBool("fullCapacity", true);
     }
 }

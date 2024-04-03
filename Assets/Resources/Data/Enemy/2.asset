@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 2
   enemyName: Steadfast Sergeants
-  walkSpeed: 5
-  runSpeed: 5
+  walkSpeed: 3.5
+  runSpeed: 4.5
   lineOfSight: 5
   fieldOfView: 80

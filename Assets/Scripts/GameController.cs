@@ -215,11 +215,13 @@ public class GameController : MonoBehaviour
         yield return StartCoroutine(Typewriter("Now, let's talk about the goal of Reveille."));
         canInteract = false;
         GameObject.Find("Main Camera").GetComponent<CameraController>().target = GameObject.Find("Food Spawn Area").transform;
-        yield return StartCoroutine(Typewriter("Your goal is collect the food delivery without getting caught."));
+        yield return StartCoroutine(Typewriter("Your goal is to collect the food delivery without getting caught within the time limit."));
         GameObject.Find("Main Camera").GetComponent<CameraController>().target = GameObject.Find("Dropoff").transform;
         yield return StartCoroutine(Typewriter("Afterwards, you have to deliver the food back to a drop off area."));
         yield return StartCoroutine(Typewriter("You can take as many trips as you want, but remember,"));
         yield return StartCoroutine(Typewriter("the more weight you carry on you, the slower you'll move."));
+        yield return StartCoroutine(Typewriter("Take note that you can only carry 3000 g worth of food!"));
+        yield return StartCoroutine(Typewriter("Each drop off area also has a different amount of food capacity!"));
         tutorialDialogue.SetActive(false);
         GameObject.Find("Main Camera").GetComponent<CameraController>().target = PlayerManager.instance.gameObject.transform;
         GameObject.Find("Tutorial Barrier 1").SetActive(false);
@@ -228,8 +230,9 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(1f);
         tutorialDialogue.SetActive(true);
         yield return StartCoroutine(Typewriter("Located around the map are these locked doors."));
+        yield return StartCoroutine(Typewriter("Unlock these doors by successfully clearing a minigame by fitting the slot into the gap."));
         yield return StartCoroutine(Typewriter("Unlocking these doors will open up shortcuts and places for you to hide."));
-        yield return StartCoroutine(Typewriter("However, failing to unlock them will sound an alarm, alerting all nearby guards to the area."));
+        yield return StartCoroutine(Typewriter("However, failing to unlock them will sound an alarm, alerting all nearby guards to the area!"));
         yield return StartCoroutine(Typewriter("You can unlock them by pressing E on the terminals next to them."));
         canInteract = true;
         GameObject.Find("Main Camera").GetComponent<CameraController>().target = PlayerManager.instance.gameObject.transform;
@@ -242,7 +245,7 @@ public class GameController : MonoBehaviour
         tutorialDialogue.SetActive(true);
         GameObject.Find("Tutorial Barrier 2").SetActive(false);
         yield return StartCoroutine(Typewriter("Great, now you're on your own!"));
-        yield return StartCoroutine(Typewriter("Deliver all the food in the stage to complete the tutorial"));
+        yield return StartCoroutine(Typewriter("Deliver all the food in the stage to complete the tutorial."));
         yield return new WaitForSeconds(1f);
         tutorialDialogue.SetActive(false);
         while (PlayerManager.instance.inventory.Count <= 0)
