@@ -291,18 +291,21 @@ public class GameController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F10))
         {
+            Time.timeScale = 1.0f;
             AudioManager.instance.PlayBGM(AudioManager.instance.mainMenuMusic);
             AudioManager.instance.chaseCounter = 0;
             SceneManager.LoadScene("Main Menu");
         }
         else if (Input.GetKeyDown(KeyCode.F11))
         {
+            Time.timeScale = 1.0f;
             AudioManager.instance.PlayBGM(AudioManager.instance.levelOneMusic);
             AudioManager.instance.chaseCounter = 0;
             SceneManager.LoadScene("Level 1");
         }
         else if (Input.GetKeyDown (KeyCode.F12))
         {
+            Time.timeScale = 1.0f;
             AudioManager.instance.PlayBGM(AudioManager.instance.levelTwoMusic);
             AudioManager.instance.chaseCounter = 0;
             SceneManager.LoadScene("Level 2");
