@@ -32033,11 +32033,11 @@ PrefabInstance:
       objectReference: {fileID: 1367666564}
     - target: {fileID: 7619041425578762912, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
       propertyPath: rings
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7619041425578762912, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
       propertyPath: speed
-      value: 125
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7619041425578762912, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
       propertyPath: doors.Array.size
@@ -34331,11 +34331,11 @@ PrefabInstance:
       objectReference: {fileID: 1377166811}
     - target: {fileID: 7619041425578762912, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
       propertyPath: rings
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7619041425578762912, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
       propertyPath: speed
-      value: 100
+      value: 110
       objectReference: {fileID: 0}
     - target: {fileID: 7619041425578762912, guid: 6bc7adfb120ae194d86af787134693c5, type: 3}
       propertyPath: doors.Array.size
@@ -35453,7 +35453,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5326860050779275585, guid: 2e61fa250bfa56247b39f51be21bd282, type: 3}
       propertyPath: maxCapacity
-      value: 2000
+      value: 2500
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
